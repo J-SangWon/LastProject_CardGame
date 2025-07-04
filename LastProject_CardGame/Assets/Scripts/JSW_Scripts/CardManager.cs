@@ -11,6 +11,9 @@ public class CardManager : MonoBehaviour
     // 카드 이름으로 빠르게 찾기 위한 Dictionary
     public Dictionary<string, BaseCardData> cardDict = new Dictionary<string, BaseCardData>();
 
+    public List<DeckData> allDecks = new List<DeckData>();
+    public DeckData currentDeck;
+
     private void Awake()
     {
         if (Instance == null)
@@ -52,5 +55,41 @@ public class CardManager : MonoBehaviour
         return allCards.FindAll(card => card.rarity == rarity);
     }
 
+    // 덱 생성
+    public DeckData CreateDeck(string name)
+    {
+        DeckData newDeck = new DeckData { deckName = name };
+        allDecks.Add(newDeck);
+        return newDeck;
+    }
 
+    // 덱 삭제
+    public void DeleteDeck(DeckData deck)
+    {
+        allDecks.Remove(deck);
+    }
+
+    // 덱 불러오기
+    public DeckData GetDeckByName(string name)
+    {
+        return allDecks.Find(d => d.deckName == name);
+    }
+
+    // 덱에 카드 추가
+    public void AddCardToDeck(DeckData deck, BaseCardData card)
+    {
+        deck.cards.Add(card);
+    }
+
+    // 덱에서 카드 제거
+    public void RemoveCardFromDeck(DeckData deck, BaseCardData card)
+    {
+        deck.cards.Remove(card);
+    }
+
+    // 모든 카드 리스트 반환 (예시)
+    public List<BaseCardData> GetAllCards()
+    {
+        return allCards;
+    }
 }
