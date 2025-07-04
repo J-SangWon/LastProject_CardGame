@@ -10,20 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 0}
-  m_Name: DogmaRequiem Sherap
+  m_Name: DogmaRequiem_Sherap
   m_EditorClassIdentifier: Assembly-CSharp::MonsterCardData
   cardName: DogmaRequiem Sherap
-  description: 
+  description: qqq
   artwork: {fileID: 21300000, guid: 1af841b420b74204cad56a56a20ac72b, type: 3}
   cardType: 0
   rarity: 3
-  cost: 0
+  cost: 5
   haveLive2D: 0
   live2DPath: 
   effectIds: []
   effectTimings: 
-  tags: []
+  tags:
+  - Undead
   monsterType: 0
-  attack: 4
-  health: 15
+  attack: 10
+  health: 20
   race: 1
