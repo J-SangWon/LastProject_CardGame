@@ -1,40 +1,69 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-
 public class UIManager : SingletonBehaviour<UIManager>
 {
+	[SerializeField] private GameObject LobbyUI;
+	[SerializeField] private GameObject DeckSelectUI;
+	[SerializeField] private GameObject DeckEditUI;
+	[SerializeField] private GameObject ShopUI;
+	[SerializeField] private GameObject MyPageUI;
 	[SerializeField] private Image fadeImage;
 
 	[Header("Fade In/Out Setting")]
-	[SerializeField] float fadeDuration = 1f;
+	[SerializeField] private float fadeDuration = 1f;
 
 	private Coroutine currentFade;
+	private Dictionary<LobbyType, GameObject> lobbyUIMap;
+
+	protected override void Awake()
+	{
+		base.Awake();
+		InitLobbyUIMap();
+	}
+
+	private void InitLobbyUIMap()
+	{
+		lobbyUIMap = new Dictionary<LobbyType, GameObject>
+		{
+			{ LobbyType.Lobby, LobbyUI },
+			{ LobbyType.DeckSelect, DeckSelectUI },
+			{ LobbyType.DeckEdit, DeckEditUI },
+			{ LobbyType.Shop, ShopUI },
+			{ LobbyType.MyPage, MyPageUI },
+		};
+	}
+
+	public void ShowLobby(LobbyType type, float delay, System.Action onComplete = null)
+	{
+		StartCoroutine(TransitionRoutine(type, delay, onComplete));
+	}
+
+	private IEnumerator TransitionRoutine(LobbyType type, float delay, System.Action onComplete)
+	{
+		yield return Fade(FadeDirection.Out);
+
+		SetAllUI(false);
+		if (lobbyUIMap.TryGetValue(type, out var targetUI))
+			targetUI.SetActive(true);
+
+		yield return new WaitForSeconds(delay);
+
+		yield return Fade(FadeDirection.In);
+
+		onComplete?.Invoke();
+	}
+
 	private enum FadeDirection { In, Out }
 
-	public void FadeIn()
+	private IEnumerator Fade(FadeDirection direction)
 	{
-		StartFade(FadeDirection.In);
-	}
+		if (fadeImage == null) yield break;
 
-	public void FadeOut()
-	{
-		StartFade(FadeDirection.Out);
-	}
+		fadeImage.gameObject.SetActive(true);
 
-	private void StartFade(FadeDirection direction)
-	{
-		if (currentFade != null)
-		{
-			StopCoroutine(currentFade);
-		}
-
-		currentFade = StartCoroutine(FadeRoutine(direction));
-	}
-
-	private IEnumerator FadeRoutine(FadeDirection direction)
-	{
 		float time = 0f;
 		Color color = fadeImage.color;
 
@@ -56,5 +85,17 @@ public class UIManager : SingletonBehaviour<UIManager>
 		color.a = endAlpha;
 		fadeImage.color = color;
 		currentFade = null;
+		if(direction == FadeDirection.In)
+			fadeImage.gameObject.SetActive(false);
+		else
+			fadeImage.gameObject.SetActive(true);
+	}
+
+	private void SetAllUI(bool active)
+	{
+		foreach (var kvp in lobbyUIMap)
+		{
+			kvp.Value.SetActive(active);
+		}
 	}
 }
