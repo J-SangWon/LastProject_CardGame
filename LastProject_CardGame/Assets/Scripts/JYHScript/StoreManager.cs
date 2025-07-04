@@ -16,9 +16,11 @@ public class StoreManager : MonoBehaviour
     [SerializeField] private int superRareRate = 9; // 슈퍼 희귀 카드 확률
     [SerializeField] private int ultraRareRate = 1; // 울트라 희귀 카드 확률
 
-    [Header("카드 프리팹")]
+    [Header("카드 소환")]
     public GameObject cardPrefab;
-    public Transform cardSpawnRoot;
+    public GameObject cardSpawnPanel;
+    public Button cardPanelExit;
+    public Transform cardSpawnContent;
 
     [Header("상점 UI")]
     public Text CoinText;
@@ -32,6 +34,9 @@ public class StoreManager : MonoBehaviour
 
         if (BuyCardBtn != null)
             BuyCardBtn.onClick.AddListener(BuyCard);
+
+        if(cardPanelExit != null)
+            cardPanelExit.onClick.AddListener(() => cardSpawnPanel.SetActive(false));
     }
 
     void Update()
@@ -59,19 +64,21 @@ public class StoreManager : MonoBehaviour
 
     IEnumerator CardSpawn()
     {
-        foreach (Transform child in cardSpawnRoot)
+        foreach (Transform child in cardSpawnContent)
         {
             Destroy(child.gameObject); // 기존 카드 제거
         }
 
         yield return new WaitForSeconds(0.2f); // 카드 제거 후 잠시 대기
 
+        cardSpawnPanel.SetActive(true); // 카드 생성 패널 활성화
+
         for (int i = 0; i < cardCount; i++)
         {
             CardRarity rarity = GetRandomRarity();
             Race race = (Race)Random.Range(0, System.Enum.GetValues(typeof(Race)).Length);
 
-            GameObject cardObj = Instantiate(cardPrefab, cardSpawnRoot);
+            GameObject cardObj = Instantiate(cardPrefab, cardSpawnContent);
             CardPrefab cardPrefabComponent = cardObj.GetComponent<CardPrefab>();
             cardPrefabComponent.Initialize(rarity, race);
 
