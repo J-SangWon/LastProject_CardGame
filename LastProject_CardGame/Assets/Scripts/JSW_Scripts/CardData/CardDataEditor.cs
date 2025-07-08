@@ -74,22 +74,31 @@ public class CardDataEditor : Editor
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("몬스터 정보", EditorStyles.boldLabel);
 
-            monster.monsterType = (MonsterType)EditorGUILayout.EnumPopup("몬스터 타입", monster.monsterType);
-            monster.attack = EditorGUILayout.IntField("공격력", monster.attack);
-            monster.health = EditorGUILayout.IntField("체력", monster.health);
-            monster.race = (Race)EditorGUILayout.EnumPopup("종족", monster.race);
+            SerializedProperty monsterTypeProp = serializedObject.FindProperty("monsterType");
+            SerializedProperty attackProp = serializedObject.FindProperty("attack");
+            SerializedProperty healthProp = serializedObject.FindProperty("health");
+            SerializedProperty raceProp = serializedObject.FindProperty("race");
+
+            EditorGUILayout.PropertyField(monsterTypeProp, new GUIContent("몬스터 타입"));
+            EditorGUILayout.PropertyField(attackProp, new GUIContent("공격력"));
+            EditorGUILayout.PropertyField(healthProp, new GUIContent("체력"));
+            EditorGUILayout.PropertyField(raceProp, new GUIContent("종족"));
         }
-        else if (baseCard is SpellCardData spell)
+        else if (baseCard is SpellCardData)
         {
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("스펠 정보", EditorStyles.boldLabel);
-            spell.spellType = (SpellType)EditorGUILayout.EnumPopup("스펠 타입", spell.spellType);
+
+            SerializedProperty spellTypeProp = serializedObject.FindProperty("spellType");
+            EditorGUILayout.PropertyField(spellTypeProp, new GUIContent("스펠 타입"));
         }
-        else if (baseCard is TrapCardData trap)
+        else if (baseCard is TrapCardData)
         {
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("트랩 정보", EditorStyles.boldLabel);
-            trap.trapType = (TrapType)EditorGUILayout.EnumPopup("트랩 타입", trap.trapType);
+
+            SerializedProperty trapTypeProp = serializedObject.FindProperty("trapType");
+            EditorGUILayout.PropertyField(trapTypeProp, new GUIContent("트랩 타입"));
         }
     }
 }
