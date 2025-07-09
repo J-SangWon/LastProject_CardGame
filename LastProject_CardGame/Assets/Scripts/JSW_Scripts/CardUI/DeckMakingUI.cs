@@ -16,6 +16,22 @@ public class DeckMakingUI : MonoBehaviour
     public Button saveButton;
     public Button backButton; // 뒤로가기 버튼
     public DeckSelectUI deckSelectUI; // 덱 선택 UI 참조
+    public TMP_InputField searchBar;
+    // 드롭다운 참조
+    public TMP_Dropdown typeDropdown;      // 1번: 타입 필터
+    public TMP_Dropdown sortDropdown;      // 2번: 정렬 기준
+    public TMP_Dropdown orderDropdown;     // 3번: 오름/내림차순
+
+    // 예시 데이터
+    private readonly Dictionary<int, List<string>> filterOptionsBySort = new Dictionary<int, List<string>>()
+    {
+        // key: sortDropdown.value
+        // value: filterDropdown 옵션 리스트
+        { 0, new List<string> { "전체", "몬스터", "마법", "함정" } }, // 전체
+        { 1, new List<string> { "전체", "일반", "효과", "융합", "싱크로", "엑시즈", "링크" } }, // 몬스터
+        { 2, new List<string> { "전체", "일반 마법", "속공 마법", "장착 마법", "필드 마법", "지속 마법" } }, // 마법
+        { 3, new List<string> { "전체", "일반 함정", "지속 함정", "카운터 함정" } }, // 함정
+    };
 
     void Start()
     {
@@ -51,6 +67,31 @@ public class DeckMakingUI : MonoBehaviour
         // 뒤로가기 버튼
         if (backButton != null)
             backButton.onClick.AddListener(OnBackButtonClicked);
+
+        if (searchBar != null)
+            searchBar.onValueChanged.AddListener(_ => RefreshAllCardList());
+        if (typeDropdown != null)
+            typeDropdown.onValueChanged.AddListener(_ => RefreshAllCardList());
+        if (sortDropdown != null)
+            sortDropdown.onValueChanged.AddListener(_ => RefreshAllCardList());
+        if (orderDropdown != null)
+            orderDropdown.onValueChanged.AddListener(_ => RefreshAllCardList());
+
+        // 드롭다운 옵션 세팅(최초 1회)
+        if (typeDropdown != null)
+            typeDropdown.ClearOptions();
+        typeDropdown.AddOptions(new List<string> { "전체", "몬스터", "마법", "함정" });
+
+        if (sortDropdown != null)
+            sortDropdown.ClearOptions();
+        sortDropdown.AddOptions(new List<string> { "카드이름", "레어도", "공격력", "체력" });
+
+        if (orderDropdown != null)
+            orderDropdown.ClearOptions();
+        orderDropdown.AddOptions(new List<string> { "오름차순", "내림차순" });
+
+        // 최초 옵션 세팅
+        OnSortDropdownChanged(sortDropdown.value);
     }
 
     void OnEnable()
@@ -84,27 +125,75 @@ public class DeckMakingUI : MonoBehaviour
     // 1. 카드리스트 UI 갱신 함수
     void RefreshAllCardList()
     {
+        string keyword = searchBar != null ? searchBar.text.ToLower() : "";
+        int typeFilter = typeDropdown != null ? typeDropdown.value : 0;
+        int sortType = sortDropdown != null ? sortDropdown.value : 0;
+        int orderType = orderDropdown != null ? orderDropdown.value : 0;
+
+        var allCards = CardManager.Instance.GetAllCards();
+
+        // 1. 검색
+        var filtered = allCards.Where(card =>
+            card.cardName.ToLower().Contains(keyword) ||
+            card.description.ToLower().Contains(keyword)
+        );
+
+        // 2. 타입 필터
+        if (typeFilter == 1)
+            filtered = filtered.Where(card => card.cardType == CardType.Monster);
+        else if (typeFilter == 2)
+            filtered = filtered.Where(card => card.cardType == CardType.Spell);
+        else if (typeFilter == 3)
+            filtered = filtered.Where(card => card.cardType == CardType.Trap);
+
+        // 3. 정렬
+        IOrderedEnumerable<BaseCardData> ordered = null;
+        switch (sortType)
+        {
+            case 0: // 카드이름
+                ordered = orderType == 0
+                    ? filtered.OrderBy(card => card.cardName)
+                    : filtered.OrderByDescending(card => card.cardName);
+                break;
+            case 1: // 레어도
+                ordered = orderType == 0
+                    ? filtered.OrderBy(card => card.rarity)
+                    : filtered.OrderByDescending(card => card.rarity);
+                break;
+            case 2: // 공격력
+                ordered = orderType == 0
+                    ? filtered.OrderBy(card => (card is MonsterCardData m ? m.attack : 0))
+                    : filtered.OrderByDescending(card => (card is MonsterCardData m ? m.attack : 0));
+                break;
+            case 3: // 체력
+                ordered = orderType == 0
+                    ? filtered.OrderBy(card => (card is MonsterCardData m ? m.health : 0))
+                    : filtered.OrderByDescending(card => (card is MonsterCardData m ? m.health : 0));
+                break;
+            default:
+                ordered = filtered.OrderBy(card => card.cardName);
+                break;
+        }
+
+        // 4. 리스트 UI 갱신
         foreach (Transform child in allCardsContent)
             Destroy(child.gameObject);
 
-        List<BaseCardData> allCards = CardManager.Instance.GetAllCards();
-        foreach (var card in allCards)
+        foreach (var card in ordered)
         {
-            int available = CardManager.Instance.ownedCardCounts.ContainsKey(card) ? CardManager.Instance.ownedCardCounts[card] : 0;
-            int inMain = deckBuilder.currentDeck.mainDeck.Where(e => e.card == card).Sum(e => e.count);
-            int inExtra = deckBuilder.currentDeck.extraDeck.Where(e => e.card == card).Sum(e => e.count);
+            GameObject obj = Instantiate(CardThumbnailPrefab, allCardsContent);
+            CardThumbnail thumbnail = obj.GetComponent<CardThumbnail>();
+            int owned = CardManager.Instance.GetOwnedCardCount(card);
+            int available = CardManager.Instance.GetAvailableCardCount(card);
+            thumbnail.SetCard(card, owned, available);
 
-            GameObject cardObj = Instantiate(CardThumbnailPrefab, allCardsContent);
-            CardThumbnail thumbnail = cardObj.GetComponent<CardThumbnail>();
-            thumbnail.SetCard(card, available);
-
-            // 비활성화 처리
-            if (available <= 0)
+            if (available == 0)
                 thumbnail.SetUnavailableVisual();
 
-            // 이벤트 등록(좌클릭/우클릭)
-            EventTrigger trigger = cardObj.GetComponent<EventTrigger>();
-            if (trigger == null) trigger = cardObj.AddComponent<EventTrigger>();
+            // -------------------------------
+            // 이벤트 등록(좌클릭: 상세, 우클릭: 덱에 추가)
+            EventTrigger trigger = obj.GetComponent<EventTrigger>();
+            if (trigger == null) trigger = obj.AddComponent<EventTrigger>();
             AddCardDetailEvent(trigger, card);
 
             // 우클릭: 덱에 추가
@@ -127,6 +216,7 @@ public class DeckMakingUI : MonoBehaviour
                 }
             });
             trigger.triggers.Add(rightClick);
+            // -------------------------------
         }
     }
 
@@ -236,5 +326,22 @@ public class DeckMakingUI : MonoBehaviour
             }
         });
         trigger.triggers.Add(leftClick);
+    }
+
+    void OnSortDropdownChanged(int sortIndex)
+    {
+        // 드롭다운 옵션 동적 변경
+        if (filterOptionsBySort.ContainsKey(sortIndex))
+        {
+            // This part is no longer needed as options are set in Start()
+            // if (filterDropdown != null)
+            // {
+            //     filterDropdown.ClearOptions();
+            //     filterDropdown.AddOptions(filterOptionsBySort[sortIndex]);
+            //     filterDropdown.value = 0;
+            //     filterDropdown.RefreshShownValue();
+            // }
+        }
+        RefreshAllCardList();
     }
 }
