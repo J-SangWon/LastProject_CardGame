@@ -17,6 +17,7 @@ public class StoreManager : MonoBehaviour
     [SerializeField] private int ultraRareRate = 1; // 울트라 희귀 카드 확률
 
     [Header("카드 소환")]
+    public CardPackViewController cardPackViewController;
     public GameObject cardPrefab;
     public GameObject cardSpawnPanel;
     public Button cardPanelExit;
@@ -31,6 +32,9 @@ public class StoreManager : MonoBehaviour
     void Start()
     {
         coin = 100; // 초기 코인 설정
+
+        cardPackViewController.onDragStart += () => BuyCardBtn.interactable = false; // 카드팩 스냅 시작 시 버튼 비활성화
+        cardPackViewController.onSnapEnd += () => BuyCardBtn.interactable = true; // 카드팩 스냅 종료 시 버튼 활성화
 
         if (BuyCardBtn != null)
             BuyCardBtn.onClick.AddListener(BuyCard);
@@ -77,10 +81,11 @@ public class StoreManager : MonoBehaviour
         {
             CardRarity rarity = GetRandomRarity();
             Race race = (Race)Random.Range(0, System.Enum.GetValues(typeof(Race)).Length);
+            CardPackType selectedType = cardPackViewController.selectedCardPackView.cardPackData.packType;
 
             GameObject cardObj = Instantiate(cardPrefab, cardSpawnContent);
             CardPrefab cardPrefabComponent = cardObj.GetComponent<CardPrefab>();
-            cardPrefabComponent.Initialize(rarity, race);
+            cardPrefabComponent.Initialize(rarity, race, selectedType);
 
             //List<BaseCardData> rarityCard = cardList.FindAll(card => card.rarity == rarity);
 

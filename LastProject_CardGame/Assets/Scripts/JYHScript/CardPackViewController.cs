@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using System;
 
 public class CardPackViewController : MonoBehaviour
 {
@@ -17,6 +18,8 @@ public class CardPackViewController : MonoBehaviour
     public float snapSpeed = 20f;                // SmoothDamp 빠르기
     public float velocityThreshold = 30f;        // 드래그 속도 감지 임계값
     public float snapSmoothTime = 0.1f;          // Snap 부드럽게 이동할 시간
+    public Action onDragStart;
+    public Action onSnapEnd;
 
     [Header("선택된 카드")]
     public CardPackView selectedCardPackView;
@@ -68,6 +71,8 @@ public class CardPackViewController : MonoBehaviour
         {
             isDragging = true;
 
+            onDragStart?.Invoke();
+
             if (snapCoroutine != null)
             {
                 StopCoroutine(snapCoroutine);
@@ -107,5 +112,7 @@ public class CardPackViewController : MonoBehaviour
 
         scrollRect.content.anchoredPosition = new Vector2(targetX, scrollRect.content.anchoredPosition.y);
         snapCoroutine = null;
+
+        onSnapEnd?.Invoke();
     }
 }
