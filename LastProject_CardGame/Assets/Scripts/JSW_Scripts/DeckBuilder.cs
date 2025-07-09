@@ -50,8 +50,11 @@ public class DeckBuilder : MonoBehaviour
     // 카드 추가
     public bool AddCardToMain(BaseCardData card)
     {
-        if (!CardManager.Instance.ownedCardCounts.ContainsKey(card) || CardManager.Instance.ownedCardCounts[card] <= 0)
-            return false; // 보유 카드 없음
+        int owned = CardManager.Instance.ownedCardCounts.ContainsKey(card) ? CardManager.Instance.ownedCardCounts[card] : 0;
+        var entry = currentDeck.mainDeck.Find(e => IsSameCard(e.card, card));
+        int inDeck = entry != null ? entry.count : 0;
+        if (inDeck + 1 > owned)
+            return false; // 소유 개수 초과
 
         // 몬스터 카드일 때
         if (card.cardType == CardType.Monster)
@@ -64,7 +67,6 @@ public class DeckBuilder : MonoBehaviour
                 return false;
         }
 
-        var entry = currentDeck.mainDeck.Find(e => IsSameCard(e.card, card));
         if (entry != null)
         {
             entry.count++;
@@ -74,19 +76,17 @@ public class DeckBuilder : MonoBehaviour
             if (currentDeck.mainDeck.Count >= 40) return false;
             currentDeck.mainDeck.Add(new DeckCardEntry { card = card, count = 1 });
         }
-        CardManager.Instance.ownedCardCounts[card]--;
-        OnDeckChanged?.Invoke(); // 덱 변경 알림
-        
-        // 덱 변경 시 자동 저장
-        SaveCurrentDeck();
-        
+        OnDeckChanged?.Invoke();
         return true;
     }
 
     public bool AddCardToExtra(BaseCardData card)
     {
-        if (!CardManager.Instance.ownedCardCounts.ContainsKey(card) || CardManager.Instance.ownedCardCounts[card] <= 0)
-            return false; // 보유 카드 없음
+        int owned = CardManager.Instance.ownedCardCounts.ContainsKey(card) ? CardManager.Instance.ownedCardCounts[card] : 0;
+        var entry = currentDeck.extraDeck.Find(e => IsSameCard(e.card, card));
+        int inDeck = entry != null ? entry.count : 0;
+        if (inDeck + 1 > owned)
+            return false; // 소유 개수 초과
 
         // 몬스터 카드만 엑스트라덱 가능
         if (card.cardType != CardType.Monster)
@@ -99,7 +99,6 @@ public class DeckBuilder : MonoBehaviour
         if (monster.monsterType == MonsterType.Normal || monster.monsterType == MonsterType.Effect)
             return false;
 
-        var entry = currentDeck.extraDeck.Find(e => IsSameCard(e.card, card));
         if (entry != null)
         {
             entry.count++;
@@ -109,12 +108,7 @@ public class DeckBuilder : MonoBehaviour
             if (currentDeck.extraDeck.Count >= 15) return false;
             currentDeck.extraDeck.Add(new DeckCardEntry { card = card, count = 1 });
         }
-        CardManager.Instance.ownedCardCounts[card]--;
-        OnDeckChanged?.Invoke(); // 덱 변경 알림
-        
-        // 덱 변경 시 자동 저장
-        SaveCurrentDeck();
-        
+        OnDeckChanged?.Invoke();
         return true;
     }
 
@@ -128,11 +122,8 @@ public class DeckBuilder : MonoBehaviour
             if (entry.count <= 0)
                 currentDeck.mainDeck.Remove(entry);
         }
-        CardManager.Instance.ownedCardCounts[card]++;
-        OnDeckChanged?.Invoke(); // 덱 변경 알림
+        OnDeckChanged?.Invoke();
         
-        // 덱 변경 시 자동 저장
-        SaveCurrentDeck();
     }
 
     public void RemoveCardFromExtra(BaseCardData card)
@@ -144,11 +135,8 @@ public class DeckBuilder : MonoBehaviour
             if (entry.count <= 0)
                 currentDeck.extraDeck.Remove(entry);
         }
-        CardManager.Instance.ownedCardCounts[card]++;
-        OnDeckChanged?.Invoke(); // 덱 변경 알림
+        OnDeckChanged?.Invoke();
         
-        // 덱 변경 시 자동 저장
-        SaveCurrentDeck();
     }
 
     // 덱 비우기
@@ -157,8 +145,6 @@ public class DeckBuilder : MonoBehaviour
         currentDeck.mainDeck.Clear();
         currentDeck.extraDeck.Clear();
         
-        // 덱 변경 시 자동 저장
-        SaveCurrentDeck();
     }
 
     private bool IsSameCard(BaseCardData a, BaseCardData b)
