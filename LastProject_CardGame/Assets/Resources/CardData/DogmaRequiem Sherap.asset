@@ -19,12 +19,11 @@ MonoBehaviour:
   cardType: 0
   rarity: 3
   cost: 5
+  cardId: acb2d30a-cebf-4a4c-a847-a2fb1468abda
   haveLive2D: 0
   live2DPath: 
-  effectIds: []
-  effectTimings: 
-  tags:
-  - Undead
+  cardEffects: []
+  tags: []
   monsterType: 2
   attack: 10
   health: 20

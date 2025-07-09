@@ -17,10 +17,16 @@ public class CardThumbnail : MonoBehaviour, IPointerClickHandler
         countText.text = count.ToString();
     }
 
+    public void SetCard(BaseCardData card, int owned, int available)
+    {
+        cardData = card;
+        artworkImage.sprite = card.artwork;
+        countText.text = $"{available}";
+    }
+
     public void OnPointerClick(PointerEventData eventData)
     {
-        // OnPointerClick, AddCardToDeck 등 행동 관련 코드 제거
-        // CardThumbnail은 카드 정보 표시만 담당
+
     }
 
     public void SetUnavailableVisual()

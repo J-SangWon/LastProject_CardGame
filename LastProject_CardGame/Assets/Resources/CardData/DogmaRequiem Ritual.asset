@@ -12,15 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: DogmaRequiem Ritual
   m_EditorClassIdentifier: Assembly-CSharp::SpellCardData
-  cardName: 
-  description: 
+  cardName: "\uB3C4\uADF8\uB9C8\uB808\uD034\uC5E0\uC758 \uC758\uC2DD"
+  description: "\uB3C4\uADF8\uB9C8\uB808\uD034\uC5E0 \uC138\uB77C\uD504\uB97C \uC18C\uD658\uD558\uAE30
+    \uC704\uD574"
   artwork: {fileID: 0}
   cardType: 1
   rarity: 1
   cost: 1
+  cardId: 8f44f80e-da7a-4b61-be3e-3745a5f5e7c6
   haveLive2D: 0
   live2DPath: 
-  effectIds: []
-  effectTimings: 
+  cardEffects: []
   tags: []
   spellType: 3
