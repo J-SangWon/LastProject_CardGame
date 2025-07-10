@@ -41,6 +41,7 @@ public class StoreManager : MonoBehaviour
     // ────────────────── 내부 상태 ──────────────────
     private bool isOpening = false;
     private GameObject currentPack;
+    private GameObject particle;
     private readonly List<CardRarity> rarityList = new();   // 희귀도만 저장
     private readonly List<CardInfo> cardList = new();   // 클릭 후 실제 카드 정보 저장
 
@@ -98,13 +99,15 @@ public class StoreManager : MonoBehaviour
 
         // 스크롤 셀 복제 대신, 연출 전용 모델 Prefab을 CardPackData에 넣어두는 편이 좋음
         if (currentPack) Destroy(currentPack);
+        if (particle) Destroy(particle);
 
         GameObject packPrefab = packViewController.selectedCardPackView.gameObject;
-      
+
         currentPack = Instantiate(packPrefab, cardPackDisplayPoint);
         RectTransform packrect = currentPack.GetComponent<RectTransform>();
-        packrect.sizeDelta = new Vector2(400, 540); // 카드팩 크기 조정 (예시)
-        packrect.anchoredPosition = Vector2.zero; // 중앙 위치로 조정
+        packrect.sizeDelta = new Vector2(400, 540); // 카드팩 크기 조정 (예시)                                                   
+        packrect.anchorMin = new Vector2(0.5f, 0.5f);// 앵커를 Middle Center로 설정 (0.5, 0.5)
+        packrect.anchorMax = new Vector2(0.5f, 0.5f);
         currentPack.transform.localScale = Vector3.zero;
 
         // 최고 희귀도에 맞는 파티클(이펙트) 표시
@@ -132,7 +135,10 @@ public class StoreManager : MonoBehaviour
     {
         int idx = (int)rarity;
         if (idx < rarityEffects.Length && rarityEffects[idx])
-            Instantiate(rarityEffects[idx], currentPack.transform);
+        {
+            particle = Instantiate(rarityEffects[idx], cardPackDisplayPoint);
+            particle.transform.position = new Vector2(0, 0);
+        }
     }
 
     CardRarity GetHighestRarity()
@@ -159,6 +165,7 @@ public class StoreManager : MonoBehaviour
     IEnumerator SpawnCards()
     {
         if (currentPack) Destroy(currentPack);
+        if (particle) Destroy(particle);
 
         foreach (Transform child in cardSpawnContent) Destroy(child.gameObject);
         yield return new WaitForSeconds(0.25f);
