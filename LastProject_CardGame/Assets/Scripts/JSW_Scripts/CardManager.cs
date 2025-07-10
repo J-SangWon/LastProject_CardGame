@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class CardManager : MonoBehaviour
 {
@@ -16,6 +17,7 @@ public class CardManager : MonoBehaviour
 
     public Dictionary<BaseCardData, int> ownedCardCounts = new Dictionary<BaseCardData, int>();
 
+
     public bool isTestMode = false;
     
     private DeckSaveManager deckSaveManager;
@@ -27,21 +29,24 @@ public class CardManager : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(gameObject);
             LoadAllCards();
-            InitOwnedCards();
-            if (isTestMode) GiveTestCardsToUser(); // 테스트용 카드 지급
-            
+
+            RefreshOwnedCardCounts();
+            if (isTestMode) GiveTestCardsToUser();
+
             // DeckSaveManager 찾기
-            deckSaveManager = FindObjectOfType<DeckSaveManager>();
+            deckSaveManager = FindAnyObjectByType<DeckSaveManager>();
             if (deckSaveManager == null)
             {
-                // DeckSaveManager가 없다면 생성
                 GameObject saveManagerObj = new GameObject("DeckSaveManager");
                 deckSaveManager = saveManagerObj.AddComponent<DeckSaveManager>();
                 DontDestroyOnLoad(saveManagerObj);
             }
-            
-            // 저장된 덱들 불러오기
-            LoadAllDecks();
+
+            // 저장된 덱들 불러오기 (null 체크)
+            if (deckSaveManager != null)
+                LoadAllDecks();
+            else
+                Debug.LogWarning("DeckSaveManager가 생성되지 않았습니다!");
         }
         else
         {
@@ -49,6 +54,16 @@ public class CardManager : MonoBehaviour
         }
     }
     
+    public void RefreshOwnedCardCounts()
+    {
+        ownedCardCounts.Clear();
+        var ownedList = PlayerCardCollectionManager.Instance.GetOwnedCardDataList();
+        foreach (var (cardData, count) in ownedList)
+        {
+            if (cardData != null)
+                ownedCardCounts[cardData] = count;
+        }
+    }
     // 저장된 모든 덱 불러오기
     private void LoadAllDecks()
     {
@@ -166,17 +181,34 @@ public class CardManager : MonoBehaviour
         return allCards;
     }
 
-    void InitOwnedCards()
-    {
-        foreach (var card in allCards)
-            ownedCardCounts[card] = 0; // 기본 0장
-        // 실제 보유 카드 데이터로 ownedCardCounts[card] = N; 세팅
-    }
-
     // 테스트용: 모든 카드를 3장씩 보유하게 한다
     public void GiveTestCardsToUser()
     {
         foreach (var card in allCards)
             ownedCardCounts[card] = 3;
+    }
+
+    // 카드의 전체 소유 개수 반환
+    public int GetOwnedCardCount(BaseCardData card)
+    {
+        return PlayerCardCollectionManager.Instance.GetCardCount(card.cardId);
+    }
+
+    // 카드의 추가 가능 개수(전체 소유 - 현재 덱에 들어간 개수)
+    public int GetAvailableCardCount(BaseCardData card)
+    {
+        int owned = GetOwnedCardCount(card);
+        int inMainDeck = 0;
+        int inExtraDeck = 0;
+        if (DeckBuilder.Instance != null && DeckBuilder.Instance.currentDeck != null)
+        {
+            inMainDeck = DeckBuilder.Instance.currentDeck.mainDeck
+                .FindAll(e => e.card.cardId == card.cardId)
+                .Sum(e => e.count);
+            inExtraDeck = DeckBuilder.Instance.currentDeck.extraDeck
+                .FindAll(e => e.card.cardId == card.cardId)
+                .Sum(e => e.count);
+        }
+        return owned - (inMainDeck + inExtraDeck);
     }
 }
