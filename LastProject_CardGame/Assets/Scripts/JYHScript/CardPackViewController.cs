@@ -10,7 +10,7 @@ public class CardPackViewController : MonoBehaviour
     public RectTransform content;
 
     [Header("카드 크기 조절")]
-    public float effectRange = 300f;
+    public float effectRange = 100f;
     public float maxScale = 1f;
     public float minScale = 0.7f;
 

@@ -1711,7 +1711,7 @@ Transform:
   m_GameObject: {fileID: 1831049494}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 960, y: 540, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1985,7 +1985,7 @@ Canvas:
   m_GameObject: {fileID: 1999028146}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 0
+  m_RenderMode: 1
   m_Camera: {fileID: 40663137}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
@@ -2154,7 +2154,7 @@ MonoBehaviour:
   m_Content: {fileID: 242534602}
   m_Horizontal: 1
   m_Vertical: 0
-  m_MovementType: 0
+  m_MovementType: 1
   m_Elasticity: 0.1
   m_Inertia: 1
   m_DecelerationRate: 0.1
@@ -2221,7 +2221,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scrollRect: {fileID: 2057026837}
   content: {fileID: 242534602}
-  effectRange: 300
+  effectRange: 50
   maxScale: 1
   minScale: 0.5
   snapSpeed: 20

@@ -137,7 +137,7 @@ public class StoreManager : MonoBehaviour
         if (idx < rarityEffects.Length && rarityEffects[idx])
         {
             particle = Instantiate(rarityEffects[idx], cardPackDisplayPoint);
-            particle.transform.position = new Vector2(0, 0);
+            particle.transform.localPosition = Vector3.zero;
         }
     }
 
@@ -170,11 +170,35 @@ public class StoreManager : MonoBehaviour
         foreach (Transform child in cardSpawnContent) Destroy(child.gameObject);
         yield return new WaitForSeconds(0.25f);
 
-        foreach (CardInfo info in cardList)
+        bool skipDelay = false;
+
+        for (int i = 0; i < cardList.Count; i++)
         {
+            // 카드 Instantiate
+            CardInfo info = cardList[i];
             GameObject obj = Instantiate(cardPrefab, cardSpawnContent);
             obj.GetComponent<CardPrefab>().Initialize(info.rarity, info.race, info.type);
-            yield return new WaitForSeconds(0.25f);
+
+            // 클릭 감시
+            // 이미 skipDelay 가 true 면 바로 다음 카드로 진행
+            // 아직 false 면 대기, 하지만 대기 중 클릭 들어오면 즉시 skipDelay = true
+            if (!skipDelay)
+            {
+                float timer = 0f;
+                float delay = 0.25f;         // 원래 딜레이
+                while (timer < delay)
+                {
+                    if (Input.GetMouseButtonDown(0))   // 모바일은 Touch 검사로 교체
+                    {
+                        skipDelay = true;
+                        break;                         // 루프 탈출 → 바로 다음 카드
+                    }
+
+                    timer += Time.deltaTime;
+                    yield return null;                 // 다음 프레임까지 대기
+                }
+            }
+            // skipDelay == true 이면 Wait 없이 바로 다음 카드 생성
         }
 
         cardPanelExit.gameObject.SetActive(true);
