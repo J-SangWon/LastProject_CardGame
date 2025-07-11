@@ -207,6 +207,9 @@ public class StoreManager : MonoBehaviour
     // ────────────────── Close ──────────────────
     void ClosePanel()
     {
+        //카드 정보 저장
+
+
         foreach (Transform child in cardSpawnContent) Destroy(child.gameObject);
         if (currentPack) Destroy(currentPack);
 
