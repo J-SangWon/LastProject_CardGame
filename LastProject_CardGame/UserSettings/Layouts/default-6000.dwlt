@@ -171,7 +171,7 @@ MonoBehaviour:
   m_MinSize: {x: 100, y: 100}
   m_MaxSize: {x: 8096, y: 16192}
   vertical: 1
-  controlID: 18
+  controlID: 43
   draggingID: 0
 --- !u!114 &8
 MonoBehaviour:
@@ -324,8 +324,8 @@ MonoBehaviour:
     y: 0
     width: 360
     height: 981
-  m_MinSize: {x: 276, y: 76}
-  m_MaxSize: {x: 4001, y: 4026}
+  m_MinSize: {x: 275, y: 50}
+  m_MaxSize: {x: 4000, y: 4000}
   m_ActualView: {fileID: 19}
   m_Panes:
   - {fileID: 19}
@@ -1008,9 +1008,9 @@ MonoBehaviour:
   m_AudioPlay: 0
   m_DebugDrawModesUseInteractiveLightBakingData: 0
   m_Position:
-    m_Target: {x: 723.3219, y: 471.04395, z: -66.99553}
+    m_Target: {x: 0, y: 0, z: 0}
     speed: 2
-    m_Value: {x: 723.3219, y: 471.04395, z: -66.99553}
+    m_Value: {x: 0, y: 0, z: 0}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -1058,11 +1058,11 @@ MonoBehaviour:
   m_Rotation:
     m_Target: {x: -0.045725867, y: -0.21204518, z: 0.009933458, w: -0.9761471}
     speed: 2
-    m_Value: {x: -0.045725867, y: -0.21204518, z: 0.009933458, w: -0.9761471}
+    m_Value: {x: -0.045725506, y: -0.21204351, z: 0.0099333795, w: -0.9761394}
   m_Size:
-    m_Target: 505.58408
+    m_Target: 10
     speed: 2
-    m_Value: 505.58408
+    m_Value: 10
   m_Ortho:
     m_Target: 0
     speed: 2
@@ -1310,7 +1310,7 @@ MonoBehaviour:
       scrollPos: {x: 0, y: 0}
       m_SelectedIDs: 
       m_LastClickedID: 0
-      m_ExpandedIDs: 44d4ffff10fbffff8eac000012ad0000
+      m_ExpandedIDs: 52faffff12b000002ab0000042b0000096b00000fab00000
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -1382,7 +1382,7 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/LJP_Assets/Resources/Image
+    - Assets/LJP_Assets/Scripts
     m_Globs: []
     m_ProductIds: 
     m_AnyWithAssetOrigin: 0
@@ -1392,16 +1392,16 @@ MonoBehaviour:
   m_ViewMode: 1
   m_StartGridSize: 16
   m_LastFolders:
-  - Assets/LJP_Assets/Resources/Image
+  - Assets/LJP_Assets/Scripts
   m_LastFoldersGridSize: 16
   m_LastProjectPath: C:\Unity\LastProject_CardGame\LastProject_CardGame
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
     scrollPos: {x: 0, y: 0}
-    m_SelectedIDs: 2cb00000
-    m_LastClickedID: 45100
-    m_ExpandedIDs: 00000000e0ad000002b000000eb0000018b0000020b00000
+    m_SelectedIDs: a0b30000
+    m_LastClickedID: 45984
+    m_ExpandedIDs: 0000000068b1000084b300009ab30000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1430,7 +1430,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 00000000e0ad0000
+    m_ExpandedIDs: 0000000068b10000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 

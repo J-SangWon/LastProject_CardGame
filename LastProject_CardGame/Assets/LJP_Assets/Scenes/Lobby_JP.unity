@@ -304,7 +304,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &337078492
 RectTransform:
   m_ObjectHideFlags: 0
@@ -814,7 +814,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &726174645
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2895,6 +2895,8 @@ MonoBehaviour:
   DeckEditUI: {fileID: 850877015}
   ShopUI: {fileID: 1995413614}
   MyPageUI: {fileID: 726174644}
+  Background: {fileID: 736242560}
+  LobbyCharacterImage: {fileID: 279625346}
   fadeImage: {fileID: 429210884}
   fadeDuration: 1
 --- !u!1660057539 &9223372036854775807
