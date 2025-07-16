@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 
@@ -13,6 +13,7 @@ public class PlayerCardEntry
 public class PlayerCardCollectionData
 {
     public List<PlayerCardEntry> ownedCards = new List<PlayerCardEntry>();
+    public int craftPoint;
 }
 
 public class PlayerCardCollectionManager : MonoBehaviour
@@ -130,4 +131,19 @@ public class PlayerCardCollectionManager : MonoBehaviour
         }
         return dict;
     }
-} 
+    public void AddTestCraftPoint(int amount)
+    {
+        collection.craftPoint += amount;
+        SaveCollection();
+        DeckMakingUI.Instance?.RefreshCraftPointUI();
+        Debug.Log($"테스트용 크래프트 포인트 {amount}만큼 지급됨. 현재: {collection.craftPoint}");
+    }
+
+#if UNITY_EDITOR
+    [ContextMenu("테스트용 크래프트포인트 1000 지급")]
+    public void AddTestCraftPoint1000()
+    {
+        AddTestCraftPoint(1000);
+    }
+#endif
+}

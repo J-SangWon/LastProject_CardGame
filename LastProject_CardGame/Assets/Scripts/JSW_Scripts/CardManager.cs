@@ -11,6 +11,8 @@ public class CardManager : MonoBehaviour
 
     // 카드 이름으로 빠르게 찾기 위한 Dictionary
     public Dictionary<string, BaseCardData> cardDict = new Dictionary<string, BaseCardData>();
+    // 카드 ID로 빠르게 찾기 위한 Dictionary
+    public Dictionary<string, BaseCardData> cardIdDict = new Dictionary<string, BaseCardData>();
 
     public List<DeckData> allDecks = new List<DeckData>();
     public DeckData currentDeck;
@@ -28,32 +30,35 @@ public class CardManager : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
-            LoadAllCards();
-
-            RefreshOwnedCardCounts();
-            if (isTestMode) GiveTestCardsToUser();
-
-            // DeckSaveManager 찾기
-            deckSaveManager = FindAnyObjectByType<DeckSaveManager>();
-            if (deckSaveManager == null)
-            {
-                GameObject saveManagerObj = new GameObject("DeckSaveManager");
-                deckSaveManager = saveManagerObj.AddComponent<DeckSaveManager>();
-                DontDestroyOnLoad(saveManagerObj);
-            }
-
-            // 저장된 덱들 불러오기 (null 체크)
-            if (deckSaveManager != null)
-                LoadAllDecks();
-            else
-                Debug.LogWarning("DeckSaveManager가 생성되지 않았습니다!");
         }
         else
         {
             Destroy(gameObject);
         }
     }
-    
+
+    private void Start()
+    {
+        LoadAllCards();
+        RefreshOwnedCardCounts();
+        if (isTestMode) GiveTestCardsToUser();
+
+        // DeckSaveManager 찾기
+        deckSaveManager = FindAnyObjectByType<DeckSaveManager>();
+        if (deckSaveManager == null)
+        {
+            GameObject saveManagerObj = new GameObject("DeckSaveManager");
+            deckSaveManager = saveManagerObj.AddComponent<DeckSaveManager>();
+            DontDestroyOnLoad(saveManagerObj);
+        }
+
+        // 저장된 덱들 불러오기 (null 체크)
+        if (deckSaveManager != null)
+            LoadAllDecks();
+        else
+            Debug.LogWarning("DeckSaveManager가 생성되지 않았습니다!");
+    }
+
     public void RefreshOwnedCardCounts()
     {
         ownedCardCounts.Clear();
@@ -118,12 +123,14 @@ public class CardManager : MonoBehaviour
     {
         allCards.Clear();
         cardDict.Clear();
+        cardIdDict.Clear();
 
         BaseCardData[] cards = Resources.LoadAll<BaseCardData>("CardData");
         foreach (var card in cards)
         {
             allCards.Add(card);
             cardDict[card.cardName] = card;
+            cardIdDict[card.cardId] = card;
         }
     }
 
@@ -194,21 +201,97 @@ public class CardManager : MonoBehaviour
         return PlayerCardCollectionManager.Instance.GetCardCount(card.cardId);
     }
 
+    // 디버깅용: 현재 소유 카드 정보 출력
+    [ContextMenu("소유 카드 정보 출력")]
+    public void PrintOwnedCards()
+    {
+        var pcm = PlayerCardCollectionManager.Instance;
+        Debug.Log("=== 현재 소유 카드 정보 ===");
+        Debug.Log($"크래프트 포인트: {pcm.collection.craftPoint}");
+        Debug.Log($"소유 카드 수: {pcm.collection.ownedCards.Count}개");
+        
+        foreach (var entry in pcm.collection.ownedCards)
+        {
+            var card = PlayerCardCollectionManager.FindCardDataById(entry.cardId);
+            string cardName = card != null ? card.cardName : "알 수 없는 카드";
+            Debug.Log($"- {cardName} (ID: {entry.cardId}): {entry.count}장");
+        }
+    }
+
     // 카드의 추가 가능 개수(전체 소유 - 현재 덱에 들어간 개수)
     public int GetAvailableCardCount(BaseCardData card)
     {
         int owned = GetOwnedCardCount(card);
         int inMainDeck = 0;
         int inExtraDeck = 0;
-        if (DeckBuilder.Instance != null && DeckBuilder.Instance.currentDeck != null)
+        if (currentDeck != null)
         {
-            inMainDeck = DeckBuilder.Instance.currentDeck.mainDeck
-                .FindAll(e => e.card.cardId == card.cardId)
+            inMainDeck = currentDeck.mainDeck
+                .FindAll(e => e.card != null && e.card.cardId == card.cardId)
                 .Sum(e => e.count);
-            inExtraDeck = DeckBuilder.Instance.currentDeck.extraDeck
-                .FindAll(e => e.card.cardId == card.cardId)
+            inExtraDeck = currentDeck.extraDeck
+                .FindAll(e => e.card != null && e.card.cardId == card.cardId)
                 .Sum(e => e.count);
         }
         return owned - (inMainDeck + inExtraDeck);
+    }
+
+    public bool TryCraftCard(string cardId)
+    {
+        if (!cardIdDict.TryGetValue(cardId, out var card)) return false;
+        var pcm = PlayerCardCollectionManager.Instance;
+        if (!card.canCraft || pcm.collection.craftPoint < card.craftCost) return false;
+
+        // 포인트 차감
+        pcm.collection.craftPoint -= card.craftCost;
+
+        // 카드 소유 정보 갱신
+        var entry = pcm.collection.ownedCards.Find(e => e.cardId == cardId);
+        if (entry != null)
+            entry.count += 1;
+        else
+            pcm.collection.ownedCards.Add(new PlayerCardEntry { cardId = cardId, count = 1 });
+
+        pcm.SaveCollection();
+        return true;
+    }
+
+    public bool TryDisenchantCard(string cardId)
+    {
+        Debug.Log($"TryDisenchantCard 호출됨 - cardId: {cardId}");
+        
+        if (!cardIdDict.TryGetValue(cardId, out var card)) 
+        {
+            Debug.Log($"카드를 찾을 수 없음 - cardId: {cardId}");
+            return false;
+        }
+        
+        Debug.Log($"카드 찾음 - {card.cardName}");
+        
+        var pcm = PlayerCardCollectionManager.Instance;
+        var entry = pcm.collection.ownedCards.Find(e => e.cardId == cardId);
+        
+        Debug.Log($"소유 카드 엔트리: {(entry != null ? $"count={entry.count}" : "null")}");
+        Debug.Log($"분해 가능: {card.canDisenchant}");
+        
+        if (!card.canDisenchant || entry == null || entry.count <= 0) 
+        {
+            Debug.Log($"분해 조건 불만족 - canDisenchant: {card.canDisenchant}, entry: {(entry != null ? "있음" : "없음")}, count: {(entry != null ? entry.count : 0)}");
+            return false;
+        }
+
+        // 카드 소유 개수 차감
+        entry.count -= 1;
+        // 포인트 증가
+        pcm.collection.craftPoint += card.disenchantReward;
+
+        Debug.Log($"분해 완료 - 남은 개수: {entry.count}, 획득 포인트: {card.disenchantReward}");
+
+        // 0장 이하가 되면 리스트에서 제거
+        if (entry.count <= 0)
+            pcm.collection.ownedCards.Remove(entry);
+
+        pcm.SaveCollection();
+        return true;
     }
 }

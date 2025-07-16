@@ -11,16 +11,16 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 0}
   m_Name: DogmaRequiem Funishment
-  m_EditorClassIdentifier: Assembly-CSharp::TrapCardData
+  m_EditorClassIdentifier: Assembly-CSharp::SpellCardData
   cardName: "\uB3C4\uADF8\uB9C8\uB808\uD034\uC5E0 \uC9D5\uBC8C"
   description: 
-  artwork: {fileID: 0}
-  cardType: 2
+  artwork: {fileID: 21300000, guid: 0a2df28f963747a498634d90e0c6f48b, type: 3}
+  cardType: 1
   rarity: 0
-  cost: 2
-  cardId: fa04b41e-e0f1-4341-8cb8-9cbad0c852d9
+  cost: 0
+  cardId: 84789399-d353-4f3b-ad2c-ec4f25cf3158
   haveLive2D: 0
   live2DPath: 
   cardEffects: []
   tags: []
-  trapType: 0
+  spellType: 0

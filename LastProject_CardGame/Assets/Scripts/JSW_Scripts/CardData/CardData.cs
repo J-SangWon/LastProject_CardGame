@@ -8,6 +8,25 @@ public enum TrapType { Normal, Continuous, Counter }
 public enum Race { Null, Undead, Dragon, Warrior, wizard, Fiend, Fairy, Fish, Insect, Beast, Plant, Machine, Angel }
 public enum CardRarity { Normal, Rare, SuperRare, UltraRare }
 
+public static class CardCraftConfig
+{
+    public static readonly Dictionary<CardRarity, int> CraftCostByRarity = new Dictionary<CardRarity, int>
+    {
+        { CardRarity.Normal, 10 },
+        { CardRarity.Rare, 30 },
+        { CardRarity.SuperRare, 100 },
+        { CardRarity.UltraRare, 400 }
+    };
+
+    // 분해(회수) 비용은 제작 비용의 1/4로 자동 계산
+    public static int GetDisenchantReward(CardRarity rarity)
+    {
+        if (CraftCostByRarity.TryGetValue(rarity, out int craftCost))
+            return Mathf.RoundToInt(craftCost * 0.25f);
+        return 0;
+    }
+}
+
 public abstract class BaseCardData : ScriptableObject
 {
     [Header("기본 정보")]
@@ -35,6 +54,12 @@ public abstract class BaseCardData : ScriptableObject
     // 기존 호환성을 위한 속성들
     public List<string> effectIds => new List<string>();
     public List<string> effectTimings => new List<string>();
+
+    // ↓↓↓ 아래 필드 추가
+    public int craftCost = 0;
+    public int disenchantReward = 0;
+    public bool canCraft = true;
+    public bool canDisenchant = true;
     
     // 효과 관련 메서드들
     public void AddEffect(CardEffectData effect)
@@ -109,8 +134,13 @@ public abstract class BaseCardData : ScriptableObject
             cardId = System.Guid.NewGuid().ToString();
             UnityEditor.EditorUtility.SetDirty(this);
         }
+        if (CardCraftConfig.CraftCostByRarity.ContainsKey(rarity))
+            craftCost = CardCraftConfig.CraftCostByRarity[rarity];
+        disenchantReward = CardCraftConfig.GetDisenchantReward(rarity);
     }
 #endif
+
+
 }
 [CreateAssetMenu(menuName = "Card/MonsterCard")]
 public class MonsterCardData : BaseCardData
