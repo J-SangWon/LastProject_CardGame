@@ -14,9 +14,9 @@ public class CardDataEditor : Editor
     SerializedProperty costProp;
     SerializedProperty haveLive2DProp;
     SerializedProperty live2DPathProp;
-    SerializedProperty effectIdsProp;
-    SerializedProperty effectTimingsProp;
     SerializedProperty tagsProp;
+    SerializedProperty cardEffectsProp;
+    SerializedProperty cardIdProp;
 
     void OnEnable()
     {
@@ -28,9 +28,9 @@ public class CardDataEditor : Editor
         costProp = serializedObject.FindProperty("cost");
         haveLive2DProp = serializedObject.FindProperty("haveLive2D");
         live2DPathProp = serializedObject.FindProperty("live2DPath");
-        effectIdsProp = serializedObject.FindProperty("effectIds");
-        effectTimingsProp = serializedObject.FindProperty("effectTimings");
         tagsProp = serializedObject.FindProperty("tags");
+        cardEffectsProp = serializedObject.FindProperty("cardEffects");
+        cardIdProp = serializedObject.FindProperty("cardId");
     }
 
     public override void OnInspectorGUI()
@@ -38,6 +38,7 @@ public class CardDataEditor : Editor
         serializedObject.Update();
 
         EditorGUILayout.LabelField("카드 기본 정보", EditorStyles.boldLabel);
+        EditorGUILayout.PropertyField(cardIdProp, new GUIContent("카드 ID"));
         EditorGUILayout.PropertyField(cardNameProp, new GUIContent("카드 이름"));
         EditorGUILayout.PropertyField(descriptionProp, new GUIContent("설명"));
         EditorGUILayout.PropertyField(artworkProp, new GUIContent("일러스트"));
@@ -54,10 +55,9 @@ public class CardDataEditor : Editor
         }
 
         EditorGUILayout.Space();
-        EditorGUILayout.LabelField("효과 정보", EditorStyles.boldLabel);
-        EditorGUILayout.PropertyField(effectIdsProp, new GUIContent("효과 ID"), true);
-        EditorGUILayout.PropertyField(effectTimingsProp, new GUIContent("발동 조건"), true);
+        EditorGUILayout.LabelField("기타 정보", EditorStyles.boldLabel);
         EditorGUILayout.PropertyField(tagsProp, new GUIContent("태그"), true);
+        EditorGUILayout.PropertyField(cardEffectsProp, new GUIContent("카드 효과"), true);
 
         EditorGUILayout.Space();
         DrawTypeSpecificFields();

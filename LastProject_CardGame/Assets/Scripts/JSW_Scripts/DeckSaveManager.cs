@@ -27,7 +27,8 @@ public class DeckSaveManager : MonoBehaviour
     
     void Awake()
     {
-        LoadDeckList();
+        if (deckListData == null)
+            LoadDeckList();
     }
     
     // 덱 리스트 불러오기
@@ -124,6 +125,10 @@ public class DeckSaveManager : MonoBehaviour
     // 모든 덱 이름 가져오기
     public List<string> GetAllDeckNames()
     {
+        if (deckListData == null)
+            LoadDeckList();
+        if (deckListData == null)
+            return new List<string>();
         return new List<string>(deckListData.deckNames);
     }
     
