@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SpellCardData
   cardName: "\uB3C4\uADF8\uB9C8\uB808\uD034\uC5E0 \uB300\uC131\uB2F9"
   description: 
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: 39613be9cfee1204ea913ab778124965, type: 3}
   cardType: 1
   rarity: 3
   cost: 3

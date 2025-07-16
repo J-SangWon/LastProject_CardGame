@@ -7,14 +7,17 @@ using System.Linq;
 
 public class DeckMakingUI : MonoBehaviour
 {
+    public static DeckMakingUI Instance { get; private set; }
     public DeckBuilder deckBuilder;
     public Transform allCardsContent; // 전체 카드 리스트 Content
     public Transform mainDeckContent; // 메인덱 카드 리스트 Content
     public Transform extraDeckContent; // 엑스트라덱 카드 리스트 Content
+    public TextMeshProUGUI deckCardCountText;
     public GameObject CardThumbnailPrefab;
     public TMP_InputField deckNameInput;
     public Button saveButton;
     public Button backButton; // 뒤로가기 버튼
+    public TextMeshProUGUI ownCraftPointText;
     public DeckSelectUI deckSelectUI; // 덱 선택 UI 참조
     public TMP_InputField searchBar;
     // 드롭다운 참조
@@ -33,6 +36,14 @@ public class DeckMakingUI : MonoBehaviour
         { 3, new List<string> { "전체", "일반 함정", "지속 함정", "카운터 함정" } }, // 함정
     };
 
+    void Awake()
+    {
+        if (Instance == null)
+            Instance = this;
+        else
+            Destroy(gameObject);
+
+    }
     void Start()
     {
         // 현재 선택된 덱이 있으면 불러오고, 없으면 새 덱 생성
@@ -54,6 +65,8 @@ public class DeckMakingUI : MonoBehaviour
         // 최초 1회만 UI 갱신
         RefreshDeckList();
         RefreshAllCardList();
+        RefreshCraftPointUI();
+        RefreshDeckCardCountText();
         
         saveButton.onClick.AddListener(() => {
             // 덱 이름 업데이트 및 저장
@@ -110,6 +123,8 @@ public class DeckMakingUI : MonoBehaviour
     {
         RefreshDeckList();
         RefreshAllCardList();
+        RefreshCraftPointUI();
+        RefreshDeckCardCountText(); // ← 추가
     }
 
     // 카드가 엑스트라덱 대상인지 판별 (Normal, Effect가 아니면 엑스트라덱)
@@ -123,7 +138,7 @@ public class DeckMakingUI : MonoBehaviour
     }
 
     // 1. 카드리스트 UI 갱신 함수
-    void RefreshAllCardList()
+    public void RefreshAllCardList()
     {
         string keyword = searchBar != null ? searchBar.text.ToLower() : "";
         int typeFilter = typeDropdown != null ? typeDropdown.value : 0;
@@ -287,6 +302,7 @@ public class DeckMakingUI : MonoBehaviour
             deckNameInput.text = deck.deckName;
         RefreshDeckList();
         RefreshAllCardList();
+        RefreshCraftPointUI(); // 덱 선택 시 크래프트 포인트 갱신
     }
 
     // 뒤로가기 버튼 클릭
@@ -322,6 +338,7 @@ public class DeckMakingUI : MonoBehaviour
             PointerEventData ped = (PointerEventData)data;
             if (ped.button == PointerEventData.InputButton.Left)
             {
+                CardDetailUI.Instance.gameObject.SetActive(true);
                 CardDetailUI.Instance.SetCardDetail(card);
             }
         });
@@ -343,5 +360,47 @@ public class DeckMakingUI : MonoBehaviour
             // }
         }
         RefreshAllCardList();
+    }
+
+    // 크래프트 포인트 UI 갱신 함수 추가
+    public void RefreshCraftPointUI()
+    {
+        if (ownCraftPointText != null)
+        {
+            int craftPoint = PlayerCardCollectionManager.Instance != null ? PlayerCardCollectionManager.Instance.collection.craftPoint : 0;
+            ownCraftPointText.text = $"크래프트 포인트: {craftPoint}";
+        }
+    }
+
+    // 카드 제작/분해 등으로 값이 변할 때 이 함수를 호출해야 함
+
+    // 특정 카드가 메인덱에 몇 장 들어있는지 반환
+    public int GetCardCountInMainDeck(string cardId)
+    {
+        if (CardManager.Instance.currentDeck == null) return 0;
+        return CardManager.Instance.currentDeck.mainDeck
+            .Where(e => e.card != null && e.card.cardId == cardId)
+            .Sum(e => e.count);
+    }
+
+    // 특정 카드가 엑스트라덱에 몇 장 들어있는지 반환
+    public int GetCardCountInExtraDeck(string cardId)
+    {
+        if (CardManager.Instance.currentDeck == null) return 0;
+        return CardManager.Instance.currentDeck.extraDeck
+            .Where(e => e.card != null && e.card.cardId == cardId)
+            .Sum(e => e.count);
+    }
+
+    public void RefreshDeckCardCountText()
+    {
+        if (CardManager.Instance.currentDeck == null)
+        {
+            deckCardCountText.text = "메인덱: 0 / 엑스트라덱: 0";
+            return;
+        }
+        int mainCount = CardManager.Instance.currentDeck.mainDeck.Sum(e => e.count);
+        int extraCount = CardManager.Instance.currentDeck.extraDeck.Sum(e => e.count);
+        deckCardCountText.text = $"메인덱: {mainCount} / 엑스트라덱: {extraCount}";
     }
 }
