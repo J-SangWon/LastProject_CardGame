@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -101,19 +102,29 @@ public class StoreManager : MonoBehaviour
         if (currentPack) Destroy(currentPack);
         if (particle) Destroy(particle);
 
-        GameObject packPrefab = packViewController.selectedCardPackView.gameObject;
+        // 카드팩 나타내기
+        yield return CardPackAppear();
+        // 클릭 대기
+        yield return new WaitUntil(() => Input.GetMouseButtonDown(0));
+        // 진동 + 아래로 사라짐
+        yield return AnimatePackVanish();
+        // 3) 실제 카드 데이터 생성 후 등장
+        GenerateCardsFromRarities();
+        yield return StartCoroutine(SpawnCards());
+    }
 
+    // ────────────────── 이펙트 연출 ──────────────────
+    IEnumerator CardPackAppear()
+    {
+        GameObject packPrefab = packViewController.selectedCardPackView.gameObject;
         currentPack = Instantiate(packPrefab, cardPackDisplayPoint);
-        RectTransform packrect = currentPack.GetComponent<RectTransform>();
-        packrect.sizeDelta = new Vector2(400, 540); // 카드팩 크기 조정 (예시)                                                   
-        packrect.anchorMin = new Vector2(0.5f, 0.5f);// 앵커를 Middle Center로 설정 (0.5, 0.5)
-        packrect.anchorMax = new Vector2(0.5f, 0.5f);
+        RectTransform rect = currentPack.GetComponent<RectTransform>();
+        rect.sizeDelta = new Vector2(400, 540);
+        rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 0.5f);
         currentPack.transform.localScale = Vector3.zero;
 
-        // 최고 희귀도에 맞는 파티클(이펙트) 표시
         ShowEffect(GetHighestRarity());
 
-        // 확대 애니메이션
         float t = 0;
         while (t < 1f)
         {
@@ -121,17 +132,9 @@ public class StoreManager : MonoBehaviour
             currentPack.transform.localScale = Vector3.one * Mathf.SmoothStep(0, 1, t);
             yield return null;
         }
-
-        // 클릭 대기
-        yield return new WaitUntil(() => Input.GetMouseButtonDown(0));
-
-        // 3) 실제 카드 데이터 생성 후 등장
-        GenerateCardsFromRarities();
-        yield return StartCoroutine(SpawnCards());
     }
 
-    // ────────────────── 이펙트 연출 ──────────────────
-    void ShowEffect(CardRarity rarity)
+    void ShowEffect(CardRarity rarity)  //카드팩 파티클
     {
         int idx = (int)rarity;
         if (idx < rarityEffects.Length && rarityEffects[idx])
@@ -149,6 +152,36 @@ public class StoreManager : MonoBehaviour
         return hi;
     }
 
+    //카드팩 진동 및 사라짐
+    IEnumerator AnimatePackVanish()
+    {
+        float shakeStrength = 10f;
+        float shakeDuration = 0.3f;
+
+        switch (GetHighestRarity())
+        {
+            case CardRarity.Rare: shakeStrength = 20f; shakeDuration = 0.5f; break;
+            case CardRarity.SuperRare: shakeStrength = 30f; shakeDuration = 1f; break;
+            case CardRarity.UltraRare: shakeStrength = 40f; shakeDuration = 1.5f; break;
+        }
+
+        currentPack.transform.DOShakeRotation(shakeDuration, shakeStrength);
+        yield return new WaitForSeconds(shakeDuration + 0.1f);
+
+        RectTransform rect = currentPack.GetComponent<RectTransform>();
+        Vector2 endPos = rect.anchoredPosition + Vector2.down * 800f;
+
+        if (particle) Destroy(particle);
+
+        Sequence vanish = DOTween.Sequence();
+        vanish.Append(rect.DOAnchorPos(endPos, 0.5f).SetEase(Ease.InBack));
+        vanish.Join(currentPack.transform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.InBack));
+
+        yield return vanish.WaitForCompletion();
+
+        Destroy(currentPack);
+    }
+
     // ────────────────── 3) 희귀도 → 실제 카드 변환 ──────────────────
     void GenerateCardsFromRarities()
     {
@@ -164,44 +197,80 @@ public class StoreManager : MonoBehaviour
     // ────────────────── 카드 Instantiate ──────────────────
     IEnumerator SpawnCards()
     {
-        if (currentPack) Destroy(currentPack);
-        if (particle) Destroy(particle);
-
         foreach (Transform child in cardSpawnContent) Destroy(child.gameObject);
         yield return new WaitForSeconds(0.25f);
+
+        GridLayoutGroup g = cardSpawnContent.GetComponent<GridLayoutGroup>();
+        Vector2 cell = g.cellSize, sp = g.spacing;
+        RectOffset pad = g.padding; int cols = g.constraintCount;
+
+        Vector2 origin = new(pad.left + cell.x * .5f,
+                            -(pad.top + cell.y * .5f));
 
         bool skipDelay = false;
 
         for (int i = 0; i < cardList.Count; i++)
         {
-            // 카드 Instantiate
             CardInfo info = cardList[i];
-            GameObject obj = Instantiate(cardPrefab, cardSpawnContent);
-            obj.GetComponent<CardPrefab>().Initialize(info.rarity, info.race, info.type);
 
-            // 클릭 감시
-            // 이미 skipDelay 가 true 면 바로 다음 카드로 진행
-            // 아직 false 면 대기, 하지만 대기 중 클릭 들어오면 즉시 skipDelay = true
+            // Instantiate
+            GameObject obj = Instantiate(cardPrefab, cardSpawnContent);
+            RectTransform rt = obj.GetComponent<RectTransform>();
+            rt.anchoredPosition = new Vector2(0, -900);
+            rt.localScale = Vector3.one * .8f;
+
+            CardPrefab cp = obj.GetComponent<CardPrefab>();
+            cp.Initialize(info.rarity, info.race, info.type);
+
+            // 목표 좌표
+            int row = i / cols, col = i % cols;
+            Vector2 target = origin + new Vector2(
+                col * (cell.x + sp.x),
+               -(row * (cell.y + sp.y)));
+
+            float d = 0.06f * i;
+
+            // 코루틴 분리 호출
+            StartCoroutine(AnimateCardToGrid(rt, target, d, cp));
+
+            // 클릭 시 나머지 즉시
             if (!skipDelay)
             {
-                float timer = 0f;
-                float delay = 0.25f;         // 원래 딜레이
-                while (timer < delay)
+                float t = 0, wait = .1f;
+                while (t < wait)
                 {
-                    if (Input.GetMouseButtonDown(0))   // 모바일은 Touch 검사로 교체
+                    if (Input.GetMouseButtonDown(0))
                     {
                         skipDelay = true;
-                        break;                         // 루프 탈출 → 바로 다음 카드
+                        DOTween.Kill(rt);               // 즉시 완주
+                        rt.anchoredPosition = target;
+                        rt.localScale = Vector3.one;
+                        StartCoroutine(cp.Flip());      // 바로 Flip
+                        break;
                     }
-
-                    timer += Time.deltaTime;
-                    yield return null;                 // 다음 프레임까지 대기
+                    t += Time.deltaTime;
+                    yield return null;
                 }
             }
-            // skipDelay == true 이면 Wait 없이 바로 다음 카드 생성
         }
-
         cardPanelExit.gameObject.SetActive(true);
+    }
+
+    // ────────────────── 카드 1장 애니메이션 (이동 + 스케일 + Flip) ──────────────────
+    IEnumerator AnimateCardToGrid(RectTransform rt, Vector2 target, float baseDelay, CardPrefab cp)
+    {
+        // 올라오기 + 스케일
+        rt.DOAnchorPos(target, 0.35f)
+          .SetEase(Ease.OutQuad)
+          .SetDelay(baseDelay);
+
+        rt.DOScale(1f, 0.35f)
+          .SetEase(Ease.OutBack)
+          .SetDelay(baseDelay);
+
+        // 0.1초 뒤 Flip
+        yield return new WaitForSeconds(baseDelay + 0.1f);
+        yield return cp.Flip();   // CardPrefab 내부 Flip 코루틴
     }
 
     // ────────────────── Close ──────────────────
