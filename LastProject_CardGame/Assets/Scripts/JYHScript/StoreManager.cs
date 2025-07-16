@@ -31,6 +31,7 @@ public class StoreManager : MonoBehaviour
     public GameObject cardPrefab;                 // 1장 카드 프리팹
     public Transform cardSpawnContent;            // 10장 배치 부모
     public GameObject cardSpawnPanel;             // 검은 배경 + 카드 영역
+    public Button cardOpenBtn;
     public Button cardPanelExit;                  // 닫기 버튼
 
     // ────────────────── UI ──────────────────
@@ -51,6 +52,7 @@ public class StoreManager : MonoBehaviour
     {
         coinText.text = coin.ToString();
         buyButton.onClick.AddListener(BuyCard);
+        cardOpenBtn.onClick.AddListener(CardAllOpen);
         cardPanelExit.onClick.AddListener(ClosePanel);
 
         // 스크롤 도중 구매 방지 (옵션)
@@ -58,7 +60,20 @@ public class StoreManager : MonoBehaviour
         packViewController.onSnapEnd += () => buyButton.interactable = true;
 
         cardSpawnPanel.SetActive(false);
+        cardOpenBtn.gameObject.SetActive(false);
         cardPanelExit.gameObject.SetActive(false);
+    }
+
+    void Update()
+    {
+        if (isOpening && !cardPanelExit.gameObject.activeSelf)
+        {
+            if (AreAllCardsFlipped() && cardSpawnContent.childCount > 0)
+            {
+                cardOpenBtn.gameObject.SetActive(false);
+                cardPanelExit.gameObject.SetActive(true);
+            }
+        }
     }
 
     // ────────────────── Buy 클릭 ──────────────────
@@ -200,60 +215,71 @@ public class StoreManager : MonoBehaviour
         foreach (Transform child in cardSpawnContent) Destroy(child.gameObject);
         yield return new WaitForSeconds(0.25f);
 
-        GridLayoutGroup g = cardSpawnContent.GetComponent<GridLayoutGroup>();
-        Vector2 cell = g.cellSize, sp = g.spacing;
-        RectOffset pad = g.padding; int cols = g.constraintCount;
+        // 중앙 기준 위치 계산
+        int cols = 5;
+        float cellW = 250f, cellH = 350f;
+        float spacingX = 50f, spacingY = 50f;
 
-        Vector2 origin = new(pad.left + cell.x * .5f,
-                            -(pad.top + cell.y * .5f));
+        int rows = Mathf.CeilToInt(cardList.Count / (float)cols);
+
+        // 전체 너비, 높이
+        float totalWidth = cols * cellW + (cols - 1) * spacingX;
+        float totalHeight = rows * cellH + (rows - 1) * spacingY;
+
+        // 중앙 기준 좌상단 기준점 계산
+        Vector2 startPos = new Vector2(
+            -totalWidth / 2f + cellW / 2f,
+             totalHeight / 2f - cellH / 2f
+        );
+
 
         bool skipDelay = false;
 
         for (int i = 0; i < cardList.Count; i++)
         {
-            CardInfo info = cardList[i];
+            int row = i / cols;
+            int col = i % cols;
 
-            // Instantiate
+            Vector2 target = startPos + new Vector2(
+                col * (cellW + spacingX),
+               -row * (cellH + spacingY)
+            );
+
+            // 카드 Instantiate
+            CardInfo info = cardList[i];
             GameObject obj = Instantiate(cardPrefab, cardSpawnContent);
             RectTransform rt = obj.GetComponent<RectTransform>();
-            rt.anchoredPosition = new Vector2(0, -900);
-            rt.localScale = Vector3.one * .8f;
+            rt.anchoredPosition = new Vector2(0f, -900f);
+            rt.localScale = Vector3.one * 0.8f;
 
             CardPrefab cp = obj.GetComponent<CardPrefab>();
             cp.Initialize(info.rarity, info.race, info.type);
 
-            // 목표 좌표
-            int row = i / cols, col = i % cols;
-            Vector2 target = origin + new Vector2(
-                col * (cell.x + sp.x),
-               -(row * (cell.y + sp.y)));
+            float delay = 0.06f * i;
+            StartCoroutine(AnimateCardToGrid(rt, target, delay, cp));
 
-            float d = 0.06f * i;
-
-            // 코루틴 분리 호출
-            StartCoroutine(AnimateCardToGrid(rt, target, d, cp));
-
-            // 클릭 시 나머지 즉시
             if (!skipDelay)
             {
-                float t = 0, wait = .1f;
-                while (t < wait)
+                float timer = 0f, wait = 0.1f;
+                while (timer < wait)
                 {
                     if (Input.GetMouseButtonDown(0))
                     {
                         skipDelay = true;
-                        DOTween.Kill(rt);               // 즉시 완주
+                        DOTween.Kill(rt);
                         rt.anchoredPosition = target;
                         rt.localScale = Vector3.one;
-                        StartCoroutine(cp.Flip());      // 바로 Flip
                         break;
                     }
-                    t += Time.deltaTime;
+                    timer += Time.deltaTime;
                     yield return null;
                 }
             }
         }
-        cardPanelExit.gameObject.SetActive(true);
+
+        // 모든 카드가 배치되면 뒤집기 버튼 활성화
+        yield return new WaitForSeconds(0.5f);
+        cardOpenBtn.gameObject.SetActive(true);
     }
 
     // ────────────────── 카드 1장 애니메이션 (이동 + 스케일 + Flip) ──────────────────
@@ -270,14 +296,35 @@ public class StoreManager : MonoBehaviour
 
         // 0.1초 뒤 Flip
         yield return new WaitForSeconds(baseDelay + 0.1f);
-        yield return cp.Flip();   // CardPrefab 내부 Flip 코루틴
+    }
+
+    // ────────────────── 모든 카드 뒤집기 ──────────────────
+    void CardAllOpen()
+    {
+        foreach (Transform child in cardSpawnContent)
+        {
+            var card = child.GetComponent<CardPrefab>();
+            if (card != null && !card.isFlipped)
+                StartCoroutine(card.Flip());
+        }
+    }
+
+    // ────────────────── 카드 flip상태 확인 ──────────────────
+    bool AreAllCardsFlipped()
+    {
+        foreach (Transform child in cardSpawnContent)
+        {
+            var card = child.GetComponent<CardPrefab>();
+            if (card != null && !card.isFlipped)
+                return false;
+        }
+        return true;
     }
 
     // ────────────────── Close ──────────────────
     void ClosePanel()
     {
         //카드 정보 저장
-
 
         foreach (Transform child in cardSpawnContent) Destroy(child.gameObject);
         if (currentPack) Destroy(currentPack);

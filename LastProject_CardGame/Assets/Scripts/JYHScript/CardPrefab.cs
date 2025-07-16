@@ -2,16 +2,17 @@ using DG.Tweening;
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class CardPrefab : MonoBehaviour
+public class CardPrefab : MonoBehaviour, IPointerClickHandler
 {
     public TextMeshProUGUI CardPackType;
     public TextMeshProUGUI Rarity;
     public TextMeshProUGUI Race;
 
     private RectTransform rt;
-    private bool isFlipped = false;
+    public bool isFlipped { get; private set; } = false;
 
     void Awake()
     {
@@ -65,6 +66,12 @@ public class CardPrefab : MonoBehaviour
 
         // 3. ÆîÄ§
         yield return rt.DOScaleX(1f, duration * 0.5f).SetEase(Ease.OutBack).WaitForCompletion();
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if (!isFlipped)
+            StartCoroutine(Flip());
     }
 
     void SetTextAlpha(float alpha)
