@@ -7,8 +7,15 @@ using System.Linq;
 public class DeckSaveData
 {
     public string deckName;
-    public List<DeckCardEntry> mainDeck = new List<DeckCardEntry>();
-    public List<DeckCardEntry> extraDeck = new List<DeckCardEntry>();
+    public List<DeckCardSaveEntry> mainDeck = new List<DeckCardSaveEntry>();
+    public List<DeckCardSaveEntry> extraDeck = new List<DeckCardSaveEntry>();
+}
+
+[System.Serializable]
+public class DeckCardSaveEntry
+{
+    public string cardId;  // 카드 ID만 저장
+    public int count;
 }
 
 [System.Serializable]
@@ -147,8 +154,8 @@ public class DeckSaveManager : MonoBehaviour
         // 메인 덱 변환
         foreach (var entry in deckData.mainDeck)
         {
-            var saveEntry = new DeckCardEntry();
-            saveEntry.card = entry.card;
+            var saveEntry = new DeckCardSaveEntry();
+            saveEntry.cardId = entry.card.cardId;
             saveEntry.count = entry.count;
             saveData.mainDeck.Add(saveEntry);
         }
@@ -156,8 +163,8 @@ public class DeckSaveManager : MonoBehaviour
         // 엑스트라 덱 변환
         foreach (var entry in deckData.extraDeck)
         {
-            var saveEntry = new DeckCardEntry();
-            saveEntry.card = entry.card;
+            var saveEntry = new DeckCardSaveEntry();
+            saveEntry.cardId = entry.card.cardId;
             saveEntry.count = entry.count;
             saveData.extraDeck.Add(saveEntry);
         }
@@ -175,7 +182,7 @@ public class DeckSaveManager : MonoBehaviour
         foreach (var entry in saveData.mainDeck)
         {
             var deckEntry = new DeckCardEntry();
-            deckEntry.card = entry.card;
+            deckEntry.card = PlayerCardCollectionManager.FindCardDataById(entry.cardId);
             deckEntry.count = entry.count;
             deckData.mainDeck.Add(deckEntry);
         }
@@ -184,7 +191,7 @@ public class DeckSaveManager : MonoBehaviour
         foreach (var entry in saveData.extraDeck)
         {
             var deckEntry = new DeckCardEntry();
-            deckEntry.card = entry.card;
+            deckEntry.card = PlayerCardCollectionManager.FindCardDataById(entry.cardId);
             deckEntry.count = entry.count;
             deckData.extraDeck.Add(deckEntry);
         }

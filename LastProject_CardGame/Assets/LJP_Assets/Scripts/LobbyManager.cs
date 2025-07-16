@@ -1,9 +1,10 @@
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 
 public enum LobbyType
 {
     Lobby,
+	Start,
     DeckSelect,
     DeckEdit,
     Shop,
