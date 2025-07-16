@@ -1,15 +1,18 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class CardPrefab : MonoBehaviour
 {
-    public Text Rarity;
-    public Text Race;
+    public TextMeshProUGUI CardPackType;
+    public TextMeshProUGUI Rarity;
+    public TextMeshProUGUI Race;
 
-    public void Initialize(CardRarity rarity, Race race)
+    public void Initialize(CardRarity rarity, Race race, CardPackType type)
     {
-        Rarity.text = rarity.ToString();
-        Race.text = race.ToString();
+        CardPackType.text = "카드팩\n"+ type.ToString(); // CardPackType는 enum이므로 ToString()으로 문자열로 변환
+        Rarity.text = "등급\n"+rarity.ToString();
+        Race.text = "종족\n" + race.ToString();
 
         GetComponent<Image>().color = GetRarityColor(rarity);
     }

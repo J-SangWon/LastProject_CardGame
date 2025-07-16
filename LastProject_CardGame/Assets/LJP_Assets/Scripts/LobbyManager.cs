@@ -7,7 +7,8 @@ public enum LobbyType
     DeckSelect,
     DeckEdit,
     Shop,
-    MyPage
+    MyPage,
+	Background
 }
 
 public class LobbyManager : SingletonBehaviour<LobbyManager>

@@ -10,6 +10,9 @@ public class UIManager : SingletonBehaviour<UIManager>
 	[SerializeField] private GameObject DeckEditUI;
 	[SerializeField] private GameObject ShopUI;
 	[SerializeField] private GameObject MyPageUI;
+	[SerializeField] private GameObject BackgroundUI;
+	[SerializeField] private Image Background;
+	[SerializeField] private Image LobbyCharacterImage;
 	[SerializeField] private Image fadeImage;
 
 	[Header("Fade In/Out Setting")]
@@ -20,6 +23,7 @@ public class UIManager : SingletonBehaviour<UIManager>
 
 	protected override void Awake()
 	{
+		m_IsDestroyOnLoad = true;
 		base.Awake();
 		InitLobbyUIMap();
 	}
@@ -33,6 +37,7 @@ public class UIManager : SingletonBehaviour<UIManager>
 			{ LobbyType.DeckEdit, DeckEditUI },
 			{ LobbyType.Shop, ShopUI },
 			{ LobbyType.MyPage, MyPageUI },
+			{ LobbyType.Background, BackgroundUI },
 		};
 	}
 
@@ -54,6 +59,16 @@ public class UIManager : SingletonBehaviour<UIManager>
 		yield return Fade(FadeDirection.In);
 
 		onComplete?.Invoke();
+	}
+
+	public void ChangeBackground(Sprite backgroud)
+	{
+		Background.sprite = backgroud;
+	}
+
+	public void ChangeLobbyCharacter(Sprite CharacterImage)
+	{
+		LobbyCharacterImage.sprite = CharacterImage;
 	}
 
 	private enum FadeDirection { In, Out }
