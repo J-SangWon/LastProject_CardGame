@@ -34,8 +34,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -142.9, y: -230.1}
-  m_SizeDelta: {x: 50, y: 50}
+  m_AnchoredPosition: {x: 759.56836, y: 382.4439}
+  m_SizeDelta: {x: 24.499, y: 24.0827}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2213723665804183324
 CanvasRenderer:
@@ -170,8 +170,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 8.541, y: -10.892}
-  m_SizeDelta: {x: 670, y: 590}
+  m_AnchoredPosition: {x: 833.7713, y: 488.02625}
+  m_SizeDelta: {x: 328.2859, y: 284.1757}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3522649579192229133
 CanvasRenderer:
@@ -245,8 +245,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -19.1011, y: 6}
-  m_SizeDelta: {x: 416.2021, y: 600}
+  m_AnchoredPosition: {x: 816.7295, y: 497.23}
+  m_SizeDelta: {x: 230.5418, y: 302.58}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5430354866959803559
 CanvasRenderer:
@@ -320,8 +320,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 140, y: -229.9}
-  m_SizeDelta: {x: 50, y: 50}
+  m_AnchoredPosition: {x: 898.1833, y: 382.54025}
+  m_SizeDelta: {x: 24.499, y: 24.0827}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7335642078847942520
 CanvasRenderer:
@@ -456,8 +456,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 213}
-  m_SizeDelta: {x: 150, y: 50}
+  m_AnchoredPosition: {x: 829.5863, y: 595.8647}
+  m_SizeDelta: {x: 73.4968, y: 24.0827}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1264692488216943870
 CanvasRenderer:
@@ -514,7 +514,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 30.3
+  m_fontSize: 18
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -592,8 +592,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -139}
-  m_SizeDelta: {x: 300, y: 200}
+  m_AnchoredPosition: {x: 829.58636, y: 426.32263}
+  m_SizeDelta: {x: 146.9937, y: 96.3308}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1257437745610468992
 CanvasRenderer:
@@ -728,8 +728,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -136, y: 216}
-  m_SizeDelta: {x: 50, y: 50}
+  m_AnchoredPosition: {x: 762.94916, y: 597.3097}
+  m_SizeDelta: {x: 24.499, y: 24.0827}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6456348923497085100
 CanvasRenderer:
@@ -786,7 +786,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 24
+  m_fontSize: 18
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -864,8 +864,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.09379959, y: -1.4798}
-  m_SizeDelta: {x: 350, y: 500}
+  m_AnchoredPosition: {x: 829.5404, y: 492.5597}
+  m_SizeDelta: {x: 171.4926, y: 240.8269}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2641679991704056822
 CanvasRenderer:
@@ -917,6 +917,7 @@ GameObject:
   - component: {fileID: 6451283996007634016}
   - component: {fileID: 8906740630591169565}
   - component: {fileID: 6632694000808256612}
+  - component: {fileID: 2348234149119733982}
   m_Layer: 5
   m_Name: CardUI
   m_TagString: Untagged
@@ -1009,3 +1010,16 @@ MonoBehaviour:
   textDescription: {fileID: 8264403692094341750}
   textAttack: {fileID: 7856635177166420679}
   textHealth: {fileID: 8937133983498504324}
+--- !u!114 &2348234149119733982
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9154549864915518465}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b56ae21601194d6469d2f6c516ad86eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 0}
