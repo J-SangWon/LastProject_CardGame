@@ -46,6 +46,7 @@ public class StoreManager : MonoBehaviour
     private GameObject particle;
     private readonly List<CardRarity> rarityList = new();   // 희귀도만 저장
     private readonly List<CardInfo> cardList = new();   // 클릭 후 실제 카드 정보 저장
+    private bool skipRemaining = false; // 클릭 시 이후 카드 즉시 배치 여부  
 
     // ────────────────── 초기화 ──────────────────
     void Start()
@@ -84,9 +85,6 @@ public class StoreManager : MonoBehaviour
         coin -= 10;
         coinText.text = coin.ToString();
         isOpening = true;
-
-        rarityList.Clear();
-        cardList.Clear();
 
         GenerateRarityList();                    // 1) 희귀도만 뽑기
         StartCoroutine(ShowPackAndEffect());     // 2) 이펙트 & 팩 등장
@@ -213,6 +211,7 @@ public class StoreManager : MonoBehaviour
     IEnumerator SpawnCards()
     {
         foreach (Transform child in cardSpawnContent) Destroy(child.gameObject);
+        skipRemaining = false;
         yield return new WaitForSeconds(0.25f);
 
         // 중앙 기준 위치 계산
@@ -232,11 +231,11 @@ public class StoreManager : MonoBehaviour
              totalHeight / 2f - cellH / 2f
         );
 
-
-        bool skipDelay = false;
+        StartCoroutine(DetectClickToSkip());
 
         for (int i = 0; i < cardList.Count; i++)
         {
+            CardInfo info = cardList[i];
             int row = i / cols;
             int col = i % cols;
 
@@ -245,8 +244,6 @@ public class StoreManager : MonoBehaviour
                -row * (cellH + spacingY)
             );
 
-            // 카드 Instantiate
-            CardInfo info = cardList[i];
             GameObject obj = Instantiate(cardPrefab, cardSpawnContent);
             RectTransform rt = obj.GetComponent<RectTransform>();
             rt.anchoredPosition = new Vector2(0f, -900f);
@@ -255,47 +252,50 @@ public class StoreManager : MonoBehaviour
             CardPrefab cp = obj.GetComponent<CardPrefab>();
             cp.Initialize(info.rarity, info.race, info.type);
 
-            float delay = 0.06f * i;
-            StartCoroutine(AnimateCardToGrid(rt, target, delay, cp));
-
-            if (!skipDelay)
+            if (skipRemaining)
             {
-                float timer = 0f, wait = 0.1f;
-                while (timer < wait)
-                {
-                    if (Input.GetMouseButtonDown(0))
-                    {
-                        skipDelay = true;
-                        DOTween.Kill(rt);
-                        rt.anchoredPosition = target;
-                        rt.localScale = Vector3.one;
-                        break;
-                    }
-                    timer += Time.deltaTime;
-                    yield return null;
-                }
+                // DOTween 없이 즉시 이동
+                rt.anchoredPosition = target;
+                rt.localScale = Vector3.one;
+                continue;
+            }
+
+            // 카드 1장 애니메이션 (이동 + 스케일)
+            yield return AnimateCardToGrid(rt, target);
+
+            // 클릭 감지 후 이후 카드부터 즉시 배치
+            if (Input.GetMouseButtonDown(0))
+            {
+                skipRemaining = true;
             }
         }
 
-        // 모든 카드가 배치되면 뒤집기 버튼 활성화
-        yield return new WaitForSeconds(0.5f);
         cardOpenBtn.gameObject.SetActive(true);
     }
 
-    // ────────────────── 카드 1장 애니메이션 (이동 + 스케일 + Flip) ──────────────────
-    IEnumerator AnimateCardToGrid(RectTransform rt, Vector2 target, float baseDelay, CardPrefab cp)
+    // ────────────────── 카드 1장 애니메이션 (이동 + 스케일) ──────────────────
+    IEnumerator AnimateCardToGrid(RectTransform rt, Vector2 target)
     {
-        // 올라오기 + 스케일
-        rt.DOAnchorPos(target, 0.35f)
-          .SetEase(Ease.OutQuad)
-          .SetDelay(baseDelay);
+        float moveTime = 0.25f;
 
-        rt.DOScale(1f, 0.35f)
-          .SetEase(Ease.OutBack)
-          .SetDelay(baseDelay);
+        Tween move = rt.DOAnchorPos(target, moveTime).SetEase(Ease.OutQuad);
+        Tween scale = rt.DOScale(1f, moveTime).SetEase(Ease.OutBack);
 
-        // 0.1초 뒤 Flip
-        yield return new WaitForSeconds(baseDelay + 0.1f);
+        yield return move.WaitForCompletion();
+    }
+
+    // ───────────────── 클릭 감지 ──────────────────
+    IEnumerator DetectClickToSkip()
+    {
+        while (!skipRemaining)
+        {
+            if (Input.GetMouseButtonDown(0))  // 모바일은 터치로 교체 가능
+            {
+                skipRemaining = true;
+                yield break;
+            }
+            yield return null; // 다음 프레임까지 대기
+        }
     }
 
     // ────────────────── 모든 카드 뒤집기 ──────────────────
@@ -325,6 +325,11 @@ public class StoreManager : MonoBehaviour
     void ClosePanel()
     {
         //카드 정보 저장
+        //cardList
+
+        //정보 초기화
+        rarityList.Clear();
+        cardList.Clear();
 
         foreach (Transform child in cardSpawnContent) Destroy(child.gameObject);
         if (currentPack) Destroy(currentPack);
