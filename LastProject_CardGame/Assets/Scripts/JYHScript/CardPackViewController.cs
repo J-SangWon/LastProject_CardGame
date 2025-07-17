@@ -15,41 +15,53 @@ public class CardPackViewController : MonoBehaviour
     public float minScale = 0.7f;
 
     [Header("스냅 설정")]
-    public float snapSpeed = 20f;                // SmoothDamp 빠르기
-    public float velocityThreshold = 30f;        // 드래그 속도 감지 임계값
-    public float snapSmoothTime = 0.1f;          // Snap 부드럽게 이동할 시간
-    public Action onDragStart;
-    public Action onSnapEnd;
+    public float velocityThreshold = 30f;
+    public float snapSmoothTime = 0.1f;
 
     [Header("선택된 카드")]
     public CardPackView selectedCardPackView;
 
+    public Action onDragStart;
+    public Action onSnapEnd;
+
     private Coroutine snapCoroutine;
     private bool isDragging = false;
-    private Vector3 viewportCenterWorld;
-
-    void Start()
-    {
-        // ScrollRect 뷰포트의 중앙을 월드좌표로 계산 (변하지 않음)
-        viewportCenterWorld = scrollRect.viewport.TransformPoint(scrollRect.viewport.rect.center);
-    }
+    private bool hasSnapped = false;
 
     void Update()
+    {
+        UpdateCardScaleAndSelectClosest();
+        HandleSnapping();
+    }
+
+    /// <summary>
+    /// 카드 크기 조정 및 가장 가까운 카드 선택
+    /// </summary>
+    void UpdateCardScaleAndSelectClosest()
     {
         float closestDistance = float.MaxValue;
         CardPackView closestCard = null;
 
-        // 카드 스케일 조절 및 중심 카드 탐색
+        // Viewport 중심의 "로컬 좌표"
+        // scrollRect.viewport의 좌표계 기준에서의 중심점
+        Vector3 centerLocal = scrollRect.viewport.rect.center;
+
         for (int i = 0; i < content.childCount; i++)
         {
             RectTransform card = content.GetChild(i) as RectTransform;
-            Vector3 cardCenter = card.TransformPoint(card.rect.center);
-            float distance = Mathf.Abs(viewportCenterWorld.x - cardCenter.x);
 
+            // 카드의 "월드 좌표"를 Viewport 로컬 기준으로 변환한 값
+            // Viewport의 좌표계 안에서 카드가 얼마나 떨어져 있는지를 판단하기 위함
+            Vector3 cardLocalPos = scrollRect.viewport.InverseTransformPoint(card.position);
+
+            // 중심과의 거리 계산
+            float distance = Mathf.Abs(centerLocal.x - cardLocalPos.x);
+
+            // 거리 비례 스케일 조정 (멀수록 작아짐)
             float t = Mathf.Clamp01(distance / effectRange);
-            float scale = Mathf.Lerp(maxScale, minScale, t);
-            card.localScale = Vector3.one * scale;
+            card.localScale = Vector3.one * Mathf.Lerp(maxScale, minScale, t);
 
+            // 가장 가까운 카드 선택
             if (distance < closestDistance)
             {
                 closestDistance = distance;
@@ -59,19 +71,24 @@ public class CardPackViewController : MonoBehaviour
 
         if (closestCard != null)
             selectedCardPackView = closestCard;
+    }
 
-        // 스냅 시작 조건: 드래그 중 아님 + 속도가 느림 + 스냅 중이 아님
-        if (!isDragging && scrollRect.velocity.magnitude < velocityThreshold && snapCoroutine == null)
+    /// <summary>
+    /// 드래그 여부에 따라 스냅 작동 제어
+    /// </summary>
+    void HandleSnapping()
+    {
+        float velocity = scrollRect.velocity.magnitude;
+
+        if (velocity > velocityThreshold)
         {
-            snapCoroutine = StartCoroutine(SnapToCenter(selectedCardPackView));
-        }
-
-        // 드래그 중이면 스냅 중단
-        if (scrollRect.velocity.magnitude > velocityThreshold)
-        {
-            isDragging = true;
-
-            onDragStart?.Invoke();
+            if (!isDragging)
+            {
+                Debug.Log("드래그 시작");
+                isDragging = true;
+                hasSnapped = false; // 새 드래그 시작 시 초기화
+                onDragStart?.Invoke();
+            }
 
             if (snapCoroutine != null)
             {
@@ -79,26 +96,52 @@ public class CardPackViewController : MonoBehaviour
                 snapCoroutine = null;
             }
         }
-        else if (isDragging && scrollRect.velocity.magnitude < velocityThreshold)
+        else
         {
-            isDragging = false;
+            if (isDragging)
+            {
+                Debug.Log("드래그 종료");
+                isDragging = false;
+            }
+
+
+            if (!hasSnapped && snapCoroutine == null && selectedCardPackView != null)
+            {
+                Debug.Log("스냅 시작: " + selectedCardPackView.name);
+                snapCoroutine = StartCoroutine(SnapToCenter(selectedCardPackView));
+            }
         }
     }
 
     /// <summary>
-    /// 선택된 카드를 ScrollRect의 가운데로 스냅시킴
+    /// 선택된 카드를 ScrollRect 중심으로 스냅 이동
     /// </summary>
     IEnumerator SnapToCenter(CardPackView targetCard)
     {
-        yield return null; // 1프레임 대기 (안정성용)
+        yield return null; // 1프레임 대기
 
-        Vector3 cardWorldPos = targetCard.transform.TransformPoint(targetCard.GetComponent<RectTransform>().rect.center);
-        float diffX = cardWorldPos.x - viewportCenterWorld.x;
+        if (targetCard == null) yield break;
+
+        RectTransform rt = targetCard.GetComponent<RectTransform>();
+        if (rt == null) yield break;
+
+        // 카드의 "월드 좌표"를 Viewport의 로컬 좌표로 변환
+        // Viewport 중심과의 차이를 계산하기 위해
+        Vector3 cardLocalPos = scrollRect.viewport.InverseTransformPoint(rt.position);
+
+        // Viewport 중심의 "로컬 좌표"
+        Vector3 centerLocal = scrollRect.viewport.rect.center;
+
+        // Viewport 중심과 카드의 중심 차이 (x축)
+        float diffX = cardLocalPos.x - centerLocal.x;
+
+        // 현재 content.anchoredPosition에서 diffX만큼 보정
+        // anchoredPosition은 Content의 피벗 기준 위치 (왼쪽 상단이 (0,0)이 아님)
         float targetX = scrollRect.content.anchoredPosition.x - diffX;
 
         Vector2 velocity = Vector2.zero;
 
-        while (Mathf.Abs(scrollRect.content.anchoredPosition.x - targetX) > 0.01f)
+        while (Mathf.Abs(scrollRect.content.anchoredPosition.x - targetX) > 0.1f)
         {
             float newX = Mathf.SmoothDamp(
                 scrollRect.content.anchoredPosition.x,
@@ -108,11 +151,16 @@ public class CardPackViewController : MonoBehaviour
             );
 
             scrollRect.content.anchoredPosition = new Vector2(newX, scrollRect.content.anchoredPosition.y);
+            yield return null;
         }
 
+        // 마지막 보정
         scrollRect.content.anchoredPosition = new Vector2(targetX, scrollRect.content.anchoredPosition.y);
-        snapCoroutine = null;
 
+        Debug.Log("스냅완료");
         onSnapEnd?.Invoke();
+        snapCoroutine = null;
+        hasSnapped = true;
+
     }
 }
