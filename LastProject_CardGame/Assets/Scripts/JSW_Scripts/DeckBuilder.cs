@@ -4,6 +4,7 @@ using System;
 
 public class DeckBuilder : MonoBehaviour
 {
+    public int maxCardCount = 3;
     public DeckData currentDeck;
 
     public static DeckBuilder Instance { get; private set; }
@@ -50,11 +51,13 @@ public class DeckBuilder : MonoBehaviour
     // 카드 추가
     public bool AddCardToMain(BaseCardData card)
     {
-        int owned = CardManager.Instance.ownedCardCounts.ContainsKey(card) ? CardManager.Instance.ownedCardCounts[card] : 0;
+        int owned = CardManager.Instance.GetOwnedCardCount(card);
         var entry = currentDeck.mainDeck.Find(e => IsSameCard(e.card, card));
         int inDeck = entry != null ? entry.count : 0;
         if (inDeck + 1 > owned)
             return false; // 소유 개수 초과
+        if(inDeck >= maxCardCount)
+            return false; // 동일 카드 제한
 
         // 몬스터 카드일 때
         if (card.cardType == CardType.Monster)
@@ -82,11 +85,13 @@ public class DeckBuilder : MonoBehaviour
 
     public bool AddCardToExtra(BaseCardData card)
     {
-        int owned = CardManager.Instance.ownedCardCounts.ContainsKey(card) ? CardManager.Instance.ownedCardCounts[card] : 0;
+        int owned = CardManager.Instance.GetOwnedCardCount(card);
         var entry = currentDeck.extraDeck.Find(e => IsSameCard(e.card, card));
         int inDeck = entry != null ? entry.count : 0;
         if (inDeck + 1 > owned)
             return false; // 소유 개수 초과
+        if (inDeck >= maxCardCount)
+            return false; // 동일 카드 제한
 
         // 몬스터 카드만 엑스트라덱 가능
         if (card.cardType != CardType.Monster)
@@ -149,7 +154,7 @@ public class DeckBuilder : MonoBehaviour
 
     private bool IsSameCard(BaseCardData a, BaseCardData b)
     {
-        // cardName이 유일하다면 이렇게, 아니면 GUID 등 사용
-        return a != null && b != null && a.cardName == b.cardName;
+        // cardId로 통일하여 비교
+        return a != null && b != null && a.cardId == b.cardId;
     }
 }

@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -6,7 +6,8 @@ using UnityEngine.UI;
 public class UIManager : SingletonBehaviour<UIManager>
 {
 	[SerializeField] private GameObject LobbyUI;
-	[SerializeField] private GameObject DeckSelectUI;
+	[SerializeField] private GameObject StartUI;
+    [SerializeField] private GameObject DeckSelectUI;
 	[SerializeField] private GameObject DeckEditUI;
 	[SerializeField] private GameObject ShopUI;
 	[SerializeField] private GameObject MyPageUI;
@@ -33,6 +34,7 @@ public class UIManager : SingletonBehaviour<UIManager>
 		lobbyUIMap = new Dictionary<LobbyType, GameObject>
 		{
 			{ LobbyType.Lobby, LobbyUI },
+            { LobbyType.Start, StartUI }, 
 			{ LobbyType.DeckSelect, DeckSelectUI },
 			{ LobbyType.DeckEdit, DeckEditUI },
 			{ LobbyType.Shop, ShopUI },

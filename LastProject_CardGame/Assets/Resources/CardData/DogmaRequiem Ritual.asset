@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: DogmaRequiem Ritual
   m_EditorClassIdentifier: Assembly-CSharp::SpellCardData
-  cardName: "\uB3C4\uADF8\uB9C8\uB808\uD034\uC5E0\uC758 \uC758\uC2DD"
+  cardName: "\uB3C4\uADF8\uB9C8\uB808\uD034\uC5E0\uC758 \uBD80\uD65C\uC758 \uB9CC\uCC2C"
   description: "\uB3C4\uADF8\uB9C8\uB808\uD034\uC5E0 \uC138\uB77C\uD504\uB97C \uC18C\uD658\uD558\uAE30
     \uC704\uD574"
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: ff2ca0370a7329e4294cc4729c1d33f9, type: 3}
   cardType: 1
   rarity: 1
   cost: 1
