@@ -36,7 +36,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 650, y: -430}
+  m_AnchoredPosition: {x: 650, y: -450}
   m_SizeDelta: {x: 160, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6383606333692630453
@@ -1289,10 +1289,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scrollRect: {fileID: 2261317684787000019}
   content: {fileID: 5851541800461675989}
-  effectRange: 50
+  effectRange: 200
   maxScale: 1
   minScale: 0.5
-  snapSpeed: 20
   velocityThreshold: 30
   snapSmoothTime: 0.1
   selectedCardPackView: {fileID: 0}

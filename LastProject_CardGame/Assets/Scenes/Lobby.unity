@@ -657,7 +657,7 @@ PrefabInstance:
     - target: {fileID: 3457817937308699894, guid: 81c1df92da6640e45b24839b4321c3fa, type: 3}
       propertyPath: cardSpawnContent
       value: 
-      objectReference: {fileID: 537158767}
+      objectReference: {fileID: 1011909146}
     - target: {fileID: 3457817937308699894, guid: 81c1df92da6640e45b24839b4321c3fa, type: 3}
       propertyPath: packViewController
       value: 
@@ -985,6 +985,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1288696934}
     m_Modifications:
+    - target: {fileID: 2153451788926737060, guid: d1bf92950af282242a33d643000aab89, type: 3}
+      propertyPath: effectRange
+      value: 500
+      objectReference: {fileID: 0}
+    - target: {fileID: 2153451788926737060, guid: d1bf92950af282242a33d643000aab89, type: 3}
+      propertyPath: velocityThreshold
+      value: 50
+      objectReference: {fileID: 0}
     - target: {fileID: 4367700129948171589, guid: d1bf92950af282242a33d643000aab89, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -1012,6 +1020,10 @@ PrefabInstance:
     - target: {fileID: 5851541800461675989, guid: d1bf92950af282242a33d643000aab89, type: 3}
       propertyPath: m_SizeDelta.x
       value: 1730
+      objectReference: {fileID: 0}
+    - target: {fileID: 6115354410763597628, guid: d1bf92950af282242a33d643000aab89, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -450
       objectReference: {fileID: 0}
     - target: {fileID: 6512561721610829204, guid: d1bf92950af282242a33d643000aab89, type: 3}
       propertyPath: m_Name
@@ -1047,11 +1059,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7145677437977259302, guid: d1bf92950af282242a33d643000aab89, type: 3}
       propertyPath: m_SizeDelta.x
-      value: -1820
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7145677437977259302, guid: d1bf92950af282242a33d643000aab89, type: 3}
       propertyPath: m_SizeDelta.y
-      value: -980
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7145677437977259302, guid: d1bf92950af282242a33d643000aab89, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1211,11 +1223,6 @@ MonoBehaviour:
 --- !u!1 &537158766 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 9081631960369188208, guid: d1bf92950af282242a33d643000aab89, type: 3}
-  m_PrefabInstance: {fileID: 537158759}
-  m_PrefabAsset: {fileID: 0}
---- !u!224 &537158767 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 5851541800461675989, guid: d1bf92950af282242a33d643000aab89, type: 3}
   m_PrefabInstance: {fileID: 537158759}
   m_PrefabAsset: {fileID: 0}
 --- !u!114 &537158768 stripped
@@ -2179,6 +2186,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!224 &1011909146 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 2412613841194151048, guid: d1bf92950af282242a33d643000aab89, type: 3}
+  m_PrefabInstance: {fileID: 537158759}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1029480168
 GameObject:
   m_ObjectHideFlags: 0
@@ -2684,7 +2696,7 @@ Canvas:
   m_Enabled: 1
   serializedVersion: 3
   m_RenderMode: 0
-  m_Camera: {fileID: 0}
+  m_Camera: {fileID: 549823480}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
