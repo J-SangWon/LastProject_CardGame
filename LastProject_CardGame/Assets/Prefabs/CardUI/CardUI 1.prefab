@@ -918,7 +918,7 @@ GameObject:
   - component: {fileID: 8906740630591169565}
   - component: {fileID: 6632694000808256612}
   m_Layer: 5
-  m_Name: CardUI
+  m_Name: CardUI 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -949,7 +949,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 39.6, y: 0}
-  m_SizeDelta: {x: 4, y: 590}
+  m_SizeDelta: {x: 200, y: 300}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6451283996007634016
 CanvasRenderer:
