@@ -1,3 +1,4 @@
+using Coffee.UIExtensions;
 using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
@@ -22,7 +23,7 @@ public class StoreManager : MonoBehaviour
 
     // ────────────────── 연출용 오브젝트 ──────────────────
     [Header("연출 오브젝트")]
-    public Transform cardPackDisplayPoint;        // 카드팩 중앙 표시 위치
+    public Transform cardPackContainer;        // 카드팩 중앙 표시 위치
     public GameObject[] rarityEffects;            // 0~3 : Normal/Rare/SR/UR 파티클 등
 
     // ────────────────── 카드 소환용 ──────────────────
@@ -130,7 +131,7 @@ public class StoreManager : MonoBehaviour
     IEnumerator CardPackAppear()
     {
         GameObject packPrefab = packViewController.selectedCardPackView.gameObject;
-        currentPack = Instantiate(packPrefab, cardPackDisplayPoint);
+        currentPack = Instantiate(packPrefab, cardPackContainer);
         RectTransform rect = currentPack.GetComponent<RectTransform>();
         rect.sizeDelta = new Vector2(400, 540);
         rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 0.5f);
@@ -152,7 +153,7 @@ public class StoreManager : MonoBehaviour
         int idx = (int)rarity;
         if (idx < rarityEffects.Length && rarityEffects[idx])
         {
-            particle = Instantiate(rarityEffects[idx], cardPackDisplayPoint);
+            particle = Instantiate(rarityEffects[idx], cardPackContainer);
             particle.transform.localPosition = Vector3.zero;
         }
     }
