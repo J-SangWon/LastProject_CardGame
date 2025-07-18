@@ -985,6 +985,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1288696934}
     m_Modifications:
+    - target: {fileID: 2153451788926737060, guid: d1bf92950af282242a33d643000aab89, type: 3}
+      propertyPath: effectRange
+      value: 500
+      objectReference: {fileID: 0}
+    - target: {fileID: 2153451788926737060, guid: d1bf92950af282242a33d643000aab89, type: 3}
+      propertyPath: velocityThreshold
+      value: 50
+      objectReference: {fileID: 0}
     - target: {fileID: 4367700129948171589, guid: d1bf92950af282242a33d643000aab89, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -2687,7 +2695,7 @@ Canvas:
   m_GameObject: {fileID: 1288696930}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 1
+  m_RenderMode: 0
   m_Camera: {fileID: 549823480}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
