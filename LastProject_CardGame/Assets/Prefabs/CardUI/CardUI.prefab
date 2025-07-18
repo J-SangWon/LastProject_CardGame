@@ -917,7 +917,6 @@ GameObject:
   - component: {fileID: 6451283996007634016}
   - component: {fileID: 8906740630591169565}
   - component: {fileID: 6632694000808256612}
-  - component: {fileID: 2348234149119733982}
   m_Layer: 5
   m_Name: CardUI
   m_TagString: Untagged
@@ -1010,16 +1009,3 @@ MonoBehaviour:
   textDescription: {fileID: 8264403692094341750}
   textAttack: {fileID: 7856635177166420679}
   textHealth: {fileID: 8937133983498504324}
---- !u!114 &2348234149119733982
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9154549864915518465}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b56ae21601194d6469d2f6c516ad86eb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  player: {fileID: 0}
