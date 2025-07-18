@@ -251,7 +251,7 @@ public class StoreManager : MonoBehaviour
             rt.localScale = Vector3.one * 0.8f;
 
             CardPrefab cp = obj.GetComponent<CardPrefab>();
-            cp.Initialize(info.rarity, info.race, info.type);
+            //cp.Initialize(info.rarity, info.race, info.type);
 
             if (skipRemaining)
             {
@@ -306,7 +306,7 @@ public class StoreManager : MonoBehaviour
         {
             var card = child.GetComponent<CardPrefab>();
             if (card != null && !card.isFlipped)
-                StartCoroutine(card.Flip());
+                card.Flip(true);
         }
     }
 
