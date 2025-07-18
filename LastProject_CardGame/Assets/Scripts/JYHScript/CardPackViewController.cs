@@ -87,6 +87,7 @@ public class CardPackViewController : MonoBehaviour
                 Debug.Log("드래그 시작");
                 isDragging = true;
                 hasSnapped = false; // 새 드래그 시작 시 초기화
+                Debug.Log(velocity + " 속도로 드래그 중");
                 onDragStart?.Invoke();
             }
 
@@ -137,25 +138,26 @@ public class CardPackViewController : MonoBehaviour
 
         // 현재 content.anchoredPosition에서 diffX만큼 보정
         // anchoredPosition은 Content의 피벗 기준 위치 (왼쪽 상단이 (0,0)이 아님)
-        float targetX = scrollRect.content.anchoredPosition.x - diffX;
+        float targetX = content.anchoredPosition.x - diffX;
 
         Vector2 velocity = Vector2.zero;
 
-        while (Mathf.Abs(scrollRect.content.anchoredPosition.x - targetX) > 0.1f)
+        while (Mathf.Abs(content.anchoredPosition.x - targetX) > 5f)
         {
             float newX = Mathf.SmoothDamp(
-                scrollRect.content.anchoredPosition.x,
+                content.anchoredPosition.x,
                 targetX,
                 ref velocity.x,
                 snapSmoothTime
             );
 
-            scrollRect.content.anchoredPosition = new Vector2(newX, scrollRect.content.anchoredPosition.y);
+            content.anchoredPosition = new Vector2(newX, content.anchoredPosition.y);
+
             yield return null;
         }
 
         // 마지막 보정
-        scrollRect.content.anchoredPosition = new Vector2(targetX, scrollRect.content.anchoredPosition.y);
+        content.anchoredPosition = new Vector2(targetX, content.anchoredPosition.y);
 
         Debug.Log("스냅완료");
         onSnapEnd?.Invoke();
