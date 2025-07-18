@@ -23,6 +23,10 @@ MonoBehaviour:
   live2DPath: 
   cardEffects: []
   tags: []
+  craftCost: 10
+  disenchantReward: 2
+  canCraft: 1
+  canDisenchant: 1
   monsterType: 0
   attack: 2
   health: 2
