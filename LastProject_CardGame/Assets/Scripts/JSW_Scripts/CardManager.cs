@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using System;
 
 public class CardManager : MonoBehaviour
 {
@@ -290,6 +291,50 @@ public class CardManager : MonoBehaviour
         // 0장 이하가 되면 리스트에서 제거
         if (entry.count <= 0)
             pcm.collection.ownedCards.Remove(entry);
+
+        // --- 덱에서 초과분 자동 제거 ---
+        int totalInDecks = 0;
+        foreach (var deck in allDecks)
+        {
+            int inMain = deck.mainDeck.FindAll(e => e.card != null && e.card.cardId == cardId).Sum(e => e.count);
+            int inExtra = deck.extraDeck.FindAll(e => e.card != null && e.card.cardId == cardId).Sum(e => e.count);
+            totalInDecks += inMain + inExtra;
+        }
+        int ownedNow = pcm.GetCardCount(cardId); // 분해 후 소유 수
+        if (totalInDecks > ownedNow)
+        {
+            int toRemove = totalInDecks - ownedNow;
+            foreach (var deck in allDecks)
+            {
+                // 메인 덱에서 제거
+                foreach (var entryDeck in deck.mainDeck.ToList())
+                {
+                    if (entryDeck.card != null && entryDeck.card.cardId == cardId && toRemove > 0)
+                    {
+                        int removeCount = Math.Min(entryDeck.count, toRemove);
+                        entryDeck.count -= removeCount;
+                        toRemove -= removeCount;
+                        if (entryDeck.count <= 0)
+                            deck.mainDeck.Remove(entryDeck);
+                    }
+                }
+                // 엑스트라 덱에서 제거
+                foreach (var entryDeck in deck.extraDeck.ToList())
+                {
+                    if (entryDeck.card != null && entryDeck.card.cardId == cardId && toRemove > 0)
+                    {
+                        int removeCount = Math.Min(entryDeck.count, toRemove);
+                        entryDeck.count -= removeCount;
+                        toRemove -= removeCount;
+                        if (entryDeck.count <= 0)
+                            deck.extraDeck.Remove(entryDeck);
+                    }
+                }
+                DeckBuilder.Instance?.OnDeckChanged?.Invoke();
+                if (toRemove <= 0) break;
+            }
+        }
+        // --- 덱에서 초과분 자동 제거 끝 ---
 
         pcm.SaveCollection();
         return true;
