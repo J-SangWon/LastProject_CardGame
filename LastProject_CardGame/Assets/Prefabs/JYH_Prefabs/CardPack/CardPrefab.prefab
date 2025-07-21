@@ -240,7 +240,9 @@ MonoBehaviour:
   textDescription: {fileID: 205735282706749928}
   textAttack: {fileID: 6320395151038936313}
   textHealth: {fileID: 5147339157010032666}
-  ParticlePrefab: []
+  ParticlePrefab:
+  - {fileID: 8123917504731673251, guid: 6bcd68abfe2b28a4ca2a7889515ce8a2, type: 3}
+  - {fileID: 8123917504731673251, guid: 43753860b4d5e6b43978040c3ff6b032, type: 3}
 --- !u!1 &1721312108165602896
 GameObject:
   m_ObjectHideFlags: 0

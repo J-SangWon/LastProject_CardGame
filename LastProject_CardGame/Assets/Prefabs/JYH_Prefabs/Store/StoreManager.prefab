@@ -49,14 +49,14 @@ MonoBehaviour:
   rareRate: 30
   superRareRate: 9
   ultraRareRate: 1
-  cardPackDisplayPoint: {fileID: 0}
+  cardPackContainer: {fileID: 0}
   rarityEffects:
-  - {fileID: 7281590315073793291, guid: 46001a7c28fb7a94194fa13640fbfb20, type: 3}
-  - {fileID: 7281590315073793291, guid: 116e205246e8c544ab280639e0034b2f, type: 3}
-  - {fileID: 7281590315073793291, guid: 5279ea13c1463e247bce52989a4aab37, type: 3}
-  - {fileID: 7281590315073793291, guid: 2542b752b8872de4b8e5e8fc43eebdbd, type: 3}
+  - {fileID: 8123917504731673251, guid: ad617db0d006d0c408b7274fed1eef7a, type: 3}
+  - {fileID: 1735147079509607124, guid: 7d3630dc8e4c2734387c8c4b0a93af27, type: 3}
+  - {fileID: 1026704767439348748, guid: 08b7bb9cfa8b5ea48b4c78fac8a68cec, type: 3}
+  - {fileID: 6607868229346757992, guid: fcb830545a84d1c43afdc1542e9713ec, type: 3}
   packViewController: {fileID: 0}
-  cardPrefab: {fileID: 1011176014795811374, guid: 1a23d217784d48e43a8356c0c3406962, type: 3}
+  cardPrefab: {fileID: 698617964354570257, guid: ff023ea072bedc341aec6034cee88b66, type: 3}
   cardSpawnContent: {fileID: 0}
   cardSpawnPanel: {fileID: 0}
   cardOpenBtn: {fileID: 0}

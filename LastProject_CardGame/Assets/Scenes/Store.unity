@@ -678,9 +678,9 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 7775730771812103705}
     - target: {fileID: 3457817937308699894, guid: 81c1df92da6640e45b24839b4321c3fa, type: 3}
-      propertyPath: UIParticle
+      propertyPath: cardPrefab
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 698617964354570257, guid: ff023ea072bedc341aec6034cee88b66, type: 3}
     - target: {fileID: 3457817937308699894, guid: 81c1df92da6640e45b24839b4321c3fa, type: 3}
       propertyPath: cardOpenBtn
       value: 
@@ -705,10 +705,6 @@ PrefabInstance:
       propertyPath: packViewController
       value: 
       objectReference: {fileID: 753035462792069891}
-    - target: {fileID: 3457817937308699894, guid: 81c1df92da6640e45b24839b4321c3fa, type: 3}
-      propertyPath: cardPackDisplayPoint
-      value: 
-      objectReference: {fileID: 4242702013114415965}
     - target: {fileID: 3457817937308699894, guid: 81c1df92da6640e45b24839b4321c3fa, type: 3}
       propertyPath: 'rarityEffects.Array.data[0]'
       value: 
@@ -789,10 +785,6 @@ PrefabInstance:
     - target: {fileID: 5851541800461675989, guid: d1bf92950af282242a33d643000aab89, type: 3}
       propertyPath: m_SizeDelta.x
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6115354410763597628, guid: d1bf92950af282242a33d643000aab89, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -450
       objectReference: {fileID: 0}
     - target: {fileID: 6512561721610829204, guid: d1bf92950af282242a33d643000aab89, type: 3}
       propertyPath: m_Name

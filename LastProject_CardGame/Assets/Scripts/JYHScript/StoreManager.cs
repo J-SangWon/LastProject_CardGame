@@ -46,7 +46,7 @@ public class StoreManager : MonoBehaviour
     private GameObject currentPack;
     private GameObject particle;
     private readonly List<CardRarity> rarityList = new();   // 희귀도만 저장
-    private readonly List<CardInfo> cardList = new();   // 클릭 후 실제 카드 정보 저장
+    private readonly List<BaseCardData> cardList = new();   // 클릭 후 실제 카드 정보 저장
     private bool skipRemaining = false; // 클릭 시 이후 카드 즉시 배치 여부  
 
     // ────────────────── 초기화 ──────────────────
@@ -199,12 +199,23 @@ public class StoreManager : MonoBehaviour
     // ────────────────── 3) 희귀도 → 실제 카드 변환 ──────────────────
     void GenerateCardsFromRarities()
     {
-        CardPackType type = packViewController.selectedCardPackView.cardPackData.packType;
+        var packData = packViewController.selectedCardPackView.cardPackData;
 
         foreach (CardRarity r in rarityList)
         {
-            Race race = (Race)Random.Range(0, System.Enum.GetValues(typeof(Race)).Length);
-            cardList.Add(new CardInfo(r, race, type));
+            BaseCardData[] carddatas = packData.cards.FindAll(BaseCardData => BaseCardData.rarity == r).ToArray();
+
+            if(carddatas.Length > 0)
+            {
+                // 랜덤으로 카드 선택
+                BaseCardData selectedCard = carddatas[Random.Range(0, carddatas.Length)];
+                cardList.Add(selectedCard);
+            }
+            else
+            {
+                Debug.LogWarning($"No cards found for rarity: {r}");
+            }
+
         }
     }
 
@@ -236,7 +247,6 @@ public class StoreManager : MonoBehaviour
 
         for (int i = 0; i < cardList.Count; i++)
         {
-            CardInfo info = cardList[i];
             int row = i / cols;
             int col = i % cols;
 
@@ -245,19 +255,20 @@ public class StoreManager : MonoBehaviour
                -row * (cellH + spacingY)
             );
 
+            BaseCardData data = cardList[i];
             GameObject obj = Instantiate(cardPrefab, cardSpawnContent);
             RectTransform rt = obj.GetComponent<RectTransform>();
             rt.anchoredPosition = new Vector2(0f, -900f);
-            rt.localScale = Vector3.one * 0.8f;
+            rt.localScale = Vector3.one * 0.5f;
 
             CardPrefab cp = obj.GetComponent<CardPrefab>();
-            //cp.Initialize(info.rarity, info.race, info.type);
+            cp.Init(data);
 
             if (skipRemaining)
             {
                 // DOTween 없이 즉시 이동
                 rt.anchoredPosition = target;
-                rt.localScale = Vector3.one;
+                rt.localScale = Vector3.one * 1.3f;
                 continue;
             }
 
@@ -280,7 +291,7 @@ public class StoreManager : MonoBehaviour
         float moveTime = 0.25f;
 
         Tween move = rt.DOAnchorPos(target, moveTime).SetEase(Ease.OutQuad);
-        Tween scale = rt.DOScale(1f, moveTime).SetEase(Ease.OutBack);
+        Tween scale = rt.DOScale(1.3f, moveTime).SetEase(Ease.OutBack);
 
         yield return move.WaitForCompletion();
     }
@@ -326,6 +337,10 @@ public class StoreManager : MonoBehaviour
     void ClosePanel()
     {
         //카드 정보 저장
+        foreach(BaseCardData card in cardList)
+        {
+            PlayerCardCollectionManager.Instance.AddCard(card.cardId);
+        }
         //cardList
 
         //정보 초기화
@@ -340,13 +355,4 @@ public class StoreManager : MonoBehaviour
         isOpening = false;
     }
 
-    // ────────────────── 내부 카드 구조체 ──────────────────
-    struct CardInfo
-    {
-        public CardRarity rarity;
-        public Race race;
-        public CardPackType type;
-        public CardInfo(CardRarity r, Race ra, CardPackType t)
-        { rarity = r; race = ra; type = t; }
-    }
 }

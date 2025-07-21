@@ -24,21 +24,17 @@ public class CardPrefab : MonoBehaviour, IPointerClickHandler
     private BaseCardData cardData;
     public bool isFlipped { get; private set; } = false;
 
-    void Awake()
-    {
-        GetRarityColor(cardData.rarity); // 초기화 시 색상 설정
-    }
-
-
     public void Init(BaseCardData data)
     {
-        textCardName.text = data.cardName;
-        imageArtwork.sprite = data.artwork;
-        textCost.text = data.cost.ToString();
-        textDescription.text = data.description;
+        cardData = data;
+
+        textCardName.text = cardData.cardName;
+        imageArtwork.sprite = cardData.artwork;
+        textCost.text = cardData.cost.ToString();
+        textDescription.text = cardData.description;
 
         // 몬스터 카드일 때만 공격력/체력 표시
-        if (data is MonsterCardData monsterData)
+        if (cardData is MonsterCardData monsterData)
         {
             textAttack.text = monsterData.attack.ToString();
             textHealth.text = monsterData.health.ToString();
@@ -52,9 +48,13 @@ public class CardPrefab : MonoBehaviour, IPointerClickHandler
             textAttack.gameObject.SetActive(false); // UI에서 숨김
             textHealth.gameObject.SetActive(false);
         }
+
+        SetFace(isFlipped); // 초기에는 뒷면만 보이도록 설정
+
+        GetRarityEffect(cardData.rarity); // 초기화 시 이펙트
     }
 
-    void GetRarityColor(CardRarity rarity)
+    void GetRarityEffect(CardRarity rarity)
     {
         if(rarity == CardRarity.SuperRare)
             particleprefab = Instantiate(ParticlePrefab[0], transform);
@@ -65,6 +65,10 @@ public class CardPrefab : MonoBehaviour, IPointerClickHandler
     // ────────────────── Flip 애니메이션 ──────────────────
     public void Flip(bool showFront)
     {
+        isFlipped = showFront;
+
+        Destroy(particleprefab);
+
         // 0.15초 동안 Y축 90도 회전 → 앞/뒷면 교체 → 다시 0도로 회전
         transform.DORotate(new Vector3(0, 90, 0), 0.15f)
             .OnComplete(() => {
@@ -75,11 +79,12 @@ public class CardPrefab : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
+        if (isFlipped)
+            return;
+
         if (!isFlipped)
-        {
-            Destroy(particleprefab);
-            Flip(false);
-        }
+            Flip(true);
+        
     }
 
     public void SetFace(bool showFront)
