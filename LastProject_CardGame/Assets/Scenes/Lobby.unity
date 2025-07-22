@@ -659,6 +659,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1011909146}
     - target: {fileID: 3457817937308699894, guid: 81c1df92da6640e45b24839b4321c3fa, type: 3}
+      propertyPath: cardPackContainer
+      value: 
+      objectReference: {fileID: 1876462188}
+    - target: {fileID: 3457817937308699894, guid: 81c1df92da6640e45b24839b4321c3fa, type: 3}
       propertyPath: packViewController
       value: 
       objectReference: {fileID: 537158768}
