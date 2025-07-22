@@ -15,6 +15,7 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
     public TMP_Text textDescription;
     public TMP_Text textAttack;
     public TMP_Text textHealth;
+    public TMP_Text textRace;
 
     private bool isFront = true;
 
@@ -37,12 +38,61 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
         imageArtwork.sprite = data.artwork;
         textCost.text = data.cost.ToString();
         textDescription.text = data.description;
+        
+        if(data is MonsterCardData m)
+        {
+            switch (m.race)
+            {
+                case Race.wizard:
+                    textRace.text = "마법사";
+                    break;
+                case Race.Warrior:
+                    textRace.text = "전사";
+                    break;
+                case Race.Undead:
+                    textRace.text = "언데드";
+                    break;
+                case Race.Dragon:
+                    textRace.text = "드래곤";
+                    break;
+                case Race.Fiend:
+                    textRace.text = "악마";
+                    break;
+                case Race.Fairy:
+                    textRace.text = "정령";
+                    break;
+                case Race.Fish:
+                    textRace.text = "어류";
+                    break;
+                case Race.Insect:
+                    textRace.text = "곤충";
+                    break;
+                case Race.Beast:
+                    textRace.text = "야수";
+                    break;
+                case Race.Plant:
+                    textRace.text = "식물";
+                    break;
+                case Race.Machine:
+                    textRace.text = "기계";
+                    break;
+                case Race.Angel:
+                    textRace.text = "천사";
+                    break;
+                default:
+                    textRace.text = "";
+                    break;
+
+            }
+
+        }
 
         // 몬스터 카드일 때만 공격력/체력 표시
         if (data is MonsterCardData monsterData)
         {
             textAttack.text = monsterData.attack.ToString();
             textHealth.text = monsterData.health.ToString();
+            textRace.gameObject.SetActive(true);
             textAttack.gameObject.SetActive(true);
             textHealth.gameObject.SetActive(true);
         }
@@ -50,7 +100,8 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
         {
             textAttack.text = "";
             textHealth.text = "";
-            textAttack.gameObject.SetActive(false); // UI에서 숨김
+            textRace.gameObject.SetActive(false);
+            textAttack.gameObject.SetActive(false);
             textHealth.gameObject.SetActive(false);
         }
     }
