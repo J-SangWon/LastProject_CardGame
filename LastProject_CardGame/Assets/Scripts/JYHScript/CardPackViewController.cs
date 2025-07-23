@@ -84,10 +84,8 @@ public class CardPackViewController : MonoBehaviour
         {
             if (!isDragging)
             {
-                Debug.Log("드래그 시작");
                 isDragging = true;
                 hasSnapped = false; // 새 드래그 시작 시 초기화
-                Debug.Log(velocity + " 속도로 드래그 중");
                 onDragStart?.Invoke();
             }
 
@@ -101,14 +99,12 @@ public class CardPackViewController : MonoBehaviour
         {
             if (isDragging)
             {
-                Debug.Log("드래그 종료");
                 isDragging = false;
             }
 
 
             if (!hasSnapped && snapCoroutine == null && selectedCardPackView != null)
             {
-                Debug.Log("스냅 시작: " + selectedCardPackView.name);
                 snapCoroutine = StartCoroutine(SnapToCenter(selectedCardPackView));
             }
         }
@@ -158,8 +154,6 @@ public class CardPackViewController : MonoBehaviour
 
         // 마지막 보정
         content.anchoredPosition = new Vector2(targetX, content.anchoredPosition.y);
-
-        Debug.Log("스냅완료");
         onSnapEnd?.Invoke();
         snapCoroutine = null;
         hasSnapped = true;
