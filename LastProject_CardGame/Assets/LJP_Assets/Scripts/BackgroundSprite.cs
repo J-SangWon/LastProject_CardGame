@@ -3,20 +3,27 @@ using UnityEngine.UIElements;
 
 public class BackgroundSprite : MonoBehaviour
 {
-    [SerializeField] private Image SelectImage;
+    private BackgroundEditController backgroundController;
+
+    public GameObject SelectImage;
     public Sprite bgSpirte { get; private set; }
-    public bool isSelect { get; private set; }
-    [HideInInspector] public bool isOwned;
+
+    [HideInInspector] public bool isSelect;
+    public bool isOwned;
 
     void Start()
     {
+        backgroundController = GetComponentInParent<BackgroundEditController>();
         bgSpirte = GetComponent<Image>()?.sprite;
         isSelect = false;
     }
 
-    public void SetIsSelect(bool _isSelect)
+    public void SetIsSelect()
     {
-        isSelect = _isSelect;
-        SelectImage.SetEnabled(isSelect);
+        if (!isOwned) return;
+
+        backgroundController.BackgroundSpriteAllUnSelect();
+        isSelect = !isSelect;
+        SelectImage.SetActive(isSelect);
     }
 }
