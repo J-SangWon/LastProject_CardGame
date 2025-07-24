@@ -134,11 +134,17 @@ public class CardManager : MonoBehaviour
             cardIdDict[card.cardId] = card;
         }
     }
-
+    
     // 카드 이름으로 카드 데이터 가져오기
     public BaseCardData GetCardByName(string name)
     {
         cardDict.TryGetValue(name, out var card);
+        return card;
+    }
+    // 카드 ID로 카드 데이터 가져오기
+    public BaseCardData GetCardById(string cardId)
+    {
+        cardIdDict.TryGetValue(cardId, out var card);
         return card;
     }
 
