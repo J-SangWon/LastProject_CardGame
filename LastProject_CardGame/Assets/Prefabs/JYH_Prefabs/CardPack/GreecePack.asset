@@ -17,12 +17,7 @@ MonoBehaviour:
   packArtwork: {fileID: 0}
   packCost: 0
   cards:
-  - {fileID: 11400000, guid: 33591029e61a2fb44a81192a7162d7fc, type: 2}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 11400000, guid: 40d9f5494c2feb44083e511994cba11b, type: 2}
+  - {fileID: 11400000, guid: bb18ce48b1eade54f8abf19180d80042, type: 2}
+  - {fileID: 11400000, guid: cb070d16ccda3f942b846597157a0bb8, type: 2}
+  - {fileID: 11400000, guid: 38861599d775e504ea06c9551f2cd990, type: 2}
