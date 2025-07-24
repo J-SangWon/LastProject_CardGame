@@ -55,7 +55,6 @@ public abstract class BaseCardData : ScriptableObject
     public List<string> effectIds => new List<string>();
     public List<string> effectTimings => new List<string>();
 
-    // ↓↓↓ 아래 필드 추가
     public int craftCost = 0;
     public int disenchantReward = 0;
     public bool canCraft = true;
@@ -126,6 +125,10 @@ public abstract class BaseCardData : ScriptableObject
         }
     }
 
+    protected virtual void OnEnable()
+    {
+        hideFlags = HideFlags.DontUnloadUnusedAsset;
+    }
 #if UNITY_EDITOR
     private void OnValidate()
     {
@@ -141,41 +144,6 @@ public abstract class BaseCardData : ScriptableObject
 #endif
 
 
-}
-[CreateAssetMenu(menuName = "Card/MonsterCard")]
-public class MonsterCardData : BaseCardData
-{
-    public MonsterType monsterType;
-    public int attack;
-    public int health;
-    public Race race;
-
-    private void OnEnable()
-    {
-        cardType = CardType.Monster;
-    }
-}
-
-[CreateAssetMenu(menuName = "Card/SpellCard")]
-public class SpellCardData : BaseCardData
-{
-    public SpellType spellType;
-
-    private void OnEnable()
-    {
-        cardType = CardType.Spell;
-    }
-}
-
-[CreateAssetMenu(menuName = "Card/TrapCard")]
-public class TrapCardData : BaseCardData
-{
-    public TrapType trapType;
-
-    private void OnEnable()
-    {
-        cardType = CardType.Trap;
-    }
 }
 
 [CreateAssetMenu(menuName = "CardGame/CardEffectData")]
