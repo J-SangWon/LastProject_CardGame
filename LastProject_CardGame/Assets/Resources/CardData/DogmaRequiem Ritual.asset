@@ -2,16 +2,16 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 32
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: d6e3b89d52292a546aa24ae61a66b65b, type: 3}
   m_Name: DogmaRequiem Ritual
-  m_EditorClassIdentifier: Assembly-CSharp::SpellCardData
+  m_EditorClassIdentifier: 
   cardName: "\uB3C4\uADF8\uB9C8\uB808\uD034\uC5E0\uC758 \uBD80\uD65C\uC758 \uB9CC\uCC2C"
   description: "\uB3C4\uADF8\uB9C8\uB808\uD034\uC5E0 \uC138\uB77C\uD504\uB97C \uC18C\uD658\uD558\uAE30
     \uC704\uD574"
@@ -19,9 +19,13 @@ MonoBehaviour:
   cardType: 1
   rarity: 1
   cost: 1
-  cardId: 8f44f80e-da7a-4b61-be3e-3745a5f5e7c6
+  cardId: 6488b3e0-bd53-45d3-9158-3ad9210781aa
   haveLive2D: 0
   live2DPath: 
   cardEffects: []
   tags: []
-  spellType: 3
+  craftCost: 30
+  disenchantReward: 8
+  canCraft: 1
+  canDisenchant: 1
+  spellType: 0

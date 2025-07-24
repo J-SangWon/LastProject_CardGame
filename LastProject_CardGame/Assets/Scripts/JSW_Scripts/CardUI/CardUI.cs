@@ -10,26 +10,46 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
     public Image imageBack;
     public Image imageFront;
     public Image imageArtwork;
+    public GameObject cardName;
     public TMP_Text textCardName;
+    public GameObject Cost;
     public TMP_Text textCost;
+    public GameObject description;
     public TMP_Text textDescription;
+    public GameObject Attack;
     public TMP_Text textAttack;
+    public GameObject Health;
     public TMP_Text textHealth;
+    public GameObject race;
     public TMP_Text textRace;
+    public GameObject Rarity;
+    public Sprite[] rarityImages;
 
     private bool isFront = true;
 
     // 카드 앞/뒷면 전환
     public void SetFace(bool showFront)
     {
-        imageBack.gameObject.SetActive(!showFront);
-        imageFront.gameObject.SetActive(showFront);
-        imageArtwork.gameObject.SetActive(showFront);
-        textCardName.gameObject.SetActive(showFront);
-        textCost.gameObject.SetActive(showFront);
-        textDescription.gameObject.SetActive(showFront);
-        textAttack.gameObject.SetActive(showFront);
-        textHealth.gameObject.SetActive(showFront);
+        if(imageBack)
+            imageBack.gameObject.SetActive(!showFront);
+        if (imageFront)
+            imageFront.gameObject.SetActive(showFront);
+        if (imageArtwork)
+            imageArtwork.gameObject.SetActive(showFront);
+        if (textCardName)
+            cardName.SetActive(showFront);
+        if (textCost)
+            Cost.SetActive(showFront);
+        if(description)
+            description.SetActive(showFront);
+        if(Attack)
+            Attack.SetActive(showFront);
+        if(Health)
+            Health.SetActive(showFront);
+        if(race)
+            race.SetActive(showFront);
+        if(Rarity)
+            Rarity.SetActive(showFront);
     }
 
     public void SetCard(BaseCardData data)
@@ -38,8 +58,9 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
         imageArtwork.sprite = data.artwork;
         textCost.text = data.cost.ToString();
         textDescription.text = data.description;
-        
-        if(data is MonsterCardData m)
+        SetRarity(data.rarity);
+
+        if (data is MonsterCardData m)
         {
             switch (m.race)
             {
@@ -104,6 +125,21 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
             textAttack.gameObject.SetActive(false);
             textHealth.gameObject.SetActive(false);
         }
+
+    }
+    public void SetRarity(CardRarity rarity)
+    {
+        // Rarity 이미지 설정
+        var RImage = Rarity.GetComponentInChildren<Image>();
+        if (RImage != null && rarityImages.Length > (int)rarity)
+        {
+            RImage.sprite = rarityImages[(int)rarity];
+        }
+        else
+        {
+            Debug.LogWarning("Rarity image not found or index out of range.");
+        }
+
     }
 
     public void FlipCard(bool showFront)

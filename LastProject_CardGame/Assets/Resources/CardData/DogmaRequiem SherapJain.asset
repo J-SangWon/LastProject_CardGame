@@ -2,16 +2,16 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 32
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 5e8e2555d73122b43b44cc301395f4ad, type: 3}
   m_Name: DogmaRequiem SherapJain
-  m_EditorClassIdentifier: Assembly-CSharp::MonsterCardData
+  m_EditorClassIdentifier: 
   cardName: "\uB3C4\uADF8\uB9C8\uB808\uD034\uC5E0 \uC138\uB77C\uD504\uC81C\uC778"
   description: "\uC18C\uD658 : \uC790\uC2E0 \uD544\uB4DC\uC758 \uB3C4\uADF8\uB9C8\uB808\uD034\uC5E0
     \uBAAC\uC2A4\uD130\uB4E4\uC758 "
@@ -19,11 +19,15 @@ MonoBehaviour:
   cardType: 0
   rarity: 3
   cost: 5
-  cardId: acb2d30a-cebf-4a4c-a847-a2fb1468abda
+  cardId: a90e6a60-2eb1-4d57-b98a-6094920878f0
   haveLive2D: 0
   live2DPath: 
   cardEffects: []
   tags: []
+  craftCost: 400
+  disenchantReward: 100
+  canCraft: 1
+  canDisenchant: 1
   monsterType: 2
   attack: 5
   health: 20
