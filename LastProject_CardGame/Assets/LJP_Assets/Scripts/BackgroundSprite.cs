@@ -6,6 +6,8 @@ public class BackgroundSprite : MonoBehaviour
     private BackgroundEditController backgroundController;
 
     public GameObject SelectImage;
+    public GameObject nonOwneImage;
+
     public Sprite bgSpirte { get; private set; }
 
     [HideInInspector] public bool isSelect;
@@ -16,6 +18,8 @@ public class BackgroundSprite : MonoBehaviour
         backgroundController = GetComponentInParent<BackgroundEditController>();
         bgSpirte = GetComponent<Image>()?.sprite;
         isSelect = false;
+
+        if (!isOwned) nonOwneImage.SetActive(true);
     }
 
     public void SetIsSelect()
@@ -25,5 +29,6 @@ public class BackgroundSprite : MonoBehaviour
         backgroundController.BackgroundSpriteAllUnSelect();
         isSelect = !isSelect;
         SelectImage.SetActive(isSelect);
+        backgroundController.backgroundSprite = bgSpirte;
     }
 }

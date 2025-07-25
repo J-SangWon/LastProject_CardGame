@@ -1,11 +1,11 @@
 fileFormatVersion: 2
-guid: ec785febb56d8bb469dd6cb6235ebcd2
+guid: 8714e2d47c8e4ca48adda165fee501f1
 AssetOrigin:
   serializedVersion: 1
   productId: 53276
   packageName: Simple UI Elements
   packageVersion: 1.0
-  assetPath: Assets/LJP_Assets/Resources/Image/settings.png
+  assetPath: Assets/Assets/UI Elements/White/1x/lock.png
   uploadId: 96991
 TextureImporter:
   internalIDToNameTable: []

@@ -12,7 +12,8 @@ public class UIManager : SingletonBehaviour<UIManager>
 	[SerializeField] private GameObject ShopUI;
 	[SerializeField] private GameObject MyPageUI;
 	[SerializeField] private GameObject BackgroundUI;
-	[SerializeField] private Image Background;
+
+	public Image Background { get; private set; }
 	[SerializeField] private Image LobbyCharacterImage;
 	[SerializeField] private Image fadeImage;
 
