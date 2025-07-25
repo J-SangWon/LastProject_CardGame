@@ -8,34 +8,40 @@ public class CardManager_test : MonoBehaviour
     public Transform handZone;
 
     private List<GameObject> deck = new List<GameObject>();
-
     public DeckData currentDeckData;
-
-    public DeckSaveManager deckSaveManager;
 
     void Start()
     {
-        string lastDeckName = deckSaveManager.GetLastSelectedDeckName();
-
-        if (!string.IsNullOrEmpty(lastDeckName))
-        {
-            LoadDeckFromSave(lastDeckName);
-        }
-        else
-        {
-            CreateDeck(10);
-            DrawCards(5);
-        }
+        LoadDeckFromTransfer();
     }
 
-    public void LoadDeckFromSave(string deckFileName)
+    void LoadDeckFromTransfer()
     {
-        currentDeckData = deckSaveManager.LoadDeck(deckFileName);
+        currentDeckData = DeckTransferManager.Instance?.GetDeck();
 
         if (currentDeckData == null)
         {
-            Debug.LogWarning("덱 데이터를 불러오지 못했습니다: " + deckFileName);
+            Debug.LogWarning("DeckTransferManager로부터 덱 데이터를 가져오지 못했습니다.");
             return;
+        }
+
+        // Resources에서 모든 카드 불러오기 및 cardId 매핑 (안정성 보장)
+        BaseCardData[] allCards = Resources.LoadAll<BaseCardData>("CardData");
+        foreach (var entry in currentDeckData.mainDeck)
+        {
+            if (entry.card == null)
+            {
+                foreach (var c in allCards)
+                {
+                    if (c.cardId == entry.cardId)
+                    {
+                        entry.card = c;
+                        break;
+                    }
+                }
+                if (entry.card == null)
+                    Debug.LogWarning($"cardId {entry.cardId}를 가진 카드 데이터를 찾을 수 없습니다.");
+            }
         }
 
         ClearDeck();
@@ -49,22 +55,19 @@ public class CardManager_test : MonoBehaviour
                 GameObject card = Instantiate(cardPrefab, deckZone);
                 card.transform.localScale = Vector3.one;
 
-                var cardComponent = card.GetComponent<CardComponent>();
-                if (cardComponent != null)
+                var cardUI = card.GetComponent<CardUI_N>();
+                if (cardUI != null)
                 {
-                    cardComponent.SetCardData(cardEntry.card);
+                    cardUI.SetCard(cardEntry.card);
+                }
+                else
+                {
+                    Debug.LogWarning("CardUI_N 컴포넌트를 찾을 수 없습니다.");
                 }
 
                 card.transform.localPosition = new Vector3(0, 0, -zIndex * 0.01f);
                 zIndex++;
 
-                var clickHandler = card.GetComponent<CardClickHandler>();
-                if (clickHandler != null)
-                {
-                    clickHandler.handZone = handZone;
-                }
-
-                // ★ 여기서 cardManager 할당 추가 ★
                 var effect = card.GetComponent<MonsterEffectOnSummon>();
                 if (effect != null)
                 {
@@ -74,6 +77,8 @@ public class CardManager_test : MonoBehaviour
                 deck.Add(card);
             }
         }
+
+        DrawCards(5);
     }
 
     private void ClearDeck()
@@ -85,11 +90,13 @@ public class CardManager_test : MonoBehaviour
         deck.Clear();
     }
 
+    // 카드 한 장을 드로우
     public void DrawCard()
     {
         DrawCards(1);
     }
 
+    // 카드 여러 장을 드로우
     public void DrawCards(int count)
     {
         for (int i = 0; i < count && deck.Count > 0; i++)
@@ -104,33 +111,9 @@ public class CardManager_test : MonoBehaviour
         UpdateHandLayout();
     }
 
-    void CreateDeck(int count)
-    {
-        for (int i = 0; i < count; i++)
-        {
-            GameObject card = Instantiate(cardPrefab, deckZone);
-            card.transform.localScale = Vector3.one;
-
-            var clickHandler = card.GetComponent<CardClickHandler>();
-            if (clickHandler != null)
-            {
-                clickHandler.handZone = handZone;
-            }
-
-            var effect = card.GetComponent<MonsterEffectOnSummon>();
-            if (effect != null)
-            {
-                effect.cardManager = this;
-            }
-
-            deck.Add(card);
-        }
-    }
-
-    // 핸드존 카드 위치 자동 정렬 (예: 가로 배치)
     private void UpdateHandLayout()
     {
-        float spacing = 150f; // 카드 간격(px)
+        float spacing = 150f;
         for (int i = 0; i < handZone.childCount; i++)
         {
             RectTransform rt = handZone.GetChild(i).GetComponent<RectTransform>();
