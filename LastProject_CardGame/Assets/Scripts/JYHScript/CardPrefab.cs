@@ -11,11 +11,20 @@ public class CardPrefab : MonoBehaviour, IPointerClickHandler
     public Image imageBack;
     public Image imageFront;
     public Image imageArtwork;
+    public GameObject cardName;
     public TMP_Text textCardName;
+    public GameObject Cost;
     public TMP_Text textCost;
+    public GameObject description;
     public TMP_Text textDescription;
+    public GameObject Attack;
     public TMP_Text textAttack;
+    public GameObject Health;
     public TMP_Text textHealth;
+    public GameObject race;
+    public TMP_Text textRace;
+    public GameObject Rarity;
+    public Sprite[] rarityImages;
 
     [Header("희귀도에 따른 이펙트")]
     public GameObject[] ParticlePrefab;
@@ -32,34 +41,108 @@ public class CardPrefab : MonoBehaviour, IPointerClickHandler
         imageArtwork.sprite = cardData.artwork;
         textCost.text = cardData.cost.ToString();
         textDescription.text = cardData.description;
-
-        // 몬스터 카드일 때만 공격력/체력 표시
-        if (cardData is MonsterCardData monsterData)
-        {
-            textAttack.text = monsterData.attack.ToString();
-            textHealth.text = monsterData.health.ToString();
-            textAttack.gameObject.SetActive(true);
-            textHealth.gameObject.SetActive(true);
-        }
-        else
-        {
-            textAttack.text = "";
-            textHealth.text = "";
-            textAttack.gameObject.SetActive(false); // UI에서 숨김
-            textHealth.gameObject.SetActive(false);
-        }
-
+        
+        SetRarity(cardData.rarity);
+        SetRace(cardData);
         SetFace(isFlipped); // 초기에는 뒷면만 보이도록 설정
 
         GetRarityEffect(cardData.rarity); // 초기화 시 이펙트
     }
 
+    private void SetAttackHealth(BaseCardData data)
+    {
+        if (data is MonsterCardData monsterData)
+        {
+            textAttack.text = monsterData.attack.ToString();
+            textHealth.text = monsterData.health.ToString();
+            race.SetActive(true);
+            Attack.SetActive(true);
+            Health.SetActive(true);
+        }
+        else
+        {
+            textAttack.text = "";
+            textHealth.text = "";
+            race.SetActive(false);
+            Attack.SetActive(false);
+            Health.SetActive(false);
+        }
+    }
+
+    private void SetRace(BaseCardData data)
+    {
+        if (data is MonsterCardData m)
+        {
+            switch (m.race)
+            {
+                case Race.wizard:
+                    textRace.text = "마법사";
+                    break;
+                case Race.Warrior:
+                    textRace.text = "전사";
+                    break;
+                case Race.Undead:
+                    textRace.text = "언데드";
+                    break;
+                case Race.Dragon:
+                    textRace.text = "드래곤";
+                    break;
+                case Race.Fiend:
+                    textRace.text = "악마";
+                    break;
+                case Race.Fairy:
+                    textRace.text = "정령";
+                    break;
+                case Race.Fish:
+                    textRace.text = "어류";
+                    break;
+                case Race.Insect:
+                    textRace.text = "곤충";
+                    break;
+                case Race.Beast:
+                    textRace.text = "야수";
+                    break;
+                case Race.Plant:
+                    textRace.text = "식물";
+                    break;
+                case Race.Machine:
+                    textRace.text = "기계";
+                    break;
+                case Race.Angel:
+                    textRace.text = "천사";
+                    break;
+                default:
+                    textRace.text = "";
+                    break;
+
+            }
+
+        }
+    }
+
+    private void SetRarity(CardRarity rarity)
+    {
+        // Rarity 이미지 설정
+        var RImage = Rarity.GetComponentInChildren<Image>();
+        if (RImage != null && rarityImages.Length > (int)rarity)
+        {
+            RImage.sprite = rarityImages[(int)rarity];
+        }
+        else
+        {
+            Debug.LogWarning("Rarity image not found or index out of range.");
+        }
+
+    }
+
     void GetRarityEffect(CardRarity rarity)
     {
-        if(rarity == CardRarity.SuperRare)
+        if(rarity == CardRarity.Rare)
             particleprefab = Instantiate(ParticlePrefab[0], transform);
-        else if(rarity == CardRarity.UltraRare)
+        else if (rarity == CardRarity.SuperRare)
             particleprefab = Instantiate(ParticlePrefab[1], transform);
+        else if (rarity == CardRarity.UltraRare)
+            particleprefab = Instantiate(ParticlePrefab[2], transform);
     }
 
     // ────────────────── Flip 애니메이션 ──────────────────
@@ -84,18 +167,32 @@ public class CardPrefab : MonoBehaviour, IPointerClickHandler
 
         if (!isFlipped)
             Flip(true);
-        
     }
 
     public void SetFace(bool showFront)
     {
-        imageBack.gameObject.SetActive(!showFront);
-        imageFront.gameObject.SetActive(showFront);
-        imageArtwork.gameObject.SetActive(showFront);
-        textCardName.gameObject.SetActive(showFront);
-        textCost.gameObject.SetActive(showFront);
-        textDescription.gameObject.SetActive(showFront);
-        textAttack.gameObject.SetActive(showFront);
-        textHealth.gameObject.SetActive(showFront);
+        if (imageBack)
+            imageBack.gameObject.SetActive(!showFront);
+        if (imageFront)
+            imageFront.gameObject.SetActive(showFront);
+        if (imageArtwork)
+            imageArtwork.gameObject.SetActive(showFront);
+        if (textCardName)
+            cardName.SetActive(showFront);
+        if (textCost)
+            Cost.SetActive(showFront);
+        if (description)
+            description.SetActive(showFront);
+        if (Attack)
+            Attack.SetActive(showFront);
+        if (Health)
+            Health.SetActive(showFront);
+        if (race)
+            race.SetActive(showFront);
+        if (Rarity)
+            Rarity.SetActive(showFront);
+
+        if (showFront)
+            SetAttackHealth(cardData);
     }
 }
