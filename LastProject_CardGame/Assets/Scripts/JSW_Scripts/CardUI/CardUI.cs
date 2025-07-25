@@ -10,25 +10,46 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
     public Image imageBack;
     public Image imageFront;
     public Image imageArtwork;
+    public GameObject cardName;
     public TMP_Text textCardName;
+    public GameObject Cost;
     public TMP_Text textCost;
+    public GameObject description;
     public TMP_Text textDescription;
+    public GameObject Attack;
     public TMP_Text textAttack;
+    public GameObject Health;
     public TMP_Text textHealth;
+    public GameObject race;
+    public TMP_Text textRace;
+    public GameObject Rarity;
+    public Sprite[] rarityImages;
 
     private bool isFront = true;
 
     // 카드 앞/뒷면 전환
     public void SetFace(bool showFront)
     {
-        imageBack.gameObject.SetActive(!showFront);
-        imageFront.gameObject.SetActive(showFront);
-        imageArtwork.gameObject.SetActive(showFront);
-        textCardName.gameObject.SetActive(showFront);
-        textCost.gameObject.SetActive(showFront);
-        textDescription.gameObject.SetActive(showFront);
-        textAttack.gameObject.SetActive(showFront);
-        textHealth.gameObject.SetActive(showFront);
+        if(imageBack)
+            imageBack.gameObject.SetActive(!showFront);
+        if (imageFront)
+            imageFront.gameObject.SetActive(showFront);
+        if (imageArtwork)
+            imageArtwork.gameObject.SetActive(showFront);
+        if (textCardName)
+            cardName.SetActive(showFront);
+        if (textCost)
+            Cost.SetActive(showFront);
+        if(description)
+            description.SetActive(showFront);
+        if(Attack)
+            Attack.SetActive(showFront);
+        if(Health)
+            Health.SetActive(showFront);
+        if(race)
+            race.SetActive(showFront);
+        if(Rarity)
+            Rarity.SetActive(showFront);
     }
 
     public void SetCard(BaseCardData data)
@@ -37,12 +58,62 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
         imageArtwork.sprite = data.artwork;
         textCost.text = data.cost.ToString();
         textDescription.text = data.description;
+        SetRarity(data.rarity);
+
+        if (data is MonsterCardData m)
+        {
+            switch (m.race)
+            {
+                case Race.wizard:
+                    textRace.text = "마법사";
+                    break;
+                case Race.Warrior:
+                    textRace.text = "전사";
+                    break;
+                case Race.Undead:
+                    textRace.text = "언데드";
+                    break;
+                case Race.Dragon:
+                    textRace.text = "드래곤";
+                    break;
+                case Race.Fiend:
+                    textRace.text = "악마";
+                    break;
+                case Race.Fairy:
+                    textRace.text = "정령";
+                    break;
+                case Race.Fish:
+                    textRace.text = "어류";
+                    break;
+                case Race.Insect:
+                    textRace.text = "곤충";
+                    break;
+                case Race.Beast:
+                    textRace.text = "야수";
+                    break;
+                case Race.Plant:
+                    textRace.text = "식물";
+                    break;
+                case Race.Machine:
+                    textRace.text = "기계";
+                    break;
+                case Race.Angel:
+                    textRace.text = "천사";
+                    break;
+                default:
+                    textRace.text = "";
+                    break;
+
+            }
+
+        }
 
         // 몬스터 카드일 때만 공격력/체력 표시
         if (data is MonsterCardData monsterData)
         {
             textAttack.text = monsterData.attack.ToString();
             textHealth.text = monsterData.health.ToString();
+            textRace.gameObject.SetActive(true);
             textAttack.gameObject.SetActive(true);
             textHealth.gameObject.SetActive(true);
         }
@@ -50,9 +121,25 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
         {
             textAttack.text = "";
             textHealth.text = "";
-            textAttack.gameObject.SetActive(false); // UI에서 숨김
+            textRace.gameObject.SetActive(false);
+            textAttack.gameObject.SetActive(false);
             textHealth.gameObject.SetActive(false);
         }
+
+    }
+    public void SetRarity(CardRarity rarity)
+    {
+        // Rarity 이미지 설정
+        var RImage = Rarity.GetComponentInChildren<Image>();
+        if (RImage != null && rarityImages.Length > (int)rarity)
+        {
+            RImage.sprite = rarityImages[(int)rarity];
+        }
+        else
+        {
+            Debug.LogWarning("Rarity image not found or index out of range.");
+        }
+
     }
 
     public void FlipCard(bool showFront)
