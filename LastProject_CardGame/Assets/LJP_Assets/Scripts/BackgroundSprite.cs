@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.UIElements;
+using UnityEngine.UI;
 
 public class BackgroundSprite : MonoBehaviour
 {
@@ -13,16 +13,26 @@ public class BackgroundSprite : MonoBehaviour
     [HideInInspector] public bool isSelect;
     public bool isOwned;
 
-    void Start()
-    {
-        backgroundController = GetComponentInParent<BackgroundEditController>();
-        bgSpirte = GetComponent<Image>()?.sprite;
-        isSelect = false;
+    private void Awake()
+	{
+		IntiComponent();
+		isSelect = false;
 
-        if (!isOwned) nonOwneImage.SetActive(true);
-    }
+		if (!isOwned) nonOwneImage.SetActive(true);
+	}
 
-    public void SetIsSelect()
+	private void OnEnable()
+	{
+        backgroundController.BackgroundSpriteAllUnSelect();		
+	}
+
+	private void IntiComponent()
+	{
+		backgroundController = GetComponentInParent<BackgroundEditController>();
+		bgSpirte = GetComponent<Image>()?.sprite;
+	}
+
+	public void SetIsSelect()
     {
         if (!isOwned) return;
 
@@ -30,5 +40,6 @@ public class BackgroundSprite : MonoBehaviour
         isSelect = !isSelect;
         SelectImage.SetActive(isSelect);
         backgroundController.backgroundSprite = bgSpirte;
+        UIManager.Instance.Background.sprite = bgSpirte;
     }
 }

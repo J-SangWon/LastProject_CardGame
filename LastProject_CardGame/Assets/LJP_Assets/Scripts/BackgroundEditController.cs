@@ -4,13 +4,21 @@ using UnityEngine.UI;
 
 public class BackgroundEditController : MonoBehaviour
 {
-    [SerializeField] private List<BackgroundSprite> backgroundSprites;
+    public List<BackgroundSprite> backgroundSprites;
+
+    [SerializeField] private GameObject LobbyCharacterEdit;
+    [SerializeField] private GameObject BackgroundEdit;
+
     [SerializeField] private Button OKBtn;
     [SerializeField] private Button CancelBtn;
+
     public Sprite backgroundSprite;
     private Sprite beforeSprite;
 
-	private void Start()
+    private bool lobbycharacterEditActive = false;
+    private bool backgroundEditActive = false;
+
+	private void Awake()
 	{
         OKBtn.onClick.AddListener(() => UIManager.Instance.ChangeBackground(backgroundSprite));
         CancelBtn.onClick.AddListener(() => UIManager.Instance.ChangeBackground(beforeSprite));
@@ -18,6 +26,7 @@ public class BackgroundEditController : MonoBehaviour
 
 	private void OnEnable()
 	{
+		backgroundSprite = UIManager.Instance.Background.sprite;
         beforeSprite = UIManager.Instance.Background.sprite;
 	}
 
@@ -29,4 +38,20 @@ public class BackgroundEditController : MonoBehaviour
             backgroundSprites[i].SelectImage.SetActive(false);
         }
     }
+
+    public void LobbyCharacterBtn()
+    {
+        lobbycharacterEditActive = !lobbycharacterEditActive;
+        LobbyCharacterEdit.SetActive(lobbycharacterEditActive);
+        backgroundEditActive = false;
+        BackgroundEdit.SetActive(backgroundEditActive);
+    }
+
+    public void BackgroundBtn()
+    {
+		lobbycharacterEditActive = false;
+		LobbyCharacterEdit.SetActive(lobbycharacterEditActive);
+		backgroundEditActive = !backgroundEditActive;
+		BackgroundEdit.SetActive(backgroundEditActive);
+	}
 }
