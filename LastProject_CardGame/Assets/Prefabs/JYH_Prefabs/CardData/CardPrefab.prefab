@@ -881,7 +881,7 @@ MonoBehaviour:
   ParticlePrefab:
   - {fileID: 1735147079509607124, guid: c99aa9e595ce85542be8dc894bbdac00, type: 3}
   - {fileID: 8123917504731673251, guid: 6bcd68abfe2b28a4ca2a7889515ce8a2, type: 3}
-  - {fileID: 8123917504731673251, guid: 43753860b4d5e6b43978040c3ff6b032, type: 3}
+  - {fileID: 6607868229346757992, guid: 209a3c125c7f3294aa70f3501fa6162d, type: 3}
 --- !u!1 &4490715482089669250
 GameObject:
   m_ObjectHideFlags: 0

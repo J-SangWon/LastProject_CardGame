@@ -44,8 +44,6 @@ public class CardPrefab : MonoBehaviour, IPointerClickHandler
         
         SetRarity(cardData.rarity);
         SetRace(cardData);
-        // 몬스터 카드일 때만 공격력/체력 표시
-        SetAttackHealth(cardData);
         SetFace(isFlipped); // 초기에는 뒷면만 보이도록 설정
 
         GetRarityEffect(cardData.rarity); // 초기화 시 이펙트
@@ -57,17 +55,17 @@ public class CardPrefab : MonoBehaviour, IPointerClickHandler
         {
             textAttack.text = monsterData.attack.ToString();
             textHealth.text = monsterData.health.ToString();
-            textRace.gameObject.SetActive(true);
-            textAttack.gameObject.SetActive(true);
-            textHealth.gameObject.SetActive(true);
+            race.SetActive(true);
+            Attack.SetActive(true);
+            Health.SetActive(true);
         }
         else
         {
             textAttack.text = "";
             textHealth.text = "";
-            textRace.gameObject.SetActive(false);
-            textAttack.gameObject.SetActive(false);
-            textHealth.gameObject.SetActive(false);
+            race.SetActive(false);
+            Attack.SetActive(false);
+            Health.SetActive(false);
         }
     }
 
@@ -169,7 +167,6 @@ public class CardPrefab : MonoBehaviour, IPointerClickHandler
 
         if (!isFlipped)
             Flip(true);
-        
     }
 
     public void SetFace(bool showFront)
@@ -194,5 +191,8 @@ public class CardPrefab : MonoBehaviour, IPointerClickHandler
             race.SetActive(showFront);
         if (Rarity)
             Rarity.SetActive(showFront);
+
+        if (showFront)
+            SetAttackHealth(cardData);
     }
 }
