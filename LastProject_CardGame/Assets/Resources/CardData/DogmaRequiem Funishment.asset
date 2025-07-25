@@ -2,25 +2,29 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 32
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: d6e3b89d52292a546aa24ae61a66b65b, type: 3}
   m_Name: DogmaRequiem Funishment
-  m_EditorClassIdentifier: Assembly-CSharp::SpellCardData
+  m_EditorClassIdentifier: 
   cardName: "\uB3C4\uADF8\uB9C8\uB808\uD034\uC5E0 \uC9D5\uBC8C"
   description: 
   artwork: {fileID: 21300000, guid: 0a2df28f963747a498634d90e0c6f48b, type: 3}
   cardType: 1
   rarity: 0
-  cost: 0
-  cardId: 84789399-d353-4f3b-ad2c-ec4f25cf3158
+  cost: 2
+  cardId: c2e6cd7c-d089-4a7e-b1db-375d5de7ae89
   haveLive2D: 0
   live2DPath: 
   cardEffects: []
   tags: []
+  craftCost: 10
+  disenchantReward: 2
+  canCraft: 1
+  canDisenchant: 1
   spellType: 0
