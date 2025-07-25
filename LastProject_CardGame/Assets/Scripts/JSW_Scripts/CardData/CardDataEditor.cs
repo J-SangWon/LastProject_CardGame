@@ -57,7 +57,7 @@ public class CardDataEditor : Editor
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("기타 정보", EditorStyles.boldLabel);
         EditorGUILayout.PropertyField(tagsProp, new GUIContent("태그"), true);
-        EditorGUILayout.PropertyField(cardEffectsProp, new GUIContent("카드 효과"), true);
+        //EditorGUILayout.PropertyField(cardEffectsProp, new GUIContent("카드 효과"), true);
 
         EditorGUILayout.Space();
         DrawTypeSpecificFields();

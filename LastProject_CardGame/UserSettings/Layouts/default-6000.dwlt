@@ -1361,7 +1361,7 @@ MonoBehaviour:
       scrollPos: {x: 0, y: 0}
       m_SelectedIDs: 
       m_LastClickedID: 0
-      m_ExpandedIDs: 0efbffff
+      m_ExpandedIDs: 1ef2ffffb4f7ffff0efbffff58ad0000
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -1433,7 +1433,7 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Resources/CardData
+    - Assets/Scenes
     m_Globs: []
     m_ProductIds: 
     m_AnyWithAssetOrigin: 0
@@ -1443,16 +1443,16 @@ MonoBehaviour:
   m_ViewMode: 1
   m_StartGridSize: 16
   m_LastFolders:
-  - Assets/Resources/CardData
+  - Assets/Scenes
   m_LastFoldersGridSize: 16
   m_LastProjectPath: "C:\\Users\\asdgh\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\Study\\LastProject_CardGame\\LastProject_CardGame"
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
     scrollPos: {x: 0, y: 23}
-    m_SelectedIDs: ceb90000
-    m_LastClickedID: 47566
-    m_ExpandedIDs: 0000000048b900004ab900004cb900004eb9000050b9000052b90000
+    m_SelectedIDs: d4b90000
+    m_LastClickedID: 47572
+    m_ExpandedIDs: 000000004eb7000050b7000052b7000054b7000056b7000058b70000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1481,7 +1481,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 0000000048b900004ab900004cb900004eb9000050b9000052b90000
+    m_ExpandedIDs: 000000004eb7000050b7000052b7000054b7000056b7000058b70000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 

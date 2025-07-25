@@ -46,7 +46,8 @@ public abstract class BaseCardData : ScriptableObject
     public string live2DPath;
     
     [Header("효과 시스템")]
-    public List<CardEffectData> cardEffects; // ScriptableObject 참조 리스트
+    // ScriptableObject 참조 리스트
+    //public List<BaseEffect> cardEffects;
     
     [Header("기타 정보")]
     public List<string> tags = new List<string>();
@@ -60,70 +61,54 @@ public abstract class BaseCardData : ScriptableObject
     public bool canCraft = true;
     public bool canDisenchant = true;
     
-    // 효과 관련 메서드들
-    public void AddEffect(CardEffectData effect)
-    {
-        if (effect != null && !cardEffects.Contains(effect))
-        {
-            cardEffects.Add(effect);
-        }
-    }
+    //// 효과 관련 메서드들
+    //public void AddEffect(BaseEffect effect)
+    //{
+    //    if (effect != null && !cardEffects.Contains(effect))
+    //    {
+    //        cardEffects.Add(effect);
+    //    }
+    //}
     
-    public void RemoveEffect(CardEffectData effect)
-    {
-        if (effect != null)
-        {
-            cardEffects.Remove(effect);
-        }
-    }
+    //public void RemoveEffect(BaseEffect effect)
+    //{
+    //    if (effect != null)
+    //    {
+    //        cardEffects.Remove(effect);
+    //    }
+    //}
     
-    public List<CardEffect> GetEffects()
-    {
-        var effects = new List<CardEffect>();
-        foreach (var effectData in cardEffects)
-        {
-            if (effectData != null)
-            {
-                effects.Add((CardEffect)effectData);
-            }
-        }
-        return effects;
-    }
+    //public List<BaseEffect> GetEffects()
+    //{
+    //    var effects = new List<BaseEffect>();
+    //    foreach (var effectData in cardEffects)
+    //    {
+    //        if (effectData != null)
+    //        {
+    //            effects.Add(effectData);
+    //        }
+    //    }
+    //    return effects;
+    //}
     
-    public List<CardEffect> GetEffectsByTrigger(EffectTrigger trigger)
-    {
-        var effects = new List<CardEffect>();
-        foreach (var effectData in cardEffects)
-        {
-            if (effectData != null && effectData.trigger == trigger)
-            {
-                effects.Add((CardEffect)effectData);
-            }
-        }
-        return effects;
-    }
     
-    public List<CardEffect> GetEffectsByType(EffectType effectType)
-    {
-        var effects = new List<CardEffect>();
-        foreach (var effectData in cardEffects)
-        {
-            if (effectData != null && effectData.effectType == effectType)
-            {
-                effects.Add((CardEffect)effectData);
-            }
-        }
-        return effects;
-    }
-    
-    // 카드 효과 등록
-    public void RegisterEffects()
-    {
-        if (!string.IsNullOrEmpty(cardName) && cardEffects.Count > 0)
-        {
-            CardEffectManager.Instance.RegisterCardEffects(cardName, GetEffects());
-        }
-    }
+    //// 카드 효과 등록
+    //public void RegisterEffects()
+    //{
+    //    if (string.IsNullOrEmpty(cardId) || cardEffects.Count == 0)
+    //        return;
+
+    //    // EffectManager에 카드별 효과 등록
+    //    foreach (var effect in cardEffects)
+    //    {
+    //        if (effect != null)
+    //        {
+    //            EffectManager.Instance.RegisterEffectForCard(cardId, effect);
+    //        }
+    //    }
+
+
+    //}
 
     protected virtual void OnEnable()
     {
@@ -146,46 +131,3 @@ public abstract class BaseCardData : ScriptableObject
 
 }
 
-[CreateAssetMenu(menuName = "CardGame/CardEffectData")]
-public class CardEffectData : ScriptableObject
-{
-    [Header("효과 기본 정보")]
-    public string effectName;
-    [TextArea(3, 6)]
-    public string effectDescription;
-    public EffectTrigger trigger;
-    public EffectType effectType;
-    
-    [Header("효과 조건")]
-    public EffectCondition condition;
-    public bool hasCondition => condition != null && condition.conditionType != EffectCondition.ConditionType.None;
-    
-    [Header("효과 실행")]
-    public string effectMethodName; // 실행할 메서드 이름
-    public List<string> effectParameters; // 효과 파라미터
-    
-    [Header("효과 설정")]
-    public bool isOncePerTurn = false; // 턴당 한 번만
-    public bool isOncePerGame = false; // 게임당 한 번만
-    public int activationCount = 0; // 발동 횟수 추적
-    
-    // CardEffect와의 호환성을 위한 암시적 변환
-    public static implicit operator CardEffect(CardEffectData effectData)
-    {
-        if (effectData == null) return null;
-        
-        return new CardEffect
-        {
-            effectName = effectData.effectName,
-            effectDescription = effectData.effectDescription,
-            trigger = effectData.trigger,
-            effectType = effectData.effectType,
-            condition = effectData.condition,
-            effectMethodName = effectData.effectMethodName,
-            effectParameters = effectData.effectParameters != null ? new List<string>(effectData.effectParameters) : new List<string>(),
-            isOncePerTurn = effectData.isOncePerTurn,
-            isOncePerGame = effectData.isOncePerGame,
-            activationCount = effectData.activationCount
-        };
-    }
-}
