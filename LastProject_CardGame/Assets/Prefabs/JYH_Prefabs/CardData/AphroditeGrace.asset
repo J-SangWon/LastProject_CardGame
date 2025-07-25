@@ -18,7 +18,7 @@ MonoBehaviour:
   artwork: {fileID: 21300000, guid: 1adfdae041200f347af1e016bdfea778, type: 3}
   cardType: 1
   rarity: 1
-  cost: 0
+  cost: 2
   cardId: 866485ce-c6ef-445c-a5d4-ad27a0a0f89f
   haveLive2D: 0
   live2DPath: 
