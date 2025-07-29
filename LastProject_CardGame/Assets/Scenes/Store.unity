@@ -680,7 +680,7 @@ PrefabInstance:
     - target: {fileID: 3457817937308699894, guid: 81c1df92da6640e45b24839b4321c3fa, type: 3}
       propertyPath: cardPrefab
       value: 
-      objectReference: {fileID: 698617964354570257, guid: ff023ea072bedc341aec6034cee88b66, type: 3}
+      objectReference: {fileID: 3444325798713080060, guid: 71887d347ceb34a46bae6a2f5d619960, type: 3}
     - target: {fileID: 3457817937308699894, guid: 81c1df92da6640e45b24839b4321c3fa, type: 3}
       propertyPath: cardOpenBtn
       value: 
@@ -750,13 +750,13 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1999028150}
     m_Modifications:
-    - target: {fileID: 2153451788926737060, guid: d1bf92950af282242a33d643000aab89, type: 3}
-      propertyPath: effectRange
-      value: 500
+    - target: {fileID: 1946607824369033545, guid: d1bf92950af282242a33d643000aab89, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 1650
       objectReference: {fileID: 0}
-    - target: {fileID: 2153451788926737060, guid: d1bf92950af282242a33d643000aab89, type: 3}
-      propertyPath: velocityThreshold
-      value: 50
+    - target: {fileID: 2412613841194151048, guid: d1bf92950af282242a33d643000aab89, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 1650
       objectReference: {fileID: 0}
     - target: {fileID: 4367700129948171589, guid: d1bf92950af282242a33d643000aab89, type: 3}
       propertyPath: m_AnchorMax.y

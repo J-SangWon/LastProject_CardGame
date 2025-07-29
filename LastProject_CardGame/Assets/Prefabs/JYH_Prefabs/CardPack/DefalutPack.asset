@@ -17,12 +17,12 @@ MonoBehaviour:
   packArtwork: {fileID: 0}
   packCost: 0
   cards:
-  - {fileID: 11400000, guid: 2eb978e7ce48e6040a11674333306cc6, type: 2}
-  - {fileID: 11400000, guid: 4948cf6fc992fbe4f9e06aa0ce3143d4, type: 2}
-  - {fileID: 11400000, guid: 4b3e2fadcb78d45448c6f2c8bd87226a, type: 2}
-  - {fileID: 11400000, guid: b0d30c4f938067546b5ab88898ec1e04, type: 2}
-  - {fileID: 11400000, guid: 173e1f6aeaf214841bf487fd62b5a089, type: 2}
-  - {fileID: 11400000, guid: 8344f44ab4dc5a84bba58527627bfd72, type: 2}
-  - {fileID: 11400000, guid: 82e0fcb145555f742a03b1cf9e34b9be, type: 2}
-  - {fileID: 11400000, guid: 47dd0b031f5049f4e914dd9d97d992c2, type: 2}
-  - {fileID: 11400000, guid: 61b0fd9c8caff474d93fe35300bbba91, type: 2}
+  - {fileID: 11400000, guid: 25b691c9ba989dc41991dd8515692a5f, type: 2}
+  - {fileID: 11400000, guid: a2128bffdc860874d895a51ae3a9d1d8, type: 2}
+  - {fileID: 11400000, guid: 5ac4d644c336a2f47bef48bb2d6f1d75, type: 2}
+  - {fileID: 11400000, guid: 01c2de4bfb007834d9b9be6cb88cb4f4, type: 2}
+  - {fileID: 11400000, guid: dfd248872f19531408097d7854651914, type: 2}
+  - {fileID: 11400000, guid: 88f114ee63d3d9445b4720849b224a97, type: 2}
+  - {fileID: 11400000, guid: eb2241ee5d76c5142a037ae9a2f7a3ba, type: 2}
+  - {fileID: 11400000, guid: ccd65dca498523a4a8549d4450aaf94b, type: 2}
+  - {fileID: 11400000, guid: 2f8d6b3011a7002409e918e95112395b, type: 2}

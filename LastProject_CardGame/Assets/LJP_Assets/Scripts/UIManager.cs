@@ -12,7 +12,8 @@ public class UIManager : SingletonBehaviour<UIManager>
 	[SerializeField] private GameObject ShopUI;
 	[SerializeField] private GameObject MyPageUI;
 	[SerializeField] private GameObject BackgroundUI;
-	[SerializeField] private Image Background;
+
+	public Image Background;
 	[SerializeField] private Image LobbyCharacterImage;
 	[SerializeField] private Image fadeImage;
 
@@ -102,6 +103,7 @@ public class UIManager : SingletonBehaviour<UIManager>
 		color.a = endAlpha;
 		fadeImage.color = color;
 		currentFade = null;
+
 		if(direction == FadeDirection.In)
 			fadeImage.gameObject.SetActive(false);
 		else

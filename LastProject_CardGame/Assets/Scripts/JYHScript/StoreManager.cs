@@ -229,7 +229,7 @@ public class StoreManager : MonoBehaviour
         // 중앙 기준 위치 계산
         int cols = 5;
         float cellW = 250f, cellH = 350f;
-        float spacingX = 50f, spacingY = 50f;
+        float spacingX = 80f, spacingY = 100f;
 
         int rows = Mathf.CeilToInt(cardList.Count / (float)cols);
 
