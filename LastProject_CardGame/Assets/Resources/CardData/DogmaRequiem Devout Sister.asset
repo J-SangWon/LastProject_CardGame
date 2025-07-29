@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: DogmaRequiem Devout Sister
   m_EditorClassIdentifier: 
   cardName: "\uB3C4\uADF8\uB9C8\uB808\uD034\uC5E0 \uC218\uB140"
-  description: 
+  description: "\uC0AC\uB9DD \uC2DC \uB3C4\uADF8\uB9C8\uB808\uD034\uC5E0 \uB9C8\uBC95\uCE74\uB4DC
+    \uD55C\uC7A5 \uAC00\uC838\uC634"
   artwork: {fileID: 21300000, guid: 0bf51a10a28b35243a0e25b9300c6f01, type: 3}
   cardType: 0
   rarity: 0
@@ -21,7 +22,6 @@ MonoBehaviour:
   cardId: 2c746765-79a5-40ad-bd23-7fb128ab56d4
   haveLive2D: 0
   live2DPath: 
-  cardEffects: []
   tags: []
   craftCost: 10
   disenchantReward: 2
