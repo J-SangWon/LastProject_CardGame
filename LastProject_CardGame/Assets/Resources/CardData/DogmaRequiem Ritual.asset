@@ -13,16 +13,17 @@ MonoBehaviour:
   m_Name: DogmaRequiem Ritual
   m_EditorClassIdentifier: 
   cardName: "\uB3C4\uADF8\uB9C8\uB808\uD034\uC5E0\uC758 \uBD80\uD65C\uC758 \uB9CC\uCC2C"
-  description: "\uB3C4\uADF8\uB9C8\uB808\uD034\uC5E0 \uC138\uB77C\uD504\uB97C \uC18C\uD658\uD558\uAE30
-    \uC704\uD574"
+  description: "\uBB18\uC9C0\uC5D0 \uC874\uC7AC\uD558\uB294 \uB3C4\uADF8\uB9C8\uB808\uD034\uC5E0
+    \uBAAC\uC2A4\uD130\uCE74\uB4DC\uC758 \uC218\uAC00 N\uC774\uC0C1 \uC77C \uACBD\uC6B0
+    \u2018\uB3C4\uADF8\uB9C8\uB808\uD034\uC5E0 \uC138\uB77C\uD504\uC81C\uC778\u2019
+    \uC18C\uD658"
   artwork: {fileID: 21300000, guid: ff2ca0370a7329e4294cc4729c1d33f9, type: 3}
   cardType: 1
   rarity: 1
-  cost: 1
+  cost: 2
   cardId: 6488b3e0-bd53-45d3-9158-3ad9210781aa
   haveLive2D: 0
   live2DPath: 
-  cardEffects: []
   tags: []
   craftCost: 30
   disenchantReward: 8
