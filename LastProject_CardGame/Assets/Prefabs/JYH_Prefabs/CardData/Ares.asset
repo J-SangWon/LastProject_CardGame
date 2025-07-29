@@ -10,25 +10,25 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5e8e2555d73122b43b44cc301395f4ad, type: 3}
-  m_Name: Hades
+  m_Name: Ares
   m_EditorClassIdentifier: 
-  cardName: "\uD558\uB370\uC2A4"
-  description: "\uC8FD\uC74C\uC758 \uBA54\uC544\uB9AC : \uC790\uAE30 \uC790\uC2E0\uC744
-    \uBD80\uD65C\uC2DC\uD0B5\uB2C8\uB2E4."
-  artwork: {fileID: 21300000, guid: b0e70bb3045d7814caaa667bee76f0ad, type: 3}
+  cardName: "\uC544\uB808\uC2A4"
+  description: "\uB0B4 \uD134\uC774 \uB05D\uB0A0 \uB54C, \uACF5\uACA9\uB825\uC744
+    1 \uC99D\uAC00\uC2DC\uD0B5\uB2C8\uB2E4."
+  artwork: {fileID: 21300000, guid: f2235b4e6e62fe741b50848cf1052e70, type: 3}
   cardType: 0
-  rarity: 3
-  cost: 9
-  cardId: c3832c2b-a6c8-433d-b913-4de935fb7b31
+  rarity: 1
+  cost: 4
+  cardId: ea57e7f6-6f13-4f24-99c4-d422c11a82d9
   haveLive2D: 0
   live2DPath: 
   cardEffects: []
   tags: []
-  craftCost: 400
-  disenchantReward: 100
+  craftCost: 30
+  disenchantReward: 8
   canCraft: 1
   canDisenchant: 1
   monsterType: 0
-  attack: 7
-  health: 7
-  race: 5
+  attack: 3
+  health: 5
+  race: 3
