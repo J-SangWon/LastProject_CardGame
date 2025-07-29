@@ -67,7 +67,7 @@ public class DeckMakingUI : MonoBehaviour
         RefreshAllCardList();
         RefreshCraftPointUI();
         RefreshDeckCardCountText();
-        
+
         saveButton.onClick.AddListener(() => {
             // 덱 이름 업데이트 및 저장
             if (deckBuilder.currentDeck != null && deckNameInput != null)
@@ -124,7 +124,7 @@ public class DeckMakingUI : MonoBehaviour
         RefreshDeckList();
         RefreshAllCardList();
         RefreshCraftPointUI();
-        RefreshDeckCardCountText(); // ← 추가
+        RefreshDeckCardCountText();
     }
 
     // 카드가 엑스트라덱 대상인지 판별 (Normal, Effect가 아니면 엑스트라덱)

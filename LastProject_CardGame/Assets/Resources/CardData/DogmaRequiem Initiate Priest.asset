@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: DogmaRequiem Initiate Priest
   m_EditorClassIdentifier: 
   cardName: "\uB3C4\uADF8\uB9C8\uB808\uD034\uC5E0 \uC2E0\uC785 \uC0AC\uC81C"
-  description: 
+  description: "\uC0AC\uB9DD \uC2DC \uC5B8\uB370\uB4DC\uC871 \uB3C4\uADF8\uB9C8\uB808\uD034\uC5E0
+    \uBAAC\uC2A4\uD130 \uD55C\uC7A5\uC744 \uBB18\uC9C0\uB85C \uBCF4\uB0C4"
   artwork: {fileID: 21300000, guid: 30e715db407c71a499626ae469fe05e0, type: 3}
   cardType: 0
   rarity: 0
@@ -21,7 +22,6 @@ MonoBehaviour:
   cardId: afbab2e6-7cf7-4569-ad18-a9606e131848
   haveLive2D: 0
   live2DPath: 
-  cardEffects: []
   tags: []
   craftCost: 10
   disenchantReward: 2

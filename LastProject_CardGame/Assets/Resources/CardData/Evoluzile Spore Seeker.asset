@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 32
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e8e2555d73122b43b44cc301395f4ad, type: 3}
+  m_Name: Evoluzile Spore Seeker
+  m_EditorClassIdentifier: 
+  cardName: "\uD3EC\uC790 \uD0D0\uC0C9\uC790"
+  description: "\uC18C\uD658\uC2DC \uC5D0\uBCFC\uB8E8\uC790\uC77C \uB9C8\uBC95\uCE74\uB4DC
+    1\uC7A5 \uAC00\uC838\uC634"
+  artwork: {fileID: 0}
+  cardType: 0
+  rarity: 0
+  cost: 2
+  cardId: da522569-e12e-47a9-abdf-0cc2a18e95de
+  haveLive2D: 0
+  live2DPath: 
+  tags: []
+  craftCost: 10
+  disenchantReward: 2
+  canCraft: 1
+  canDisenchant: 1
+  monsterType: 0
+  attack: 2
+  health: 1
+  race: 8
