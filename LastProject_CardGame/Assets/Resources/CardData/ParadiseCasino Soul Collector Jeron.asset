@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 32
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e8e2555d73122b43b44cc301395f4ad, type: 3}
+  m_Name: ParadiseCasino Soul Collector Jeron
+  m_EditorClassIdentifier: 
+  cardName: "\uC601\uD63C\uC218\uC9D1\uAC00 \uC81C\uB860"
+  description: 
+  artwork: {fileID: 0}
+  cardType: 0
+  rarity: 0
+  cost: 6
+  cardId: 0fb5342c-a556-4a5d-ae19-e85fbc6dfba9
+  haveLive2D: 0
+  live2DPath: 
+  tags: []
+  craftCost: 10
+  disenchantReward: 2
+  canCraft: 1
+  canDisenchant: 1
+  monsterType: 0
+  attack: 5
+  health: 5
+  race: 0

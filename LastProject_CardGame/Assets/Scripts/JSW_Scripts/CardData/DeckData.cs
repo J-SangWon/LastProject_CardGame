@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
 
 [System.Serializable]
@@ -8,7 +8,8 @@ public class DeckCardEntry
     public int count;
 
     // JSON 저장용
-    public string cardId; // BaseCardData의 고유 ID
+    // BaseCardData의 고유 ID
+    public string cardId;
 }
 
 [System.Serializable]

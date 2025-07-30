@@ -7,8 +7,6 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     private Transform originalParent;
     private CanvasGroup canvasGroup;
 
-    public Transform handZone;
-
     public bool droppedOnSlot = false;
 
     void Awake()
@@ -21,7 +19,8 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         droppedOnSlot = false;
         originalPosition = transform.position;
         originalParent = transform.parent;
-        transform.SetParent(transform.root); // 최상위로 이동
+
+        transform.SetParent(transform.root); // 드래그 시 UI 최상단으로
         canvasGroup.blocksRaycasts = false;
     }
 
