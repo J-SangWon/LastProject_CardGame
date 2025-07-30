@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 32
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6e3b89d52292a546aa24ae61a66b65b, type: 3}
+  m_Name: MetalMachine Recycling
+  m_EditorClassIdentifier: 
+  cardName: "\uC7AC\uD65C\uC6A9"
+  description: 
+  artwork: {fileID: 0}
+  cardType: 1
+  rarity: 0
+  cost: 3
+  cardId: 0a378dc0-6499-41ad-8ccd-1d5d33863faf
+  haveLive2D: 0
+  live2DPath: 
+  tags: []
+  craftCost: 10
+  disenchantReward: 2
+  canCraft: 1
+  canDisenchant: 1
+  spellType: 0
