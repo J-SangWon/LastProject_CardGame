@@ -151,6 +151,7 @@ GameObject:
   - component: {fileID: 6661898263957814896}
   - component: {fileID: 590883347657827202}
   - component: {fileID: 5536623767858594301}
+  - component: {fileID: 5303247091749567523}
   m_Layer: 5
   m_Name: CardThumbnail
   m_TagString: Untagged
@@ -288,6 +289,28 @@ MonoBehaviour:
   artworkImage: {fileID: 1563262729146547853}
   countText: {fileID: 3338240347235874847}
   cardData: {fileID: 0}
+--- !u!95 &5303247091749567523
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6804290688398883925}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: f2e5b90f281daa743b2869b3f5686d57, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &7669327822587646598
 GameObject:
   m_ObjectHideFlags: 0

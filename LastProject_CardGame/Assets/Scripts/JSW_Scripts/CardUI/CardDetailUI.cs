@@ -29,7 +29,7 @@ public class CardDetailUI : MonoBehaviour
     {
         cardImage.sprite = card.artwork;
         nameText.text = card.cardName;
-        statText.text = ""; // 몬스터면 공격력/체력 등 표시
+        statText.text = "";
         descriptionText.text = card.description;
 
         if (card is MonsterCardData m)
@@ -51,13 +51,12 @@ public class CardDetailUI : MonoBehaviour
             bool result = CardManager.Instance.TryCraftCard(card.cardId);
             if (result)
             {
-                SetCardDetail(card); // 수량/재화 갱신
+                SetCardDetail(card); 
                 DeckMakingUI.Instance?.RefreshCraftPointUI();
                 DeckMakingUI.Instance?.RefreshAllCardList();
             }
             else
             {
-                // 실패 안내
             }
         });
 
@@ -68,12 +67,9 @@ public class CardDetailUI : MonoBehaviour
                 SetCardDetail(card);
                 DeckMakingUI.Instance?.RefreshCraftPointUI();
                 DeckMakingUI.Instance?.RefreshAllCardList();
-                Debug.Log("카드 분해 성공!");
             }
             else
             {
-                Debug.Log("카드 분해 실패!");
-                // 실패 안내
             }
         });
     }
