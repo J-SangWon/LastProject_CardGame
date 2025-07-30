@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardName: "\uB3C4\uADF8\uB9C8\uB808\uD034\uC5E0 \uD0C0\uB77D\uD55C \uC8FC\uAD50
     \uB9AC\uC5D0\uC2A4"
-  description: 
+  description: "\uD544\uB4DC\uC5D0 \uC788\uC744 \uACBD\uC6B0 \uC790\uC2E0 \uD544\uB4DC
+    \uBAAC\uC2A4\uD130\uC5D0\uAC8C \uACF5\uACA9\uB825 N \uC99D\uAC00"
   artwork: {fileID: 21300000, guid: c46c148536a2c594e9dde077fb14a72a, type: 3}
   cardType: 0
   rarity: 0
@@ -22,7 +23,6 @@ MonoBehaviour:
   cardId: c2d3c64d-1429-483b-9700-1c65cc12c22d
   haveLive2D: 0
   live2DPath: 
-  cardEffects: []
   tags: []
   craftCost: 10
   disenchantReward: 2
