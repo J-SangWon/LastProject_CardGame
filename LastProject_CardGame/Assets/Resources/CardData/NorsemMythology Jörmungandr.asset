@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 32
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e8e2555d73122b43b44cc301395f4ad, type: 3}
+  m_Name: "NorsemMythology J\xF6rmungandr"
+  m_EditorClassIdentifier: 
+  cardName: "\uC694\uB974\uBB38\uAC04\uB4DC"
+  description: 
+  artwork: {fileID: 0}
+  cardType: 0
+  rarity: 0
+  cost: 6
+  cardId: e6f04073-b6db-44b9-b2bf-7bd21ae5af77
+  haveLive2D: 0
+  live2DPath: 
+  tags: []
+  craftCost: 10
+  disenchantReward: 2
+  canCraft: 1
+  canDisenchant: 1
+  monsterType: 0
+  attack: 6
+  health: 6
+  race: 0
