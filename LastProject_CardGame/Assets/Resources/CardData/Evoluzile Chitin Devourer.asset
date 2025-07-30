@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e8e2555d73122b43b44cc301395f4ad, type: 3}
   m_Name: Evoluzile Chitin Devourer
   m_EditorClassIdentifier: 
-  cardName: "\uAC11\uAC01 \uD3EC\uC2DD\uC790"
+  cardName: "\uC5D0\uBCFC\uB8E8\uC790\uC77C \uAC11\uAC01 \uD3EC\uC2DD\uC790"
   description: 
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: 4a896478316baa442b90c9f1cc60ce7c, type: 3}
   cardType: 0
   rarity: 0
   cost: 3

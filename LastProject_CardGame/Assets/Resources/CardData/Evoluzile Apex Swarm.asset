@@ -12,13 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e8e2555d73122b43b44cc301395f4ad, type: 3}
   m_Name: Evoluzile Apex Swarm
   m_EditorClassIdentifier: 
-  cardName: "\uAD70\uB2E8 \uC735\uD569\uCCB4"
+  cardName: "\uC5D0\uBCFC\uB8E8\uC790\uC77C \uAD70\uB2E8 \uC735\uD569\uCCB4"
   description: "\uC774 \uCE74\uB4DC\uAC00 \uC874\uC7AC\uD560 \uACBD\uC6B0 \uC790\uC2E0
     \uD544\uB4DC\uC704 \uBAAC\uC2A4\uD130\uB4E4\uC5D0\uAC8C +2 \uACF5\uACA9\uB825\uBD80\uC5EC"
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: 53aca05a5803fb447a5fa0956fbae9c5, type: 3}
   cardType: 0
   rarity: 3
-  cost: 5
+  cost: 2
   cardId: 6dca3c73-98f0-4c5b-9c0a-196f1e255cdf
   haveLive2D: 0
   live2DPath: 

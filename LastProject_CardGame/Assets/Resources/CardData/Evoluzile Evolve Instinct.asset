@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6e3b89d52292a546aa24ae61a66b65b, type: 3}
   m_Name: Evoluzile Evolve Instinct
   m_EditorClassIdentifier: 
-  cardName: "\uC9C4\uD654 \uBCF8\uB2A5"
+  cardName: "\uC5D0\uBCFC\uB8E8\uC790\uC77C \uC9C4\uD654 \uBCF8\uB2A5"
   description: "\uC720\uCDA9 \uB610\uB294 \uD3EC\uC2DD\uC790\uB97C \uC9C4\uD654\uC2DC\uD0A8\uB2E4"
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: 79c9368e9355c8448bcb20225b674ba8, type: 3}
   cardType: 1
   rarity: 0
   cost: 1

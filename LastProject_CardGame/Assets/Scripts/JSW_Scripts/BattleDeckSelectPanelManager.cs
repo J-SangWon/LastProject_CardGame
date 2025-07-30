@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
@@ -64,10 +64,9 @@ public class BattleDeckSelectPanelManager : MonoBehaviour
         battleStartCheckPanel.SetActive(true);
 
         // 여기서 battleStartCheckPanel에 덱 정보 표시(이름, 카드 수 등) 갱신
-        // 예: battleStartCheckPanel.GetComponent<BattleStartCheckPanel>().SetDeckInfo(deck);
+        // battleStartCheckPanel.GetComponent<BattleStartCheckPanel>().SetDeckInfo(deck);
     }
 
-    // BattleStartCheckPanel에서 호출
     public void OnStartBattleButton()
     {
         // 덱 정보는 이미 DeckTransferManager.Instance에 저장됨
