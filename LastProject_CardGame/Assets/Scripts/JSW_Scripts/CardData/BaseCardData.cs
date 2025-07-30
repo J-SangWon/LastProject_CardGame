@@ -39,7 +39,7 @@ public abstract class BaseCardData : ScriptableObject
     public int cost;
     
     [Header("고유 ID")]
-    public string cardId; // 카드 고유 ID (직접 입력 또는 자동 생성)
+    public string cardId;
     
     [Header("Live2D 설정")]
     public bool haveLive2D;
@@ -52,67 +52,14 @@ public abstract class BaseCardData : ScriptableObject
     [Header("기타 정보")]
     public List<string> tags = new List<string>();
     
-    // 기존 호환성을 위한 속성들
-    public List<string> effectIds => new List<string>();
-    public List<string> effectTimings => new List<string>();
-
     public int craftCost = 0;
     public int disenchantReward = 0;
     public bool canCraft = true;
     public bool canDisenchant = true;
-    
-    //// 효과 관련 메서드들
-    //public void AddEffect(BaseEffect effect)
-    //{
-    //    if (effect != null && !cardEffects.Contains(effect))
-    //    {
-    //        cardEffects.Add(effect);
-    //    }
-    //}
-    
-    //public void RemoveEffect(BaseEffect effect)
-    //{
-    //    if (effect != null)
-    //    {
-    //        cardEffects.Remove(effect);
-    //    }
-    //}
-    
-    //public List<BaseEffect> GetEffects()
-    //{
-    //    var effects = new List<BaseEffect>();
-    //    foreach (var effectData in cardEffects)
-    //    {
-    //        if (effectData != null)
-    //        {
-    //            effects.Add(effectData);
-    //        }
-    //    }
-    //    return effects;
-    //}
-    
-    
-    //// 카드 효과 등록
-    //public void RegisterEffects()
-    //{
-    //    if (string.IsNullOrEmpty(cardId) || cardEffects.Count == 0)
-    //        return;
-
-    //    // EffectManager에 카드별 효과 등록
-    //    foreach (var effect in cardEffects)
-    //    {
-    //        if (effect != null)
-    //        {
-    //            EffectManager.Instance.RegisterEffectForCard(cardId, effect);
-    //        }
-    //    }
-
-
-    //}
 
     protected virtual void OnEnable()
     {
-        hideFlags = HideFlags.DontUnloadUnusedAsset;
+
     }
 #if UNITY_EDITOR
     private void OnValidate()
