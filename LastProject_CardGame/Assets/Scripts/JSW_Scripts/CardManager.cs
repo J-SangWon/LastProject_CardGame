@@ -340,7 +340,6 @@ public class CardManager : MonoBehaviour
                 if (toRemove <= 0) break;
             }
         }
-        // --- 덱에서 초과분 자동 제거 끝 ---
 
         pcm.SaveCollection();
         return true;

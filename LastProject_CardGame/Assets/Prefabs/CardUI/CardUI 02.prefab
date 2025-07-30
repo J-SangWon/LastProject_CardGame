@@ -657,11 +657,20 @@ MonoBehaviour:
   imageBack: {fileID: 3295515881366924450}
   imageFront: {fileID: 733753065049726813}
   imageArtwork: {fileID: 5986707443228464169}
+  cardName: {fileID: 0}
   textCardName: {fileID: 5286187498684636731}
+  Cost: {fileID: 0}
   textCost: {fileID: 1027358143402524726}
+  description: {fileID: 0}
   textDescription: {fileID: 4957772037904090927}
+  Attack: {fileID: 0}
   textAttack: {fileID: 1684770684237175994}
+  Health: {fileID: 0}
   textHealth: {fileID: 5207283666729190646}
+  race: {fileID: 0}
+  textRace: {fileID: 0}
+  Rarity: {fileID: 0}
+  rarityImages: []
 --- !u!1 &6954398543692790935
 GameObject:
   m_ObjectHideFlags: 0

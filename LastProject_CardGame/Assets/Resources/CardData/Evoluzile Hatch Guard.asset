@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e8e2555d73122b43b44cc301395f4ad, type: 3}
   m_Name: Evoluzile Hatch Guard
   m_EditorClassIdentifier: 
-  cardName: "\uBD80\uD654 \uBCF4\uD638\uC790"
+  cardName: "\uC5D0\uBCFC\uB8E8\uC790\uC77C \uBD80\uD654 \uBCF4\uD638\uC790"
   description: "\uBCF4\uD638"
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: 0d172f7d8e2ffd444a1d010942bd8dd0, type: 3}
   cardType: 0
   rarity: 0
   cost: 2

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine.EventSystems;
 using System.Linq;
+using System.Collections;
 
 public class DeckMakingUI : MonoBehaviour
 {
@@ -20,16 +21,15 @@ public class DeckMakingUI : MonoBehaviour
     public TextMeshProUGUI ownCraftPointText;
     public DeckSelectUI deckSelectUI; // 덱 선택 UI 참조
     public TMP_InputField searchBar;
+    [Header("드롭다운 필터")]
     // 드롭다운 참조
     public TMP_Dropdown typeDropdown;      // 1번: 타입 필터
     public TMP_Dropdown sortDropdown;      // 2번: 정렬 기준
     public TMP_Dropdown orderDropdown;     // 3번: 오름/내림차순
 
-    // 예시 데이터
+    // 필터 옵션 딕셔너리 (정렬 기준에 따라 동적으로 변경됨)
     private readonly Dictionary<int, List<string>> filterOptionsBySort = new Dictionary<int, List<string>>()
     {
-        // key: sortDropdown.value
-        // value: filterDropdown 옵션 리스트
         { 0, new List<string> { "전체", "몬스터", "마법", "함정" } }, // 전체
         { 1, new List<string> { "전체", "일반", "효과", "융합", "싱크로", "엑시즈", "링크" } }, // 몬스터
         { 2, new List<string> { "전체", "일반 마법", "속공 마법", "장착 마법", "필드 마법", "지속 마법" } }, // 마법
@@ -61,14 +61,15 @@ public class DeckMakingUI : MonoBehaviour
             if (deckNameInput != null)
                 deckNameInput.text = defaultDeckName;
         }
-        
+
         // 최초 1회만 UI 갱신
         RefreshDeckList();
         RefreshAllCardList();
         RefreshCraftPointUI();
         RefreshDeckCardCountText();
 
-        saveButton.onClick.AddListener(() => {
+        saveButton.onClick.AddListener(() =>
+        {
             // 덱 이름 업데이트 및 저장
             if (deckBuilder.currentDeck != null && deckNameInput != null)
             {
@@ -76,7 +77,7 @@ public class DeckMakingUI : MonoBehaviour
                 deckBuilder.SaveCurrentDeck();
             }
         });
-        
+
         // 뒤로가기 버튼
         if (backButton != null)
             backButton.onClick.AddListener(OnBackButtonClicked);
@@ -205,7 +206,6 @@ public class DeckMakingUI : MonoBehaviour
             if (available == 0)
                 thumbnail.SetUnavailableVisual();
 
-            // -------------------------------
             // 이벤트 등록(좌클릭: 상세, 우클릭: 덱에 추가)
             EventTrigger trigger = obj.GetComponent<EventTrigger>();
             if (trigger == null) trigger = obj.AddComponent<EventTrigger>();
@@ -215,7 +215,8 @@ public class DeckMakingUI : MonoBehaviour
             EventTrigger.Entry rightClick = new EventTrigger.Entry();
             rightClick.eventID = EventTriggerType.PointerClick;
             var capturedCard = card;
-            rightClick.callback.AddListener((data) => {
+            rightClick.callback.AddListener((data) =>
+            {
                 PointerEventData ped = (PointerEventData)data;
                 if (ped.button == PointerEventData.InputButton.Right && available > 0)
                 {
@@ -225,22 +226,46 @@ public class DeckMakingUI : MonoBehaviour
                         added = deckBuilder.AddCardToExtra(capturedCard);
                     else
                         added = deckBuilder.AddCardToMain(capturedCard);
-                    if (!added)
+                    if (added)
+                    {
+                        // 썸네일 이동 애니메이션 실행
+                        var thumbnailRect = obj.GetComponent<RectTransform>();
+                        var targetRect = isExtraDeck ? extraDeckContent : mainDeckContent;
+
+                        // 타겟 덱 위치의 중앙 좌표
+                        Vector2 targetPos = targetRect.GetComponent<RectTransform>().anchoredPosition;
+
+                        CardThumbnail thumb = obj.GetComponent<CardThumbnail>();
+                        if (thumb != null)
+                        {
+                            thumb.PlayMoveInAnimation(thumbnailRect.anchoredPosition, targetPos);
+                        }
+                    }
+                    else
+                    {
                         Debug.Log("카드 추가 실패: 조건 불충족");
+                    }
                     // UI 갱신은 OnDeckChanged에서만!
                 }
             });
             trigger.triggers.Add(rightClick);
-            // -------------------------------
         }
     }
 
     // 2. 덱 UI 갱신 함수(덱에서 제거 시 카드리스트도 갱신 X)
     public void RefreshDeckList()
     {
+        // 드롭다운 값으로 정렬 기준 결정
+        int sortType = sortDropdown != null ? sortDropdown.value : 0; // 0: 이름, 1: 레어도, 2: 공격력, 3: 체력
+        int orderType = orderDropdown != null ? orderDropdown.value : 0; // 0: 오름차순, 1: 내림차순
+
         // 메인덱 UI 갱신
         foreach (Transform child in mainDeckContent)
             Destroy(child.gameObject);
+
+        // 타입별 그룹화 후, 그룹 내에서 정렬
+        var mainDeckEntries = deckBuilder.currentDeck.mainDeck;
+
         foreach (var entry in deckBuilder.currentDeck.mainDeck)
         {
             GameObject cardObj = Instantiate(CardThumbnailPrefab, mainDeckContent);
@@ -255,11 +280,27 @@ public class DeckMakingUI : MonoBehaviour
             EventTrigger.Entry rightClick = new EventTrigger.Entry();
             rightClick.eventID = EventTriggerType.PointerClick;
             var capturedEntry = entry;
-            rightClick.callback.AddListener((data) => {
+            rightClick.callback.AddListener((data) =>
+            {
                 PointerEventData ped = (PointerEventData)data;
                 if (ped.button == PointerEventData.InputButton.Right)
                 {
                     deckBuilder.RemoveCardFromMain(capturedEntry.card);
+
+                    var thumbnailRect = cardObj.GetComponent<RectTransform>();
+
+                    // 목표 위치: 전체 카드 리스트 컨테이너 중앙
+                    Vector2 targetPos = allCardsContent.GetComponent<RectTransform>().anchoredPosition;
+
+                    CardThumbnail thumb = cardObj.GetComponent<CardThumbnail>();
+                    if (thumb != null)
+                    {
+                        // 애니메이션 실행
+                        thumb.PlayMoveInAnimation(thumbnailRect.anchoredPosition, targetPos);
+
+                        // 애니메이션 끝난 뒤 오브젝트 삭제
+                        StartCoroutine(RemoveAfterDelay(cardObj, 0.3f));
+                    }
                     // UI 갱신은 OnDeckChanged에서만!
                 }
             });
@@ -268,7 +309,10 @@ public class DeckMakingUI : MonoBehaviour
         // 엑스트라덱 UI 갱신
         foreach (Transform child in extraDeckContent)
             Destroy(child.gameObject);
-        foreach (var entry in deckBuilder.currentDeck.extraDeck)
+
+        var extraDeckEntries = deckBuilder.currentDeck.extraDeck;
+
+        foreach (var entry in extraDeckEntries)
         {
             GameObject cardObj = Instantiate(CardThumbnailPrefab, extraDeckContent);
             CardThumbnail thumbnail = cardObj.GetComponent<CardThumbnail>();
@@ -282,16 +326,84 @@ public class DeckMakingUI : MonoBehaviour
             EventTrigger.Entry rightClick = new EventTrigger.Entry();
             rightClick.eventID = EventTriggerType.PointerClick;
             var capturedExtraEntry = entry;
-            rightClick.callback.AddListener((data) => {
+            rightClick.callback.AddListener((data) =>
+            {
                 PointerEventData ped = (PointerEventData)data;
                 if (ped.button == PointerEventData.InputButton.Right)
                 {
                     deckBuilder.RemoveCardFromExtra(capturedExtraEntry.card);
+
+                    var thumbnailRect = cardObj.GetComponent<RectTransform>();
+
+                    // 목표 위치: 전체 카드 리스트 컨테이너 중앙
+                    Vector2 targetPos = allCardsContent.GetComponent<RectTransform>().anchoredPosition;
+
+                    CardThumbnail thumb = cardObj.GetComponent<CardThumbnail>();
+                    if (thumb != null)
+                    {
+                        // 애니메이션 실행
+                        thumb.PlayMoveInAnimation(thumbnailRect.anchoredPosition, targetPos);
+
+                        // 애니메이션 끝난 뒤 오브젝트 삭제
+                        StartCoroutine(RemoveAfterDelay(cardObj, 0.3f));
+                    }
+
                     // UI 갱신은 OnDeckChanged에서만!
                 }
             });
             trigger.triggers.Add(rightClick);
         }
+
+        SortDecks(DeckMakingUI.Instance.sortDropdown.value, DeckMakingUI.Instance.orderDropdown.value);
+    }
+
+    private IEnumerator RemoveAfterDelay(GameObject cardObj, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        Destroy(cardObj);
+    }
+
+    public void SortDecks(int sortType, int orderType)
+    {
+        // 현재 덱 가져오기
+        var currentDeck = CardManager.Instance.currentDeck;
+        // 메인덱 정렬
+        currentDeck.mainDeck = currentDeck.mainDeck
+            .OrderBy(e => e.card.cardType) // Monster → Spell → Trap
+            .ThenBy(e =>
+            {
+                switch (sortType)
+                {
+                    case 0: return e.card.cardName;
+                    case 1: return e.card.rarity.ToString();
+                    case 2: return (e.card is MonsterCardData) ? ((MonsterCardData)e.card).attack.ToString("D5") : "00000";
+                    case 3: return (e.card is MonsterCardData) ? ((MonsterCardData)e.card).health.ToString("D5") : "00000";
+                    default: return e.card.cardName;
+                }
+            })
+            .ToList();
+
+        if (orderType == 1) // 내림차순
+            currentDeck.mainDeck.Reverse();
+
+        // 엑스트라덱 정렬
+        currentDeck.extraDeck = currentDeck.extraDeck
+            .OrderBy(e => e.card.cardType)
+            .ThenBy(e =>
+            {
+                switch (sortType)
+                {
+                    case 0: return e.card.cardName;
+                    case 1: return e.card.rarity.ToString();
+                    case 2: return (e.card is MonsterCardData) ? ((MonsterCardData)e.card).attack.ToString("D5") : "00000";
+                    case 3: return (e.card is MonsterCardData) ? ((MonsterCardData)e.card).health.ToString("D5") : "00000";
+                    default: return e.card.cardName;
+                }
+            })
+            .ToList();
+
+        if (orderType == 1)
+            currentDeck.extraDeck.Reverse();
     }
 
     // 덱 선택 화면에서 덱을 받아와서 UI를 갱신하는 함수
@@ -302,7 +414,7 @@ public class DeckMakingUI : MonoBehaviour
             deckNameInput.text = deck.deckName;
         RefreshDeckList();
         RefreshAllCardList();
-        RefreshCraftPointUI(); // 덱 선택 시 크래프트 포인트 갱신
+        RefreshCraftPointUI();
     }
 
     // 뒤로가기 버튼 클릭
@@ -314,27 +426,28 @@ public class DeckMakingUI : MonoBehaviour
             deckBuilder.currentDeck.deckName = deckNameInput.text;
             deckBuilder.SaveCurrentDeck();
         }
-        
+
         // 덱 선택 화면으로 돌아가기
         if (deckSelectUI != null)
         {
             deckSelectUI.gameObject.SetActive(true);
-            deckSelectUI.RefreshDeckList(); // 덱 리스트 새로고침
+            deckSelectUI.RefreshDeckList();
         }
         else
         {
             Debug.LogWarning("DeckSelectUI 참조가 설정되지 않았습니다!");
         }
-        
+
         gameObject.SetActive(false);
     }
-    
+
     // 공통 함수로 분리
     void AddCardDetailEvent(EventTrigger trigger, BaseCardData card)
     {
         EventTrigger.Entry leftClick = new EventTrigger.Entry();
         leftClick.eventID = EventTriggerType.PointerClick;
-        leftClick.callback.AddListener((data) => {
+        leftClick.callback.AddListener((data) =>
+        {
             PointerEventData ped = (PointerEventData)data;
             if (ped.button == PointerEventData.InputButton.Left)
             {
@@ -350,7 +463,6 @@ public class DeckMakingUI : MonoBehaviour
         // 드롭다운 옵션 동적 변경
         if (filterOptionsBySort.ContainsKey(sortIndex))
         {
-            // This part is no longer needed as options are set in Start()
             // if (filterDropdown != null)
             // {
             //     filterDropdown.ClearOptions();

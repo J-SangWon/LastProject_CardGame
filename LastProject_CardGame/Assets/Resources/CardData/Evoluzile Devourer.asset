@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e8e2555d73122b43b44cc301395f4ad, type: 3}
   m_Name: Evoluzile Devourer
   m_EditorClassIdentifier: 
-  cardName: "\uD3EC\uC2DD\uC790 "
+  cardName: "\uC5D0\uBCFC\uB8E8\uC790\uC77C \uD3EC\uC2DD\uC790 "
   description: "1\uD134 \uD6C4 \uC790\uC2E0\uC758 \uD134\uC774 \uB418\uBA74 \uC9C4\uD654\uD568"
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: f3fac07f1a879bd4198001b16cf95e89, type: 3}
   cardType: 0
   rarity: 0
   cost: 2

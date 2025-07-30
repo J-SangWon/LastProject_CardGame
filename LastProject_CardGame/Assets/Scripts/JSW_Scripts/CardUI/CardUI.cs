@@ -30,7 +30,7 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
     // 카드 앞/뒷면 전환
     public void SetFace(bool showFront)
     {
-        if(imageBack)
+        if (imageBack)
             imageBack.gameObject.SetActive(!showFront);
         if (imageFront)
             imageFront.gameObject.SetActive(showFront);
@@ -40,15 +40,15 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
             cardName.SetActive(showFront);
         if (textCost)
             Cost.SetActive(showFront);
-        if(description)
+        if (description)
             description.SetActive(showFront);
-        if(Attack)
+        if (Attack)
             Attack.SetActive(showFront);
-        if(Health)
+        if (Health)
             Health.SetActive(showFront);
-        if(race)
+        if (race)
             race.SetActive(showFront);
-        if(Rarity)
+        if (Rarity)
             Rarity.SetActive(showFront);
     }
 
@@ -107,23 +107,45 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
             }
 
         }
+        else if (data is SpellCardData spellData)
+        {
+            switch (spellData.spellType)
+            {
+                case SpellType.Normal:
+                    textRace.text = "마법";
+                    break;
+                case SpellType.Continuous:
+                    textRace.text = "지속 마법";
+                    break;
+                case SpellType.Field:
+                    textRace.text = "필드 마법";
+                    break;
+                case SpellType.Ritual:
+                    textRace.text = "의식 마법";
+                    break;
+            }
+        }
+        else if (data is TrapCardData trapData)
+        {
+            textRace.text = "비밀";
+        }
+
+
 
         // 몬스터 카드일 때만 공격력/체력 표시
         if (data is MonsterCardData monsterData)
         {
             textAttack.text = monsterData.attack.ToString();
             textHealth.text = monsterData.health.ToString();
-            textRace.gameObject.SetActive(true);
-            textAttack.gameObject.SetActive(true);
-            textHealth.gameObject.SetActive(true);
+            Attack.gameObject.SetActive(true);
+            Health.gameObject.SetActive(true);
         }
         else
         {
             textAttack.text = "";
             textHealth.text = "";
-            textRace.gameObject.SetActive(false);
-            textAttack.gameObject.SetActive(false);
-            textHealth.gameObject.SetActive(false);
+            Attack.gameObject.SetActive(false);
+            Health.gameObject.SetActive(false);
         }
 
     }
@@ -146,7 +168,8 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
     {
         // 0.15초 동안 Y축 90도 회전 → 앞/뒷면 교체 → 다시 0도로 회전
         transform.DORotate(new Vector3(0, 90, 0), 0.15f)
-            .OnComplete(() => {
+            .OnComplete(() =>
+            {
                 SetFace(showFront); // 앞/뒷면 교체
                 transform.DORotate(Vector3.zero, 0.15f);
             });

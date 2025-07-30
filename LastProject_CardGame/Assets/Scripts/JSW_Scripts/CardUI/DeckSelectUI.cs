@@ -8,7 +8,6 @@ public class DeckSelectUI : MonoBehaviour
     public GameObject deckButtonPrefab; // 덱 하나를 표시할 프리팹
     public Button createDeckButton;
 
-    // 추가: 덱 수정 패널과 UI 연결
     public GameObject deckEditPanel;
     public DeckMakingUI deckMakingUI;
 
@@ -45,6 +44,7 @@ public class DeckSelectUI : MonoBehaviour
                 // 실제 동작: 덱 수정 패널 활성화 및 덱 데이터 전달
                 if (deckEditPanel != null) deckEditPanel.SetActive(true);
                 if (deckMakingUI != null) deckMakingUI.OpenWithDeck(deck);
+
                 // 덱 선택 화면 비활성화
                 gameObject.SetActive(false);
             });
@@ -75,6 +75,5 @@ public class DeckSelectUI : MonoBehaviour
         if (deckMakingUI != null) deckMakingUI.OpenWithDeck(newDeck);
         gameObject.SetActive(false);
         
-        Debug.Log($"새 덱 '{newDeckName}'을 생성했습니다.");
     }
 }
