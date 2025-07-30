@@ -1,114 +1,65 @@
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.EventSystems;
-using System.Collections.Generic;
+using System.Collections;
 
-/// <summary>
-/// 몬스터 카드가 소환될 때 발동하는 효과 스크립트.
-/// 대상이 되는 'Enemy' 태그가 붙은 오브젝트를 클릭하면 효과가 적용됨.
-/// </summary>
 public class MonsterEffectOnSummon : MonoBehaviour
 {
-    private bool effectActivated = false;   // 효과가 이미 발동되었는지 여부
-    private bool waitingForTarget = false;  // 대상 클릭을 기다리는 상태인지 여부
+    private CardEffectType effectType;
+    private int effectValue;
+    private PlayerController_N ownerPlayer;
 
-    public CardManager_test cardManager;    // 카드 드로우 기능을 담당하는 매니저
-    public GraphicRaycaster raycaster;      // UI 요소에 대한 레이캐스트를 위한 컴포넌트 (Canvas에 있어야 함)
-    public EventSystem eventSystem;         // 마우스 입력 처리를 위한 EventSystem (씬에 있어야 함)
+    // 누락된 public 필드 선언
+    public BaseCardData cardData;
+    public CardManager_test cardManager;
 
-    void Start()
+    public void SetEffect(CardEffectType effect, int value, PlayerController_N owner)
     {
-        // GraphicRaycaster가 설정되지 않았다면 자동으로 씬에서 찾아서 할당
-        if (raycaster == null)
-            raycaster = Object.FindFirstObjectByType<GraphicRaycaster>();
+        effectType = effect;
+        effectValue = value;
+        ownerPlayer = owner;
 
-        // EventSystem이 설정되지 않았다면 자동으로 씬에서 찾아서 할당
-        if (eventSystem == null)
-            eventSystem = Object.FindFirstObjectByType<EventSystem>();
+        TryActivateEffect();
     }
 
-    /// <summary>
-    /// 몬스터 카드가 소환될 때 호출되는 함수.
-    /// 효과 발동을 알리고 대상 클릭을 기다리는 상태로 진입.
-    /// </summary>
     public void OnSummon()
     {
-        // 효과가 이미 발동되었다면 추가 발동을 막음
-        if (effectActivated) return;
-
-        Debug.Log($"{gameObject.name}의 소환 효과 발동: 대상을 선택하세요!");
-        waitingForTarget = true;  // 대상 클릭을 기다리는 상태로 진입
+        // 카드 소환 시 실행할 효과 예시
+        SetEffect(CardEffectType.DealDamageToTargetOnSummon, 3, /*플레이어 전달*/ null);
     }
 
-    void Update()
+
+    private void TryActivateEffect()
     {
-        // 대상 선택 대기 중이고 마우스 왼쪽 클릭 시 대상 지정 함수 호출
-        if (waitingForTarget && Input.GetMouseButtonDown(0))
+        if (effectType == CardEffectType.DealDamageToTargetOnSummon)
         {
-            // TrySelectTarget() 함수 호출
-            // 이 함수는 마우스를 클릭한 위치를 레이캐스트로 확인하고, 
-            // 'Enemy' 태그가 붙은 오브젝트를 클릭했을 때 해당 오브젝트에 대한 효과를 발동함.
-            TrySelectTarget();
+            StartCoroutine(WaitForTargetSelection());
         }
     }
 
-    /// <summary>
-    /// 마우스 클릭 위치에 대해 UI Raycast를 실행하고,
-    /// 'Enemy' 태그가 붙은 대상을 선택하여 효과를 적용하는 함수.
-    /// </summary>
-    private void TrySelectTarget()
+    private IEnumerator WaitForTargetSelection()
     {
-        // 마우스 위치를 이용해 Raycast 결과를 얻기 위한 데이터 설정
-        PointerEventData pointerData = new PointerEventData(eventSystem)
+        Debug.Log("대상을 클릭하여 효과를 발동하세요.");
+
+        while (true)
         {
-            position = Input.mousePosition
-        };
-
-        // Raycast 결과를 저장할 리스트
-        List<RaycastResult> results = new List<RaycastResult>();
-        raycaster.Raycast(pointerData, results);  // Raycast 실행
-
-        // 클릭된 UI 요소들 중에서 적('Enemy')을 찾아 처리
-        foreach (var result in results)
-        {
-            GameObject target = result.gameObject;
-
-            // 클릭한 대상이 'Enemy' 태그가 붙은 오브젝트인 경우
-            if (target.CompareTag("Enemy"))
+            if (Input.GetMouseButtonDown(0))
             {
-                // 적을 파괴하는 함수 호출
-                DestroyTarget(target);
+                if (EventSystem.current.IsPointerOverGameObject()) yield return null;
 
-                // 카드 드로우 처리
-                if (cardManager != null)
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                if (Physics.Raycast(ray, out RaycastHit hit))
                 {
-                    Debug.Log($"{gameObject.name}의 효과로 카드를 드로우합니다.");
-                    cardManager.DrawCard();  // 카드 1장 드로우
+                    TargetableCard target = hit.collider.GetComponent<TargetableCard>();
+                    if (target != null)
+                    {
+                        target.TakeDamage(effectValue);
+                        Debug.Log("데미지를 " + effectValue + "만큼 입혔습니다.");
+                        break;
+                    }
                 }
-                else
-                {
-                    Debug.LogWarning("CardManager가 설정되지 않았습니다.");
-                }
+            }
 
-                // 효과 발동 완료
-                effectActivated = true;
-                waitingForTarget = false;  // 대상 선택 대기 상태 종료
-                break;  // 첫 번째 적을 찾으면 반복문 종료
-            }
-            else
-            {
-                // 선택된 객체가 'Enemy'가 아닌 경우
-                Debug.Log($"선택된 객체는 'Enemy'가 아닙니다: {target.name}");
-            }
+            yield return null;
         }
-    }
-
-    /// <summary>
-    /// 선택된 대상 오브젝트를 파괴하는 함수.
-    /// </summary>
-    private void DestroyTarget(GameObject target)
-    {
-        Debug.Log($"{target.name}이(가) 파괴되었습니다!");
-        Destroy(target);  // 대상 오브젝트를 파괴
     }
 }
