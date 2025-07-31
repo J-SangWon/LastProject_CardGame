@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6e3b89d52292a546aa24ae61a66b65b, type: 3}
   m_Name: ParadiseCasino Up the ante
   m_EditorClassIdentifier: 
-  cardName: "\uD310\uB3C8\uC62C\uB9AC\uAE30"
+  cardName: "\uB808\uC774\uC988"
   description: 
   artwork: {fileID: 0}
   cardType: 1
