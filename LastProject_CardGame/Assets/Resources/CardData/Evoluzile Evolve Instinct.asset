@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardName: "\uC5D0\uBCFC\uB8E8\uC790\uC77C \uC9C4\uD654 \uBCF8\uB2A5"
   description: "\uC720\uCDA9 \uB610\uB294 \uD3EC\uC2DD\uC790\uB97C \uC9C4\uD654\uC2DC\uD0A8\uB2E4"
-  artwork: {fileID: 21300000, guid: 79c9368e9355c8448bcb20225b674ba8, type: 3}
+  artwork: {fileID: 21300000, guid: dc3d93804dbd60543bcac49695810183, type: 3}
   cardType: 1
   rarity: 0
   cost: 1
