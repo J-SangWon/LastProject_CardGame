@@ -3,6 +3,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections;
+using System;
 
 public class CardThumbnail : MonoBehaviour, IPointerClickHandler
 {
@@ -10,12 +11,27 @@ public class CardThumbnail : MonoBehaviour, IPointerClickHandler
     public TMP_Text countText;
     private Animator anim;
     AnimatorStateInfo stateInfo;
+
     public BaseCardData cardData;
+
+    private Action<BaseCardData> rightClickAction;
 
     void Awake()
     {
         anim = GetComponent<Animator>();
         stateInfo = anim.GetCurrentAnimatorStateInfo(0);
+    }
+    public void SetRightClickAction(Action<BaseCardData> action)
+    {
+        rightClickAction = action;
+    }
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if (eventData.button == PointerEventData.InputButton.Right)
+        {
+            // 우클릭 처리
+            rightClickAction?.Invoke(cardData);
+        }
     }
 
     public void PlayInOutAnimation()
@@ -57,11 +73,6 @@ public class CardThumbnail : MonoBehaviour, IPointerClickHandler
         cardData = card;
         artworkImage.sprite = card.artwork;
         countText.text = $"{available}";
-    }
-
-    public void OnPointerClick(PointerEventData eventData)
-    {
-
     }
 
     public void SetUnavailableVisual()

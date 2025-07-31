@@ -456,6 +456,8 @@ public class DeckMakingUI : MonoBehaviour
             }
         });
         trigger.triggers.Add(leftClick);
+
+
     }
 
     void OnSortDropdownChanged(int sortIndex)
