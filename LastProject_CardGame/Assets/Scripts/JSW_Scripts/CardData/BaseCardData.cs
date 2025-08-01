@@ -57,9 +57,25 @@ public abstract class BaseCardData : ScriptableObject
     public bool canCraft = true;
     public bool canDisenchant = true;
 
+    public int maxHP; // maxHP는 각 카드에서 정의된 값을 사용 (기본 설정은 자식 클래스에서)
+    public int currentHP;
     protected virtual void OnEnable()
     {
+        currentHP = maxHP;
+    }
+    public virtual void TakeDamage(int damage)
+    {
+        currentHP -= damage;
+        if (currentHP <= 0)
+        {
+            currentHP = 0;  // 체력이 0 이하로 떨어지면 0으로 처리
+        }
+    }
 
+    // 카드가 사망했는지 확인
+    public bool IsDead()
+    {
+        return currentHP <= 0;
     }
 #if UNITY_EDITOR
     private void OnValidate()

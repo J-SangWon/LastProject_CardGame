@@ -1,13 +1,15 @@
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
-    public Text phaseText;  // 화면에 표시될 텍스트
+    public TextMeshProUGUI phaseText;  // 화면에 표시될 텍스트
     public Button turnButton;  // 턴 전환 버튼
+    public Button attackButton;  // 공격 버튼
     private GamePhase currentPhase;  // 현재 게임 페이즈
-    private bool isPlayerTurn = true;  // 플레이어 턴 여부 (상대 턴으로 넘어가는 기능을 추가할 예정)
+    private bool isPlayerTurn = true;  // 플레이어 턴 여부
+    private bool isAttackMode = false;  // 공격 모드 여부
 
     void Start()
     {
@@ -17,79 +19,42 @@ public class GameManager : MonoBehaviour
 
         // 턴 전환 버튼 클릭 이벤트 설정
         turnButton.onClick.AddListener(OnTurnButtonClicked);
+
+        // 공격 버튼 클릭 이벤트 설정
+        attackButton.onClick.AddListener(OnAttackButtonClicked);
+
+        // 게임 시작 시 공격 버튼을 비활성화 (메인 페이즈에서는 공격 불가)
+        attackButton.interactable = false;
     }
 
     // 턴 전환 버튼 클릭 시 호출되는 메서드
     void OnTurnButtonClicked()
     {
-        // 텍스트 슬라이드 아웃 애니메이션
-        StartCoroutine(SlideTextOut(() =>
-        {
-            // 현재 페이즈에 맞는 행동을 처리하고 다음 페이즈로 변경
-            ChangePhase();
-
-            // 새로운 페이즈 텍스트 슬라이드 인
-            StartCoroutine(SlideTextIn());
-        }));
+        // 현재 페이즈에 맞는 행동을 처리하고 다음 페이즈로 변경
+        ChangePhase();
     }
 
-    // 텍스트가 왼쪽으로 슬라이드 아웃하는 애니메이션
-    IEnumerator SlideTextOut(System.Action onComplete)
+    // 공격 버튼 클릭 시 호출되는 메서드
+    void OnAttackButtonClicked()
     {
-        Vector3 startPos = phaseText.rectTransform.localPosition;
-        Vector3 endPos = new Vector3(-2000, startPos.y, startPos.z);  // 왼쪽으로 슬라이드 아웃
-
-        float time = 0f;
-        float duration = 0.5f;  // 애니메이션 시간
-
-        while (time < duration)
+        if (currentPhase == GamePhase.BattlePhase)
         {
-            time += Time.deltaTime;
-            phaseText.rectTransform.localPosition = Vector3.Lerp(startPos, endPos, time / duration);
-            yield return null;
+            // 공격 모드 활성화
+            isAttackMode = true;
+            Debug.Log("Attack mode enabled. Select a target.");
         }
-
-        phaseText.rectTransform.localPosition = endPos;
-        onComplete?.Invoke();  // 애니메이션 완료 후 호출될 콜백
-    }
-
-    // 텍스트가 오른쪽에서 중앙으로 슬라이드 인하는 애니메이션
-    IEnumerator SlideTextIn()
-    {
-        Vector3 startPos = new Vector3(2000, phaseText.rectTransform.localPosition.y, phaseText.rectTransform.localPosition.z);  // 오른쪽에서 시작
-        Vector3 endPos = new Vector3(0, phaseText.rectTransform.localPosition.y, phaseText.rectTransform.localPosition.z);  // 중앙으로 이동
-
-        phaseText.rectTransform.localPosition = startPos;
-
-        float time = 0f;
-        float duration = 0.5f;  // 애니메이션 시간
-
-        while (time < duration)
-        {
-            time += Time.deltaTime;
-            phaseText.rectTransform.localPosition = Vector3.Lerp(startPos, endPos, time / duration);
-            yield return null;
-        }
-
-        phaseText.rectTransform.localPosition = endPos;
     }
 
     // 현재 페이즈를 변경하고 텍스트를 업데이트하는 메서드
     void ChangePhase()
     {
-        switch (currentPhase)
-        {
-            case GamePhase.MainPhase:
-                currentPhase = GamePhase.BattlePhase;
-                break;
-            case GamePhase.BattlePhase:
-                currentPhase = GamePhase.EndPhase;
-                break;
-            case GamePhase.EndPhase:
-                // 엔드 페이즈가 끝나면 상대방 턴으로 넘어가는 로직을 추가할 수 있습니다.
-                EndPlayerTurn();
-                break;
-        }
+        // 페이즈 변경 로직
+        if (currentPhase == GamePhase.MainPhase)
+            currentPhase = GamePhase.BattlePhase;
+        else if (currentPhase == GamePhase.BattlePhase)
+            currentPhase = GamePhase.EndPhase;
+        else if (currentPhase == GamePhase.EndPhase)
+            currentPhase = GamePhase.MainPhase;
 
         UpdatePhaseText();
     }
@@ -101,17 +66,23 @@ public class GameManager : MonoBehaviour
         {
             case GamePhase.MainPhase:
                 phaseText.text = "Main Phase";
+                // 메인 페이즈에서는 공격 버튼 비활성화
+                attackButton.interactable = false;
                 break;
             case GamePhase.BattlePhase:
                 phaseText.text = "Battle Phase";
+                // 배틀 페이즈에서는 공격 버튼 활성화
+                attackButton.interactable = true;
                 break;
             case GamePhase.EndPhase:
                 phaseText.text = "End Phase";
+                // 엔드 페이즈에서는 공격 버튼 비활성화
+                attackButton.interactable = false;
                 break;
         }
     }
 
-    // 플레이어 턴이 끝나면 상대 턴으로 넘어가는 메서드 (추후 상대 턴 로직 추가 가능)
+    // 플레이어 턴이 끝나면 상대 턴으로 넘어가는 메서드
     void EndPlayerTurn()
     {
         if (isPlayerTurn)
@@ -125,6 +96,22 @@ public class GameManager : MonoBehaviour
             isPlayerTurn = true;  // 상대 턴이 끝나면 다시 플레이어 턴
             currentPhase = GamePhase.MainPhase;  // 다시 메인 페이즈로 설정
             UpdatePhaseText();
+        }
+    }
+
+    // 대상을 클릭하면 공격을 수행하는 메서드
+    public void OnTargetSelected(GameObject target)
+    {
+        if (isAttackMode && currentPhase == GamePhase.BattlePhase)
+        {
+            // 대상에 공격 처리 (단순히 로그를 출력하도록 함)
+            Debug.Log("Attacking target: " + target.name);
+
+            // 공격 후 공격 모드 종료
+            isAttackMode = false;
+
+            // 공격 후 버튼을 비활성화하여 다른 대상 선택을 방지
+            attackButton.interactable = false;
         }
     }
 }
