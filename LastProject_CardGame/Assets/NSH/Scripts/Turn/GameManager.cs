@@ -4,114 +4,148 @@ using TMPro;
 
 public class GameManager : MonoBehaviour
 {
-    public TextMeshProUGUI phaseText;  // 화면에 표시될 텍스트
-    public Button turnButton;  // 턴 전환 버튼
-    public Button attackButton;  // 공격 버튼
-    private GamePhase currentPhase;  // 현재 게임 페이즈
-    private bool isPlayerTurn = true;  // 플레이어 턴 여부
-    private bool isAttackMode = false;  // 공격 모드 여부
+    public TextMeshProUGUI phaseText;
+    public Button turnButton;
+    public Button attackButton;
+    public GameObject cardObject;  // 플레이어 카드 오브젝트
+    public GameObject enemyCardObject;  // 적 카드 오브젝트
+
+    public GameObject battleUI;
+    public GameObject projectilePrefab;  // 발사체 프리팹
+
+    private bool isBattleActive = false;
+    private GamePhase currentPhase;
+    private bool isPlayerTurn = true;
+
+    private MonsterCardData playerCard;
+    private MonsterCardData enemyCard;
 
     void Start()
     {
-        // 게임 시작 시 'Main Phase'로 시작
         currentPhase = GamePhase.MainPhase;
         UpdatePhaseText();
 
-        // 턴 전환 버튼 클릭 이벤트 설정
         turnButton.onClick.AddListener(OnTurnButtonClicked);
-
-        // 공격 버튼 클릭 이벤트 설정
         attackButton.onClick.AddListener(OnAttackButtonClicked);
 
-        // 게임 시작 시 공격 버튼을 비활성화 (메인 페이즈에서는 공격 불가)
         attackButton.interactable = false;
+        SetAttackButtonPositionToCardCenter();
+
+        battleUI.SetActive(false);
     }
 
-    // 턴 전환 버튼 클릭 시 호출되는 메서드
+    // 공격 버튼을 카드 중앙에 위치시키는 메서드
+    void SetAttackButtonPositionToCardCenter()
+    {
+        if (cardObject != null && attackButton != null)
+        {
+            RectTransform cardRect = cardObject.GetComponent<RectTransform>();
+            attackButton.GetComponent<RectTransform>().anchoredPosition = cardRect.anchoredPosition;
+        }
+    }
+
     void OnTurnButtonClicked()
     {
-        // 현재 페이즈에 맞는 행동을 처리하고 다음 페이즈로 변경
         ChangePhase();
     }
 
     // 공격 버튼 클릭 시 호출되는 메서드
     void OnAttackButtonClicked()
     {
-        if (currentPhase == GamePhase.BattlePhase)
+        if (currentPhase == GamePhase.BattlePhase && isBattleActive)
         {
-            // 공격 모드 활성화
-            isAttackMode = true;
-            Debug.Log("Attack mode enabled. Select a target.");
+            PerformAttack(playerCard, enemyCard);
+            EndPlayerTurn();
         }
     }
 
-    // 현재 페이즈를 변경하고 텍스트를 업데이트하는 메서드
-    void ChangePhase()
+    // 전투 시작
+    public void StartBattle(MonsterCardData player, MonsterCardData enemy)
     {
-        // 페이즈 변경 로직
-        if (currentPhase == GamePhase.MainPhase)
-            currentPhase = GamePhase.BattlePhase;
-        else if (currentPhase == GamePhase.BattlePhase)
-            currentPhase = GamePhase.EndPhase;
-        else if (currentPhase == GamePhase.EndPhase)
-            currentPhase = GamePhase.MainPhase;
+        playerCard = player;
+        enemyCard = enemy;
 
+        battleUI.SetActive(true);
+        isBattleActive = true;
+
+        attackButton.interactable = true;
+        currentPhase = GamePhase.BattlePhase;
         UpdatePhaseText();
     }
 
-    // 게임 페이즈에 맞는 텍스트 업데이트
+    // 공격 처리
+    void PerformAttack(MonsterCardData attacker, MonsterCardData target)
+    {
+        if (attacker == null || target == null)
+            return;
+
+        Debug.Log($"{attacker.cardName} attacks {target.cardName} for {attacker.attack} damage!");
+
+        // 발사체 생성 (발사체 프리팹을 인스턴스화)
+        GameObject projectile = Instantiate(projectilePrefab, cardObject.transform.position, Quaternion.identity);
+
+        // 발사체 초기화
+        Projectile projectileScript = projectile.GetComponent<Projectile>();
+        projectileScript.Initialize(enemyCardObject.transform, attacker.attack);  // 목표는 적 카드
+    }
+
+    void ChangePhase()
+    {
+        if (currentPhase == GamePhase.MainPhase)
+        {
+            currentPhase = GamePhase.BattlePhase;
+            attackButton.gameObject.SetActive(true);  // 배틀 페이즈에서 공격 버튼 활성화
+        }
+        else if (currentPhase == GamePhase.BattlePhase)
+        {
+            currentPhase = GamePhase.EndPhase;
+            attackButton.gameObject.SetActive(false);  // 엔드 페이즈에서는 공격 버튼 비활성화
+        }
+        else if (currentPhase == GamePhase.EndPhase)
+        {
+            currentPhase = GamePhase.MainPhase;
+            attackButton.gameObject.SetActive(false);  // 메인 페이즈에서는 공격 버튼 비활성화
+        }
+
+        // 텍스트 업데이트
+        UpdatePhaseText();
+    }
+
     void UpdatePhaseText()
     {
+        // 현재 페이즈에 따라 텍스트 변경
         switch (currentPhase)
         {
             case GamePhase.MainPhase:
                 phaseText.text = "Main Phase";
-                // 메인 페이즈에서는 공격 버튼 비활성화
-                attackButton.interactable = false;
                 break;
             case GamePhase.BattlePhase:
                 phaseText.text = "Battle Phase";
-                // 배틀 페이즈에서는 공격 버튼 활성화
-                attackButton.interactable = true;
                 break;
             case GamePhase.EndPhase:
                 phaseText.text = "End Phase";
-                // 엔드 페이즈에서는 공격 버튼 비활성화
-                attackButton.interactable = false;
                 break;
         }
+
+        // 텍스트가 변경된 후 확인용 로그 추가 (디버깅용)
+        Debug.Log("Current Phase: " + phaseText.text);
     }
 
-    // 플레이어 턴이 끝나면 상대 턴으로 넘어가는 메서드
     void EndPlayerTurn()
     {
         if (isPlayerTurn)
         {
-            isPlayerTurn = false;  // 플레이어 턴 종료
-            phaseText.text = "Opponent's Turn";  // 상대 턴으로 전환되는 텍스트
+            isPlayerTurn = false;
+            phaseText.text = "Opponent's Turn";
             Debug.Log("Opponent's turn begins...");
         }
         else
         {
-            isPlayerTurn = true;  // 상대 턴이 끝나면 다시 플레이어 턴
-            currentPhase = GamePhase.MainPhase;  // 다시 메인 페이즈로 설정
+            isPlayerTurn = true;
+            currentPhase = GamePhase.MainPhase;
             UpdatePhaseText();
-        }
-    }
-
-    // 대상을 클릭하면 공격을 수행하는 메서드
-    public void OnTargetSelected(GameObject target)
-    {
-        if (isAttackMode && currentPhase == GamePhase.BattlePhase)
-        {
-            // 대상에 공격 처리 (단순히 로그를 출력하도록 함)
-            Debug.Log("Attacking target: " + target.name);
-
-            // 공격 후 공격 모드 종료
-            isAttackMode = false;
-
-            // 공격 후 버튼을 비활성화하여 다른 대상 선택을 방지
-            attackButton.interactable = false;
+            battleUI.SetActive(false);  // 배틀 종료 후 배틀 UI 비활성화
+            isBattleActive = false;
         }
     }
 }
