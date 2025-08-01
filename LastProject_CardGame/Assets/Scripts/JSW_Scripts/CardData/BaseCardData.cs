@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using static CardEffectManager;
 
 public enum CardType { Monster, Spell, Trap }
 public enum MonsterType { Normal, Effect, Ritual, Fusion, Synchro, XYZ, Link }
@@ -44,11 +45,10 @@ public abstract class BaseCardData : ScriptableObject
     [Header("Live2D 설정")]
     public bool haveLive2D;
     public string live2DPath;
-    
-    [Header("효과 시스템")]
-    // ScriptableObject 참조 리스트
-    //public List<BaseEffect> cardEffects;
-    
+
+    [Header("카드 효과")]
+    public CardEffect cardEffect;
+
     [Header("기타 정보")]
     public List<string> tags = new List<string>();
     
