@@ -303,7 +303,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2113191306696606711
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1837,7 +1837,7 @@ GameObject:
   - component: {fileID: 8906740630591169565}
   - component: {fileID: 6632694000808256612}
   m_Layer: 5
-  m_Name: CardUI
+  m_Name: CardUI ExtraDeck
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1922,6 +1922,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67f9fd6b86830b543a591d5fbfb96ec0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enableCardFlip: 0
   imageBack: {fileID: 8116571974810745133}
   imageFront: {fileID: 9087341745902912897}
   imageArtwork: {fileID: 5644895406318296549}
