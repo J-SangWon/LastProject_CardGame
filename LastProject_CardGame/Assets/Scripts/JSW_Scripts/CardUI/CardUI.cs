@@ -7,6 +7,9 @@ using DG.Tweening;
 
 public class CardUI : MonoBehaviour, IPointerClickHandler
 {
+    [Header("카드 플립 설정")]
+    [SerializeField] private bool enableCardFlip = true; // 인스펙터에서 카드 플립 기능 켜기/끄기
+
     public Image imageBack;
     public Image imageFront;
     public Image imageArtwork;
@@ -177,8 +180,18 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
+        // 카드 플립 기능이 활성화되어 있을 때만 동작
+        if (!enableCardFlip) return;
+        
         isFront = !isFront;
         // SetFace(isFront);
         FlipCard(isFront);
+    }
+
+    // 인스펙터에서 카드 플립 기능을 켜고 끄는 프로퍼티
+    public bool EnableCardFlip
+    {
+        get { return enableCardFlip; }
+        set { enableCardFlip = value; }
     }
 }
