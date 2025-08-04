@@ -658,6 +658,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 537158763}
     - target: {fileID: 3457817937308699894, guid: 81c1df92da6640e45b24839b4321c3fa, type: 3}
+      propertyPath: StoreMenu
+      value: 
+      objectReference: {fileID: 2045150582}
+    - target: {fileID: 3457817937308699894, guid: 81c1df92da6640e45b24839b4321c3fa, type: 3}
       propertyPath: buyButton
       value: 
       objectReference: {fileID: 537158760}
@@ -673,6 +677,10 @@ PrefabInstance:
       propertyPath: cardPanelExit
       value: 
       objectReference: {fileID: 537158764}
+    - target: {fileID: 3457817937308699894, guid: 81c1df92da6640e45b24839b4321c3fa, type: 3}
+      propertyPath: CardSpawnPanel
+      value: 
+      objectReference: {fileID: 537158766}
     - target: {fileID: 3457817937308699894, guid: 81c1df92da6640e45b24839b4321c3fa, type: 3}
       propertyPath: cardSpawnPanel
       value: 
@@ -3998,6 +4006,11 @@ MonoBehaviour:
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 0
+--- !u!1 &2045150582 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7602465316746876444, guid: d1bf92950af282242a33d643000aab89, type: 3}
+  m_PrefabInstance: {fileID: 537158759}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2116948964
 GameObject:
   m_ObjectHideFlags: 0
