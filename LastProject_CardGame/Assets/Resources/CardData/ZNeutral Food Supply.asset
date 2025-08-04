@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6e3b89d52292a546aa24ae61a66b65b, type: 3}
+  m_Name: ZNeutral Food Supply
+  m_EditorClassIdentifier: 
+  cardName: "\uC2DD\uB7C9\uBCF4\uAE09"
+  description: "\uB0B4 \uBAA8\uB4E0\uC720\uB2DB\uC5D0\uAC8C \uCCB4\uB825\uC744 3\uB9CC\uD07C
+    \uBD80\uC5EC\uD569\uB2C8\uB2E4."
+  artwork: {fileID: 0}
+  cardType: 1
+  rarity: 0
+  cost: 0
+  cardId: a396ef65-fd0e-457c-9251-8aacdc9e7dfd
+  haveLive2D: 0
+  live2DPath: 
+  tags: []
+  craftCost: 10
+  disenchantReward: 2
+  canCraft: 1
+  canDisenchant: 1
+  spellType: 0

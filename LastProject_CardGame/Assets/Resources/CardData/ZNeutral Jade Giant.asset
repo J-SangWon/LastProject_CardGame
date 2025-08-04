@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e8e2555d73122b43b44cc301395f4ad, type: 3}
+  m_Name: ZNeutral Jade Giant
+  m_EditorClassIdentifier: 
+  cardName: "\uBE44\uCDE8 \uAC70\uC778"
+  description: "\uB0B4 \uBB34\uB364\uC5D0 \uC788\uB294 \uC720\uB2DB \uC218 \uB9CC\uD07C
+    \uBE44\uC6A9\uC774 \uAC10\uC18C\uD569\uB2C8\uB2E4."
+  artwork: {fileID: 0}
+  cardType: 0
+  rarity: 0
+  cost: 8
+  cardId: 88570e75-4170-4f68-9160-e63decc3e5b2
+  haveLive2D: 0
+  live2DPath: 
+  tags: []
+  craftCost: 10
+  disenchantReward: 2
+  canCraft: 1
+  canDisenchant: 1
+  monsterType: 0
+  attack: 8
+  health: 8
+  race: 0
