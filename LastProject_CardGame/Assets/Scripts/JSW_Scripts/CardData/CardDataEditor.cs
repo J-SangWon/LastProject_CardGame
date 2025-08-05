@@ -78,11 +78,13 @@ public class CardDataEditor : Editor
             SerializedProperty attackProp = serializedObject.FindProperty("attack");
             SerializedProperty healthProp = serializedObject.FindProperty("health");
             SerializedProperty raceProp = serializedObject.FindProperty("race");
+            SerializedProperty abilityTypeProp = serializedObject.FindProperty("abilityType");
 
             EditorGUILayout.PropertyField(monsterTypeProp, new GUIContent("몬스터 타입"));
             EditorGUILayout.PropertyField(attackProp, new GUIContent("공격력"));
             EditorGUILayout.PropertyField(healthProp, new GUIContent("체력"));
             EditorGUILayout.PropertyField(raceProp, new GUIContent("종족"));
+            EditorGUILayout.PropertyField (abilityTypeProp, new GUIContent("능력 타입"));
         }
         else if (baseCard is SpellCardData)
         {
