@@ -23,7 +23,6 @@ public class DuelZoneManager : MonoBehaviour
 
     void Start()
     {
-        // DeckTransferManager에서 엑스트라 덱 데이터 로드
         LoadExtraDeckFromTransfer();
     }
 

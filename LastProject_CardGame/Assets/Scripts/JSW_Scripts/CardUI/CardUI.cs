@@ -10,8 +10,14 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
     [Header("카드 플립 설정")]
     [SerializeField] private bool enableCardFlip = true; // 인스펙터에서 카드 플립 기능 켜기/끄기
 
+    [Header("카드 데이터 받아두기")]
+    public BaseCardData cardData;
+
+    public GameObject Back;
     public Image imageBack;
+    public GameObject Front;
     public Image imageFront;
+    public GameObject Artwork;
     public Image imageArtwork;
     public GameObject cardName;
     public TMP_Text textCardName;
@@ -29,6 +35,12 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
     public Sprite[] rarityImages;
 
     private bool isFront = true;
+
+    private void Start()
+    {
+        // 카드가 시작할 때 앞면으로 설정
+        SetFace(isFront);
+    }
 
     // 카드 앞/뒷면 전환
     public void SetFace(bool showFront)
@@ -57,6 +69,7 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
 
     public void SetCard(BaseCardData data)
     {
+        cardData = data;
         textCardName.text = data.cardName;
         imageArtwork.sprite = data.artwork;
         textCost.text = data.cost.ToString();
