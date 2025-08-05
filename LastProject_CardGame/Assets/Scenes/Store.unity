@@ -679,10 +679,6 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 6279201468947145074}
     - target: {fileID: 3457817937308699894, guid: 81c1df92da6640e45b24839b4321c3fa, type: 3}
-      propertyPath: SpawnMenu
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 3457817937308699894, guid: 81c1df92da6640e45b24839b4321c3fa, type: 3}
       propertyPath: StoreMenu
       value: 
       objectReference: {fileID: 869756801}
@@ -693,7 +689,7 @@ PrefabInstance:
     - target: {fileID: 3457817937308699894, guid: 81c1df92da6640e45b24839b4321c3fa, type: 3}
       propertyPath: cardPrefab
       value: 
-      objectReference: {fileID: 3444325798713080060, guid: 71887d347ceb34a46bae6a2f5d619960, type: 3}
+      objectReference: {fileID: 9154549864915518465, guid: 8b21ba56984be604ab3ecd92f3b62857, type: 3}
     - target: {fileID: 3457817937308699894, guid: 81c1df92da6640e45b24839b4321c3fa, type: 3}
       propertyPath: cardOpenBtn
       value: 
@@ -704,10 +700,6 @@ PrefabInstance:
       objectReference: {fileID: 513998905718975244}
     - target: {fileID: 3457817937308699894, guid: 81c1df92da6640e45b24839b4321c3fa, type: 3}
       propertyPath: CardSpawnPanel
-      value: 
-      objectReference: {fileID: 7609316573915239639}
-    - target: {fileID: 3457817937308699894, guid: 81c1df92da6640e45b24839b4321c3fa, type: 3}
-      propertyPath: cardSpawnPanel
       value: 
       objectReference: {fileID: 7609316573915239639}
     - target: {fileID: 3457817937308699894, guid: 81c1df92da6640e45b24839b4321c3fa, type: 3}
@@ -722,22 +714,6 @@ PrefabInstance:
       propertyPath: packViewController
       value: 
       objectReference: {fileID: 753035462792069891}
-    - target: {fileID: 3457817937308699894, guid: 81c1df92da6640e45b24839b4321c3fa, type: 3}
-      propertyPath: 'rarityEffects.Array.data[0]'
-      value: 
-      objectReference: {fileID: 8123917504731673251, guid: ad617db0d006d0c408b7274fed1eef7a, type: 3}
-    - target: {fileID: 3457817937308699894, guid: 81c1df92da6640e45b24839b4321c3fa, type: 3}
-      propertyPath: 'rarityEffects.Array.data[1]'
-      value: 
-      objectReference: {fileID: 1735147079509607124, guid: 7d3630dc8e4c2734387c8c4b0a93af27, type: 3}
-    - target: {fileID: 3457817937308699894, guid: 81c1df92da6640e45b24839b4321c3fa, type: 3}
-      propertyPath: 'rarityEffects.Array.data[2]'
-      value: 
-      objectReference: {fileID: 1026704767439348748, guid: 08b7bb9cfa8b5ea48b4c78fac8a68cec, type: 3}
-    - target: {fileID: 3457817937308699894, guid: 81c1df92da6640e45b24839b4321c3fa, type: 3}
-      propertyPath: 'rarityEffects.Array.data[3]'
-      value: 
-      objectReference: {fileID: 6607868229346757992, guid: fcb830545a84d1c43afdc1542e9713ec, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

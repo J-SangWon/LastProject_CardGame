@@ -668,7 +668,7 @@ PrefabInstance:
     - target: {fileID: 3457817937308699894, guid: 81c1df92da6640e45b24839b4321c3fa, type: 3}
       propertyPath: cardPrefab
       value: 
-      objectReference: {fileID: 3444325798713080060, guid: 71887d347ceb34a46bae6a2f5d619960, type: 3}
+      objectReference: {fileID: 9154549864915518465, guid: 8b21ba56984be604ab3ecd92f3b62857, type: 3}
     - target: {fileID: 3457817937308699894, guid: 81c1df92da6640e45b24839b4321c3fa, type: 3}
       propertyPath: cardOpenBtn
       value: 
