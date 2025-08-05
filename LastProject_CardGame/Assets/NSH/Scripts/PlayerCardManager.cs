@@ -2,21 +2,16 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// 카드 매니저: 덱 로딩, 드로우, 카드 배치 및 일부 카드 효과 처리.
+/// 플레이어 카드 매니저: 덱 로딩, 드로우, 카드 배치 및 일부 카드 효과 처리.
 /// </summary>
-public class CardManager_test : MonoBehaviour
+public class PlayerCardManager : MonoBehaviour
 {
-    public static CardManager_test Instance;
+    public static PlayerCardManager Instance;
 
     [Header("플레이어 카드")]
     public GameObject cardPrefab;
     public Transform deckZone;
     public Transform handZone;
-
-    [Header("적 카드")]
-    public GameObject enemyCardPrefab;
-    public Transform enemyMonsterZone;
-    public BaseCardData[] testEnemyCards;
 
     private List<GameObject> deck = new List<GameObject>();
     public DeckData currentDeckData;
@@ -29,8 +24,7 @@ public class CardManager_test : MonoBehaviour
 
     void Start()
     {
-        LoadDeckFromTransfer();
-        SpawnEnemyTestCards();
+        LoadDeckFromTransfer();  // 덱을 로딩하고 카드 드로우 시작
     }
 
     #region 플레이어 덱 로딩 및 드로우
@@ -71,7 +65,7 @@ public class CardManager_test : MonoBehaviour
             }
         }
 
-        DrawCards(5);
+        DrawCards(5);  // 처음에 5개의 카드를 드로우
     }
 
     private void ClearDeck()
@@ -114,26 +108,6 @@ public class CardManager_test : MonoBehaviour
 
     #endregion
 
-    #region 적 카드 스폰
-
-    void SpawnEnemyTestCards()
-    {
-        if (enemyCardPrefab == null || enemyMonsterZone == null || testEnemyCards == null) return;
-
-        for (int i = 0; i < testEnemyCards.Length; i++)
-        {
-            if (testEnemyCards[i] == null) continue;
-
-            Vector3 position = GetSlotPosition(i, testEnemyCards.Length, 200f);
-            Quaternion rotation = Quaternion.Euler(0, 180, 0);
-
-            GameObject enemyCard = CreateCard(testEnemyCards[i], enemyCardPrefab, enemyMonsterZone, rotation);
-            enemyCard.transform.localPosition = position;
-        }
-    }
-
-    #endregion
-
     #region 공통 카드 생성 메서드
 
     /// <summary>
@@ -150,7 +124,7 @@ public class CardManager_test : MonoBehaviour
         if (cardUI != null)
         {
             cardUI.SetCard(data);
-            cardUI.SetFace(true);
+            cardUI.SetFace(true);  // 카드 뒷면으로 설정 (초기화)
             cardUI.EnableCardFlip = rotation == Quaternion.identity; // 플레이어 카드만 클릭 가능
         }
 
@@ -161,7 +135,7 @@ public class CardManager_test : MonoBehaviour
             dragHandler.enabled = rotation == Quaternion.identity;
         }
 
-        // 대상 지정 및 소환 효과는 플레이어 카드만
+        // 카드 효과: 플레이어 카드에만 추가
         if (rotation == Quaternion.identity)
         {
             if (card.GetComponent<TargetableCard>() == null)
@@ -177,15 +151,6 @@ public class CardManager_test : MonoBehaviour
         return card;
     }
 
-    /// <summary>
-    /// 몬스터존 위치 계산 (5슬롯 기준 중앙 정렬)
-    /// </summary>
-    private Vector3 GetSlotPosition(int index, int total, float spacing)
-    {
-        float startX = -((total - 1) * spacing) / 2f;
-        return new Vector3(startX + index * spacing, 0, 0);
-    }
-
     #endregion
 
     #region 카드 효과 처리
@@ -193,7 +158,7 @@ public class CardManager_test : MonoBehaviour
     public void ResolveCard(PlayerController_N player, System.Action onComplete)
     {
         Debug.Log("카드 효과 해결 중...");
-        DrawCard(); // 예시
+        DrawCard(); // 예시: 카드 드로우
         onComplete?.Invoke();
     }
 
