@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e8e2555d73122b43b44cc301395f4ad, type: 3}
+  m_Name: ZNeutral Voracity Whale
+  m_EditorClassIdentifier: 
+  cardName: "\uD3ED\uC2DD\uC790 \uC6E8\uC77C"
+  description: 
+  artwork: {fileID: 0}
+  cardType: 0
+  rarity: 3
+  cost: 10
+  cardId: d7a8839f-167f-463f-b19f-036e6cc9d9b9
+  haveLive2D: 0
+  live2DPath: 
+  tags: []
+  craftCost: 400
+  disenchantReward: 100
+  canCraft: 1
+  canDisenchant: 1
+  monsterType: 0
+  attack: 5
+  health: 5
+  race: 7

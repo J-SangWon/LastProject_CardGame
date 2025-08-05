@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6e3b89d52292a546aa24ae61a66b65b, type: 3}
+  m_Name: ZNeutral Holy Ritual
+  m_EditorClassIdentifier: 
+  cardName: "\uC2E0\uC131\uC758\uC2DD"
+  description: "\uB0B4 \uB371\uC5D0\uC11C \uCC9C\uC0AC \uC720\uB2DB\uC744 \uBF51\uACE0
+    \uC18C\uD658\uD569\uB2C8\uB2E4. \uB450\uBC88 \uBC18\uBCF5\uD569\uB2C8\uB2E4."
+  artwork: {fileID: 0}
+  cardType: 1
+  rarity: 0
+  cost: 4
+  cardId: a7acfd74-4245-49dd-a66b-b503b7c95311
+  haveLive2D: 0
+  live2DPath: 
+  tags: []
+  craftCost: 10
+  disenchantReward: 2
+  canCraft: 1
+  canDisenchant: 1
+  spellType: 0

@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6e3b89d52292a546aa24ae61a66b65b, type: 3}
+  m_Name: ZNeutral Flame Burst
+  m_EditorClassIdentifier: 
+  cardName: "\uBD88\uAF43\uC791\uB82C"
+  description: "\uBAA8\uB4E0 \uD558\uC218\uC778\uC5D0\uAC8C 2\uD53C\uD574\uB97C \uC90D\uB2C8\uB2E4."
+  artwork: {fileID: 0}
+  cardType: 1
+  rarity: 0
+  cost: 2
+  cardId: 8d859639-6405-471e-9222-38008b006c0a
+  haveLive2D: 0
+  live2DPath: 
+  tags: []
+  craftCost: 10
+  disenchantReward: 2
+  canCraft: 1
+  canDisenchant: 1
+  spellType: 0
