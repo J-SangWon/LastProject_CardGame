@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e8e2555d73122b43b44cc301395f4ad, type: 3}
+  m_Name: ZNeutral Spirit Keeper Ramora
+  m_EditorClassIdentifier: 
+  cardName: "\uC601\uD63C\uAD00\uB9AC\uC790 \uB77C\uBAA8\uB77C"
+  description: 
+  artwork: {fileID: 0}
+  cardType: 0
+  rarity: 3
+  cost: 7
+  cardId: 7b2325fc-ad7e-48d7-a4f8-5b89581d9fbe
+  haveLive2D: 0
+  live2DPath: 
+  tags: []
+  craftCost: 400
+  disenchantReward: 100
+  canCraft: 1
+  canDisenchant: 1
+  monsterType: 0
+  attack: 3
+  health: 3
+  race: 0

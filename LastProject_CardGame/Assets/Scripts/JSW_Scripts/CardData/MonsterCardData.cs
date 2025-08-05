@@ -1,5 +1,15 @@
 ﻿using UnityEngine;
 
+public enum MonsterCardAbilityType
+{
+    None,
+	Entrance,           //진입
+	Reverberation,      //여운
+	Continuous          //지속효과
+}
+
+public enum AbilityType { TakeDamage, TakeAllDamage, Heal, AllHeal, Destroy, Draw}
+
 [CreateAssetMenu(menuName = "Card/MonsterCard")]
 public class MonsterCardData : BaseCardData
 {
@@ -7,10 +17,25 @@ public class MonsterCardData : BaseCardData
     public int attack;
     public int health;
     public Race race;
+    public MonsterCardAbilityType monsterAbilityType;
+    public AbilityType abilityType;
+    public int abiltyValue;
 
     protected override void OnEnable()
     {
         base.OnEnable();
         cardType = CardType.Monster;
+        maxHP = health;  // MonsterCardData에서 설정한 health 값을 maxHP에 할당
+    }
+
+    public override void TakeDamage(int damage)
+    {
+        base.TakeDamage(damage);  // 부모 클래스에서 데미지 처리
+
+        // 추가적인 몬스터 특성 처리 (예: 몬스터 카드의 죽음 상태를 로그로 출력)
+        if (IsDead())
+        {
+            Debug.Log($"{cardName} has died!");
+        }
     }
 }

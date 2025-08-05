@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6e3b89d52292a546aa24ae61a66b65b, type: 3}
+  m_Name: "ZNeutral\_Grafting"
+  m_EditorClassIdentifier: 
+  cardName: "\uC811\uBAA9"
+  description: "\uB0B4 \uB2E4\uC74C \uC2DD\uBB3C \uC720\uB2DB \uBE44\uC6A9\uC774
+    3\uAC10\uC18C\uD569\uB2C8\uB2E4."
+  artwork: {fileID: 0}
+  cardType: 1
+  rarity: 0
+  cost: 1
+  cardId: 669a23f2-4fa0-45e4-af43-8951d1fe6ba3
+  haveLive2D: 0
+  live2DPath: 
+  tags: []
+  craftCost: 10
+  disenchantReward: 2
+  canCraft: 1
+  canDisenchant: 1
+  spellType: 0

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardName: "\uBB20\uB2C8\uB974 : \uD30C\uAD34"
   description: 
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: e9c9d525dc0dbd24c8a4ed1335b5b05e, type: 3}
   cardType: 1
   rarity: 0
   cost: 2

@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e8e2555d73122b43b44cc301395f4ad, type: 3}
   m_Name: "NorsemMythology J\xF6rmungandr"
   m_EditorClassIdentifier: 
-  cardName: "\uC694\uB974\uBB38\uAC04\uB4DC"
+  cardName: "\uC601\uC6D0\uC758 \uC694\uB974\uBB38\uAC04\uB4DC"
   description: 
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: 82f9b6693fb911b479835ecf942dea7f, type: 3}
   cardType: 0
   rarity: 0
   cost: 6
