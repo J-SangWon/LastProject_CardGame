@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using TMPro;
 
 /// <summary>
 /// 카드 효과들을 관리하는 싱글톤 매니저.
