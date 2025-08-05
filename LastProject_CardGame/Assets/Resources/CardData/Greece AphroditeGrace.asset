@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d6e3b89d52292a546aa24ae61a66b65b, type: 3}
-  m_Name: AphroditeGrace
+  m_Name: Greece AphroditeGrace
   m_EditorClassIdentifier: 
   cardName: "\uC544\uD504\uB85C\uB514\uD14C\uC758 \uC740"
   description: "\uC544\uAD70 \uD558\uC218\uC778 \uD558\uB098\uC758 \uCCB4\uB825\uC744

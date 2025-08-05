@@ -31,7 +31,8 @@ public class StoreManager : MonoBehaviour
     public CardPackViewController packViewController;
     public GameObject cardPrefab;                 // 1장 카드 프리팹
     public Transform cardSpawnContent;            // 10장 배치 부모
-    public GameObject cardSpawnPanel;             // 검은 배경 + 카드 영역
+    public GameObject CardSpawnPanel;             // 검은 배경 + 카드 영역
+    public GameObject StoreMenu;
     public Button cardOpenBtn;
     public Button cardPanelExit;                  // 닫기 버튼
 
@@ -61,7 +62,7 @@ public class StoreManager : MonoBehaviour
         packViewController.onDragStart += () => buyButton.interactable = false;
         packViewController.onSnapEnd += () => buyButton.interactable = true;
 
-        cardSpawnPanel.SetActive(false);
+        CardSpawnPanel.SetActive(false);
         cardOpenBtn.gameObject.SetActive(false);
         cardPanelExit.gameObject.SetActive(false);
     }
@@ -110,7 +111,8 @@ public class StoreManager : MonoBehaviour
     // ────────────────── 2) 카드팩 + 이펙트 ──────────────────
     IEnumerator ShowPackAndEffect()
     {
-        cardSpawnPanel.SetActive(true);
+        StoreMenu.SetActive(false);
+        CardSpawnPanel.SetActive(true);
 
         // 스크롤 셀 복제 대신, 연출 전용 모델 Prefab을 CardPackData에 넣어두는 편이 좋음
         if (currentPack) Destroy(currentPack);
@@ -131,11 +133,12 @@ public class StoreManager : MonoBehaviour
     IEnumerator CardPackAppear()
     {
         GameObject packPrefab = packViewController.selectedCardPackView.gameObject;
-        currentPack = Instantiate(packPrefab, cardPackContainer);
+        currentPack = Instantiate(packPrefab,cardPackContainer);
         RectTransform rect = currentPack.GetComponent<RectTransform>();
         rect.sizeDelta = new Vector2(400, 540);
         rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 0.5f);
         currentPack.transform.localScale = Vector3.zero;
+        currentPack.transform.localPosition = Vector3.zero;
 
         ShowEffect(GetHighestRarity());
 
@@ -350,7 +353,8 @@ public class StoreManager : MonoBehaviour
         foreach (Transform child in cardSpawnContent) Destroy(child.gameObject);
         if (currentPack) Destroy(currentPack);
 
-        cardSpawnPanel.SetActive(false);
+        StoreMenu.SetActive(true);
+        CardSpawnPanel.SetActive(false);
         cardPanelExit.gameObject.SetActive(false);
         isOpening = false;
     }
