@@ -177,14 +177,16 @@ public class GraveyardZone : MonoBehaviour, IPointerClickHandler
                 cardObj.transform.localPosition = new Vector3(xPos, 0, -cardIndex * 0.01f);
                 
                 // 카드 UI 설정
-                var cardUI = cardObj.GetComponent<CardUI_N>();
+                var cardUI = cardObj.GetComponent<CardUI>();
                 if (cardUI != null)
+                {
                     cardUI.SetCard(entry.card);
-                
-                // 카드 플립 기능 비활성화 (묘지에서는 플립 불필요)
-                var cardUIComponent = cardObj.GetComponent<CardUI>();
-                if (cardUIComponent != null)
-                    cardUIComponent.EnableCardFlip = false;
+                    cardUI.EnableCardFlip = false; //카드 플립 비활성화
+                    cardUI.GetComponent<Image>().raycastTarget = false; // 클릭 방지
+
+                }
+                cardObj.GetComponent<CanvasGroup>().blocksRaycasts = false; // 클릭 방지
+
                 
                 visualCardObjs.Add(cardObj);
                 cardIndex++;

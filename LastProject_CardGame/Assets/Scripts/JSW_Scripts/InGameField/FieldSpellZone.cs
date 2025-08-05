@@ -80,7 +80,7 @@ public class FieldSpellZone : MonoBehaviour, IPointerClickHandler
             currentFieldSpellCard.transform.localPosition = Vector3.zero;
             
             // 카드 UI 설정
-            var cardUI = currentFieldSpellCard.GetComponent<CardUI_N>();
+            var cardUI = currentFieldSpellCard.GetComponent<CardUI>();
             if (cardUI != null)
             {
                 cardUI.SetCard(currentFieldSpell);

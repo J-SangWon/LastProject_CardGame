@@ -24,12 +24,6 @@ public class FieldSpellSlotDrop : MonoBehaviour, IDropHandler
             Debug.Log("cardUI // 유효한 카드가 아닙니다.");
             return;
         }
-        var cardUI_N = dropped.GetComponent<CardUI_N>();
-        if (cardUI_N == null)
-        {
-            Debug.Log("cardUI_N // 유효한 카드가 아닙니다.");
-            return;
-        }
 
         var cardData = cardUI.cardData;
 

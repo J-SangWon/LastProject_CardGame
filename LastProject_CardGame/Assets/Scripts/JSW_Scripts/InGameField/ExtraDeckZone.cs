@@ -191,6 +191,7 @@ public class ExtraDeckZone : MonoBehaviour, IPointerClickHandler
                 for (int i = 0; i < entry.count && cardIndex < maxVisibleCards; i++)
                 {
                     GameObject cardObj = Instantiate(cardPrefab, transform);
+                    cardObj.GetComponent<CanvasGroup>().blocksRaycasts = false; // 클릭 방지
                     cardObj.transform.localScale = Vector3.one;
                                         
                     // 카드 위치 설정 (가로로 나열)
@@ -198,15 +199,16 @@ public class ExtraDeckZone : MonoBehaviour, IPointerClickHandler
                     cardObj.transform.localPosition = new Vector3(xPos, 0, -cardIndex * 0.01f);
                     
                     // 카드 UI 설정
-                    var cardUI = cardObj.GetComponent<CardUI_N>();
+                    var cardUI = cardObj.GetComponent<CardUI>();
                     if (cardUI != null)
+                    {
                         cardUI.SetCard(entry.card);
-                    
-                    // 카드 플립 기능 비활성화 (엑스트라 덱에서는 플립 불필요)
-                    var cardUIComponent = cardObj.GetComponent<CardUI>();
-                    if (cardUIComponent != null)
-                        cardUIComponent.EnableCardFlip = false;
-                    
+                        cardUI.EnableCardFlip = false; // 엑스트라 덱에서는 카드 플립 비활성화
+                        cardUI.Front.SetActive(false);
+                        cardUI.GetComponent<Image>().raycastTarget = false; // 클릭 방지
+                        cardUI.Back.SetActive(true); // 뒷면만 표시
+                    }
+
                     visualCardObjs.Add(cardObj);
                     cardIndex++;
                 }
