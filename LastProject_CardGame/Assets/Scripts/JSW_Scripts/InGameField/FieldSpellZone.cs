@@ -1,11 +1,12 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.EventSystems;
 
 /// <summary>
 /// 필드마법 존을 관리하는 스크립트
 /// </summary>
-public class FieldSpellZone : MonoBehaviour
+public class FieldSpellZone : MonoBehaviour, IPointerClickHandler
 {
     [Header("UI 요소")]
     public Image fieldSpellImage;
@@ -20,7 +21,9 @@ public class FieldSpellZone : MonoBehaviour
 
     void Start()
     {
-        ClearFieldSpell();
+        RemoveFieldSpell();
+        cardPrefab = CardManager_test.Instance.cardPrefab;
+
     }
 
     /// <summary>
@@ -29,11 +32,17 @@ public class FieldSpellZone : MonoBehaviour
     public bool ActivateFieldSpell(BaseCardData fieldSpell)
     {
         if (fieldSpell == null || fieldSpell.cardType != CardType.Spell)
+        {
+            Debug.LogWarning("필드마법이 아닌 카드입니다!");
             return false;
+        }
             
         var spellCard = fieldSpell as SpellCardData;
         if (spellCard == null || spellCard.spellType != SpellType.Field)
+        {
+            Debug.LogWarning("필드마법 타입이 아닙니다!");
             return false;
+        }
 
         // 기존 필드마법 제거
         RemoveFieldSpell();
@@ -45,7 +54,20 @@ public class FieldSpellZone : MonoBehaviour
         Debug.Log($"필드마법 발동: {fieldSpell.cardName}");
         return true;
     }
-
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        Debug.Log("FieldSpellZone 클릭됨!");
+        
+        if (currentFieldSpell != null)
+        {
+            // ShowFieldSpellInfo();
+            ActivateFieldSpell(currentFieldSpell);
+        }
+        else
+        {
+            Debug.Log("현재 발동된 필드마법이 없습니다.");
+        }
+    }
     /// <summary>
     /// 필드마법 시각적 표현 생성
     /// </summary>
@@ -65,7 +87,12 @@ public class FieldSpellZone : MonoBehaviour
             }
             
             // 필드마법은 특별한 시각적 효과
-            currentFieldSpellCard.transform.localScale = Vector3.one * 1.2f;
+            currentFieldSpellCard.transform.localScale = Vector3.one;
+            
+            // 카드 플립 기능 비활성화 (필드마법은 플립 불필요)
+            var cardUIComponent = currentFieldSpellCard.GetComponent<CardUI>();
+            if (cardUIComponent != null)
+                cardUIComponent.EnableCardFlip = false;
             
             // UI 텍스트 업데이트
             if (fieldSpellNameText != null)
@@ -80,6 +107,7 @@ public class FieldSpellZone : MonoBehaviour
     {
         if (currentFieldSpellCard != null)
         {
+            DuelZoneManager.Instance.SendToGraveyard(currentFieldSpell);
             Destroy(currentFieldSpellCard);
             currentFieldSpellCard = null;
         }
@@ -87,14 +115,6 @@ public class FieldSpellZone : MonoBehaviour
         
         if (fieldSpellNameText != null)
             fieldSpellNameText.text = "필드마법 없음";
-    }
-
-    /// <summary>
-    /// 필드마법 초기화
-    /// </summary>
-    public void ClearFieldSpell()
-    {
-        RemoveFieldSpell();
     }
 
     /// <summary>
@@ -112,4 +132,19 @@ public class FieldSpellZone : MonoBehaviour
     {
         return currentFieldSpell != null;
     }
+
+    public void OnCardDropped(GameObject cardObject)
+{
+    var cardUI = cardObject.GetComponent<CardUI>();
+    if (cardUI != null && cardUI.cardData != null)
+    {
+        bool success = ActivateFieldSpell(cardUI.cardData);
+        if (success)
+        {
+            // 드롭 성공 시 처리
+            Destroy(cardObject); // 기존 카드 오브젝트 제거
+        }
+    }
+}
+
 }

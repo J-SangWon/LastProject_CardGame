@@ -10,6 +10,9 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
     [Header("카드 플립 설정")]
     [SerializeField] private bool enableCardFlip = true; // 인스펙터에서 카드 플립 기능 켜기/끄기
 
+    [Header("카드 데이터 받아두기")]
+    public BaseCardData cardData;
+
     public Image imageBack;
     public Image imageFront;
     public Image imageArtwork;
@@ -57,6 +60,7 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
 
     public void SetCard(BaseCardData data)
     {
+        cardData = data;
         textCardName.text = data.cardName;
         imageArtwork.sprite = data.artwork;
         textCost.text = data.cost.ToString();

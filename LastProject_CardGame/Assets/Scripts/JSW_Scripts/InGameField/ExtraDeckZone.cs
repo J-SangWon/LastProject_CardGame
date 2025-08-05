@@ -6,21 +6,21 @@ using UnityEditor.Overlays;
 using UnityEngine.EventSystems;
 
 /// <summary>
-/// 엑스트라 덱 존을 관리하는 스크립트 (DeckData 구조 반영)
+/// 엑스트라 덱 존을 관리하는 스크립트
 /// </summary>
 public class ExtraDeckZone : MonoBehaviour, IPointerClickHandler
 {
     [Header("UI 요소")]
     public TextMeshProUGUI extraDeckCountText; // 엑스트라 덱 카드 수 표시
     public GameObject cardPrefab;              // 카드 프리팹
-    public ExtraDeckListPanel extraDeckListPanel; // 클릭 시 보여줄 패널
+    public InGameCardListPanel extraDeckListPanel; // 클릭 시 보여줄 패널
 
     [Header("시각적 설정")]
     public float cardSpacing = 10f; // 카드 간 간격
     public int maxVisibleCards = 5; // 최대 표시할 카드 수
 
     // 실제 엑스트라 덱 데이터 (DeckCardEntry 리스트)
-    private List<DeckCardEntry> extraDeck = new List<DeckCardEntry>();
+    public List<DeckCardEntry> extraDeck = new List<DeckCardEntry>();
 
     // 시각적으로 표시되는 카드 오브젝트들
     private List<GameObject> visualCardObjs = new List<GameObject>();
@@ -47,7 +47,7 @@ public class ExtraDeckZone : MonoBehaviour, IPointerClickHandler
         
         if (extraDeckListPanel != null)
         {
-            extraDeckListPanel.Show(GetAllEntries());
+            extraDeckListPanel.Show(GetAllEntries(), "엑스트라 덱");
         }
         else
         {
