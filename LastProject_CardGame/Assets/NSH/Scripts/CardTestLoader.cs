@@ -1,30 +1,30 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 public class CardTestLoader : MonoBehaviour
 {
-    public string cardIdToLoad = "84789399-d353-4f3b-ad2c-ec4f25cf3158"; // Å×½ºÆ®ÇÒ Ä«µå ID
-    public CardUI_N cardUIPrefab; // CardUI ÇÁ¸®ÆÕ
-    public Transform spawnParent; // UI°¡ ¹èÄ¡µÉ ºÎ¸ğ ¿ÀºêÁ§Æ®
+    public string cardIdToLoad = "84789399-d353-4f3b-ad2c-ec4f25cf3158"; // í…ŒìŠ¤íŠ¸í•  ì¹´ë“œ ID
+    public CardUI_N cardUIPrefab; // CardUI í”„ë¦¬íŒ¹
+    public Transform spawnParent; // UIê°€ ë°°ì¹˜ë  ë¶€ëª¨ ì˜¤ë¸Œì íŠ¸
 
     void Start()
     {
-        // ¸ğµç Ä«µå ºÒ·¯¿À±â
+        // ëª¨ë“  ì¹´ë“œ ë¶ˆëŸ¬ì˜¤ê¸°
         BaseCardData[] allCards = Resources.LoadAll<BaseCardData>("CardData");
 
-        // ÇØ´ç IDÀÇ Ä«µå Ã£±â
+        // í•´ë‹¹ IDì˜ ì¹´ë“œ ì°¾ê¸°
         foreach (var card in allCards)
         {
             if (card.cardId == cardIdToLoad)
             {
-                Debug.Log($"Ä«µå '{card.cardName}' ·Îµå ¼º°ø");
+                Debug.Log($"ì¹´ë“œ '{card.cardName}' ë¡œë“œ ì„±ê³µ");
 
-                // Ä«µå UI ÀÎ½ºÅÏ½º »ı¼º
+                // ì¹´ë“œ UI ì¸ìŠ¤í„´ìŠ¤ ìƒì„±
                 CardUI_N ui = Instantiate(cardUIPrefab, spawnParent);
                 ui.SetCard(card);
                 return;
             }
         }
 
-        Debug.LogWarning("ÀÏÄ¡ÇÏ´Â Ä«µå ID¸¦ °¡Áø Ä«µå°¡ ¾ø½À´Ï´Ù.");
+        Debug.LogWarning("ì¼ì¹˜í•˜ëŠ” ì¹´ë“œ IDë¥¼ ê°€ì§„ ì¹´ë“œê°€ ì—†ìŠµë‹ˆë‹¤.");
     }
 }

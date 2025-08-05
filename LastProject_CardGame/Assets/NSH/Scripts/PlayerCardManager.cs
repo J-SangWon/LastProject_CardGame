@@ -1,17 +1,22 @@
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// ÇÃ·¹ÀÌ¾î Ä«µå ¸Å´ÏÀú: µ¦ ·Îµù, µå·Î¿ì, Ä«µå ¹èÄ¡ ¹× ÀÏºÎ Ä«µå È¿°ú Ã³¸®.
+/// ì¹´ë“œ ë§¤ë‹ˆì €: ë± ë¡œë”©, ë“œë¡œìš°, ì¹´ë“œ ë°°ì¹˜ ë° ì¼ë¶€ ì¹´ë“œ íš¨ê³¼ ì²˜ë¦¬.
 /// </summary>
-public class PlayerCardManager : MonoBehaviour
+public class CardManager_test : MonoBehaviour
 {
-    public static PlayerCardManager Instance;
+    public static CardManager_test Instance;
 
-    [Header("ÇÃ·¹ÀÌ¾î Ä«µå")]
+    [Header("í”Œë ˆì´ì–´ ì¹´ë“œ")]
     public GameObject cardPrefab;
     public Transform deckZone;
     public Transform handZone;
+
+    [Header("ì  ì¹´ë“œ")]
+    public GameObject enemyCardPrefab;
+    public Transform enemyMonsterZone;
+    public BaseCardData[] testEnemyCards;
 
     private List<GameObject> deck = new List<GameObject>();
     public DeckData currentDeckData;
@@ -24,10 +29,11 @@ public class PlayerCardManager : MonoBehaviour
 
     void Start()
     {
-        LoadDeckFromTransfer();  // µ¦À» ·ÎµùÇÏ°í Ä«µå µå·Î¿ì ½ÃÀÛ
+        LoadDeckFromTransfer();
+        SpawnEnemyTestCards();
     }
 
-    #region ÇÃ·¹ÀÌ¾î µ¦ ·Îµù ¹× µå·Î¿ì
+    #region í”Œë ˆì´ì–´ ë± ë¡œë”© ë° ë“œë¡œìš°
 
     void LoadDeckFromTransfer()
     {
@@ -35,11 +41,11 @@ public class PlayerCardManager : MonoBehaviour
 
         if (currentDeckData == null)
         {
-            Debug.LogWarning("DeckTransferManager·ÎºÎÅÍ µ¦ µ¥ÀÌÅÍ¸¦ °¡Á®¿ÀÁö ¸øÇß½À´Ï´Ù.");
+            Debug.LogWarning("DeckTransferManagerë¡œë¶€í„° ë± ë°ì´í„°ë¥¼ ê°€ì ¸ì˜¤ì§€ ëª»í–ˆìŠµë‹ˆë‹¤.");
             return;
         }
 
-        // ScriptableObject Àç¿¬°á
+        // ScriptableObject ì¬ì—°ê²°
         BaseCardData[] allCards = Resources.LoadAll<BaseCardData>("CardData");
 
         foreach (var entry in currentDeckData.mainDeck)
@@ -59,13 +65,14 @@ public class PlayerCardManager : MonoBehaviour
             {
                 GameObject card = CreateCard(entry.card, cardPrefab, deckZone, Quaternion.identity);
                 card.transform.localPosition = new Vector3(0, 0, -zIndex * 0.01f);
+                card.GetComponent<CardUI>().EnableCardFlip = false;
                 zIndex++;
 
                 deck.Add(card);
             }
         }
 
-        DrawCards(5);  // Ã³À½¿¡ 5°³ÀÇ Ä«µå¸¦ µå·Î¿ì
+        DrawCards(5);
     }
 
     private void ClearDeck()
@@ -108,10 +115,30 @@ public class PlayerCardManager : MonoBehaviour
 
     #endregion
 
-    #region °øÅë Ä«µå »ı¼º ¸Ş¼­µå
+    #region ì  ì¹´ë“œ ìŠ¤í°
+
+    void SpawnEnemyTestCards()
+    {
+        if (enemyCardPrefab == null || enemyMonsterZone == null || testEnemyCards == null) return;
+
+        for (int i = 0; i < testEnemyCards.Length; i++)
+        {
+            if (testEnemyCards[i] == null) continue;
+
+            Vector3 position = GetSlotPosition(i, testEnemyCards.Length, 200f);
+            Quaternion rotation = Quaternion.Euler(0, 180, 0);
+
+            GameObject enemyCard = CreateCard(testEnemyCards[i], enemyCardPrefab, enemyMonsterZone, rotation);
+            enemyCard.transform.localPosition = position;
+        }
+    }
+
+    #endregion
+
+    #region ê³µí†µ ì¹´ë“œ ìƒì„± ë©”ì„œë“œ
 
     /// <summary>
-    /// Ä«µå »ı¼º ¹× UI, È¿°ú ÃÊ±âÈ­
+    /// ì¹´ë“œ ìƒì„± ë° UI, íš¨ê³¼ ì´ˆê¸°í™”
     /// </summary>
     private GameObject CreateCard(BaseCardData data, GameObject prefab, Transform parent, Quaternion rotation)
     {
@@ -119,23 +146,23 @@ public class PlayerCardManager : MonoBehaviour
         card.transform.localScale = Vector3.one;
         card.transform.localRotation = rotation;
 
-        // UI ¼¼ÆÃ
+        // UI ì„¸íŒ…
         var cardUI = card.GetComponent<CardUI>();
         if (cardUI != null)
         {
             cardUI.SetCard(data);
-            cardUI.SetFace(true);  // Ä«µå µŞ¸éÀ¸·Î ¼³Á¤ (ÃÊ±âÈ­)
-            cardUI.EnableCardFlip = rotation == Quaternion.identity; // ÇÃ·¹ÀÌ¾î Ä«µå¸¸ Å¬¸¯ °¡´É
+            cardUI.SetFace(true);
+            cardUI.EnableCardFlip = rotation == Quaternion.identity; // í”Œë ˆì´ì–´ ì¹´ë“œë§Œ í´ë¦­ ê°€ëŠ¥
         }
 
-        // µå·¡±×
+        // ë“œë˜ê·¸
         var dragHandler = card.GetComponent<CardDragHandler>();
         if (dragHandler != null)
         {
             dragHandler.enabled = rotation == Quaternion.identity;
         }
 
-        // Ä«µå È¿°ú: ÇÃ·¹ÀÌ¾î Ä«µå¿¡¸¸ Ãß°¡
+        // ëŒ€ìƒ ì§€ì • ë° ì†Œí™˜ íš¨ê³¼ëŠ” í”Œë ˆì´ì–´ ì¹´ë“œë§Œ
         if (rotation == Quaternion.identity)
         {
             if (card.GetComponent<TargetableCard>() == null)
@@ -151,14 +178,23 @@ public class PlayerCardManager : MonoBehaviour
         return card;
     }
 
+    /// <summary>
+    /// ëª¬ìŠ¤í„°ì¡´ ìœ„ì¹˜ ê³„ì‚° (5ìŠ¬ë¡¯ ê¸°ì¤€ ì¤‘ì•™ ì •ë ¬)
+    /// </summary>
+    private Vector3 GetSlotPosition(int index, int total, float spacing)
+    {
+        float startX = -((total - 1) * spacing) / 2f;
+        return new Vector3(startX + index * spacing, 0, 0);
+    }
+
     #endregion
 
-    #region Ä«µå È¿°ú Ã³¸®
+    #region ì¹´ë“œ íš¨ê³¼ ì²˜ë¦¬
 
     public void ResolveCard(PlayerController_N player, System.Action onComplete)
     {
-        Debug.Log("Ä«µå È¿°ú ÇØ°á Áß...");
-        DrawCard(); // ¿¹½Ã: Ä«µå µå·Î¿ì
+        Debug.Log("ì¹´ë“œ íš¨ê³¼ í•´ê²° ì¤‘...");
+        DrawCard(); // ì˜ˆì‹œ
         onComplete?.Invoke();
     }
 
