@@ -9,16 +9,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d6e3b89d52292a546aa24ae61a66b65b, type: 3}
-  m_Name: PoseidonWave
+  m_Script: {fileID: 11500000, guid: 5e8e2555d73122b43b44cc301395f4ad, type: 3}
+  m_Name: Greece Siren
   m_EditorClassIdentifier: 
-  cardName: "\uD3EC\uC138\uC774\uB3C8\uC758 \uD30C"
-  description: "\uC801 \uD558\uC218\uC778 \uC804\uCCB4 3\uC758 \uB370\uBBF8\uC9C0"
-  artwork: {fileID: 21300000, guid: fb1c718acda6f5845be058ced1e86c2d, type: 3}
-  cardType: 1
+  cardName: "\uC138\uC774\uB80C"
+  description: "\uC8FD\uC74C\uC758 \uBA54\uC544\uB9AC : \uCE74\uB4DC\uD55C\uC7A5
+    \uB4DC\uB85C\uC6B0"
+  artwork: {fileID: 21300000, guid: a44e97f4a3186a44481ed1dc46614e3c, type: 3}
+  cardType: 0
   rarity: 2
-  cost: 5
-  cardId: 07ad6e4e-1e95-4db6-9e85-3c7d67809a55
+  cost: 4
+  cardId: 23f4fa5d-9ac1-400c-9603-181f7aac1e8d
   haveLive2D: 0
   live2DPath: 
   cardEffects: []
@@ -27,4 +28,7 @@ MonoBehaviour:
   disenchantReward: 25
   canCraft: 1
   canDisenchant: 1
-  spellType: 0
+  monsterType: 0
+  attack: 3
+  health: 5
+  race: 7

@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 81c0b2c749ce48b4eabfeed24c785b5e, type: 3}
-  m_Name: NemesisJudge
+  m_Name: Greece NemesisJudge
   m_EditorClassIdentifier: 
   cardName: "\uB124\uBA54\uC2DC\uC2A4\uC758 \uC2EC\uD310"
   description: "\uC0C1\uB300\uC758 \uC8FC\uBB38\uC744 \uBB34\uD6A8\uD654\uC2DC\uD0A4\uACE0,

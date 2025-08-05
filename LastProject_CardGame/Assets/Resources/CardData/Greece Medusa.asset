@@ -10,25 +10,25 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5e8e2555d73122b43b44cc301395f4ad, type: 3}
-  m_Name: Siren
+  m_Name: Greece Medusa
   m_EditorClassIdentifier: 
-  cardName: "\uC138\uC774\uB80C"
-  description: "\uC8FD\uC74C\uC758 \uBA54\uC544\uB9AC : \uCE74\uB4DC\uD55C\uC7A5
-    \uB4DC\uB85C\uC6B0"
-  artwork: {fileID: 21300000, guid: a44e97f4a3186a44481ed1dc46614e3c, type: 3}
+  cardName: "\uBA54\uB450\uC0AC"
+  description: "\uC801 \uD558\uC218\uC778 \uD558\uB098\uB97C 1\uD134\uB3D9\uC548
+    \uAE30\uC808\uC2DC\uD0B5\uB2C8\uB2E4."
+  artwork: {fileID: 21300000, guid: 8c310d6194cd5004583dfc856adc7132, type: 3}
   cardType: 0
-  rarity: 2
+  rarity: 1
   cost: 4
-  cardId: 23f4fa5d-9ac1-400c-9603-181f7aac1e8d
+  cardId: 8a86e3d6-f347-4e8c-956f-c00f3692cf6e
   haveLive2D: 0
   live2DPath: 
   cardEffects: []
   tags: []
-  craftCost: 100
-  disenchantReward: 25
+  craftCost: 30
+  disenchantReward: 8
   canCraft: 1
   canDisenchant: 1
   monsterType: 0
-  attack: 3
-  health: 5
-  race: 7
+  attack: 5
+  health: 3
+  race: 5

@@ -10,24 +10,24 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5e8e2555d73122b43b44cc301395f4ad, type: 3}
-  m_Name: Athena
+  m_Name: Greece Titan
   m_EditorClassIdentifier: 
-  cardName: "\uC544\uD14C\uB098"
-  description: "\uC544\uAD70 \uD558\uC218\uC778\uC758 \uCCB4\uB825\uC744 1 \uC99D\uAC00\uC2DC\uD0B5\uB2C8\uB2E4."
-  artwork: {fileID: 21300000, guid: a49585830215543418cbf91d588dd5a4, type: 3}
+  cardName: "\uD0C0\uC774\uD0C4"
+  description: "\uAC70\uC778"
+  artwork: {fileID: 21300000, guid: 5be33e63a3e1aee478bfbdfbc8be3bda, type: 3}
   cardType: 0
-  rarity: 2
-  cost: 5
-  cardId: 22630820-503e-491b-9349-9ad74cd8817f
+  rarity: 0
+  cost: 6
+  cardId: 38184bfd-82f4-4b5b-bae5-a9418174f170
   haveLive2D: 0
   live2DPath: 
   cardEffects: []
   tags: []
-  craftCost: 100
-  disenchantReward: 25
+  craftCost: 10
+  disenchantReward: 2
   canCraft: 1
   canDisenchant: 1
   monsterType: 0
   attack: 5
-  health: 5
-  race: 3
+  health: 7
+  race: 0
