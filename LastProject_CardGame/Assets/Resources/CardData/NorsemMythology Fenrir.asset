@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e8e2555d73122b43b44cc301395f4ad, type: 3}
   m_Name: NorsemMythology Fenrir
   m_EditorClassIdentifier: 
-  cardName: "\uD39C\uB9AC\uB974"
+  cardName: "\uC885\uB9D0\uC758 \uB291\uB300 \uD39C\uB9AC\uB974"
   description: 
   artwork: {fileID: 0}
   cardType: 0
