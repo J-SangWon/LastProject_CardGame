@@ -243,7 +243,7 @@ public class StoreManager : MonoBehaviour
         // 중앙 기준 좌상단 기준점 계산
         Vector2 startPos = new Vector2(
             -totalWidth / 2f + cellW / 2f,
-             totalHeight / 2f - cellH / 2f
+             totalHeight / 2f - cellH / 2f + 50
         );
 
         StartCoroutine(DetectClickToSkip());
