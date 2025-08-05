@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6e3b89d52292a546aa24ae61a66b65b, type: 3}
+  m_Name: ZNeutral Incantation
+  m_EditorClassIdentifier: 
+  cardName: "\uC8FC\uBB38\uC74A\uAE30"
+  description: "\uC2A4\uD3A0\uCE74\uB4DC\uB97C 3\uC7A5 \uBF51\uC2B5\uB2C8\uB2E4."
+  artwork: {fileID: 0}
+  cardType: 1
+  rarity: 0
+  cost: 3
+  cardId: d504bc17-2df4-4bbe-a52c-7b8b8ceab039
+  haveLive2D: 0
+  live2DPath: 
+  tags: []
+  craftCost: 10
+  disenchantReward: 2
+  canCraft: 1
+  canDisenchant: 1
+  spellType: 0

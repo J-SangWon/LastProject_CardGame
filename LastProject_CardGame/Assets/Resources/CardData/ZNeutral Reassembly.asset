@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6e3b89d52292a546aa24ae61a66b65b, type: 3}
+  m_Name: ZNeutral Reassembly
+  m_EditorClassIdentifier: 
+  cardName: "\uC7AC\uC870\uB9BD"
+  description: "\uB0B4 \uBB18\uC9C0\uC5D0\uC11C \uAE30\uACC4 \uC720\uB2DB\uC744 \uB458
+    \uC18C\uD658\uD569\uB2C8\uB2E4."
+  artwork: {fileID: 0}
+  cardType: 1
+  rarity: 0
+  cost: 3
+  cardId: c213826c-deda-4a20-bb95-8f87724b91f0
+  haveLive2D: 0
+  live2DPath: 
+  tags: []
+  craftCost: 10
+  disenchantReward: 2
+  canCraft: 1
+  canDisenchant: 1
+  spellType: 0
