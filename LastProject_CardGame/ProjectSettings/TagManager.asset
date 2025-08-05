@@ -4,8 +4,9 @@
 TagManager:
   serializedVersion: 3
   tags:
-  - MonsterZone
   - Enemy
+  - PlayerZone
+  - EnemyZone
   layers:
   - Default
   - TransparentFX

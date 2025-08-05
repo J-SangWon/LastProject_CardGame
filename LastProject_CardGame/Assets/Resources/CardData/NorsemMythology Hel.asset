@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e8e2555d73122b43b44cc301395f4ad, type: 3}
   m_Name: NorsemMythology Hel
   m_EditorClassIdentifier: 
-  cardName: "\uD5EC"
+  cardName: "\uC800\uC2B9\uC758 \uC5EC\uC655 \uD5EC\uB77C"
   description: 
   artwork: {fileID: 0}
   cardType: 0

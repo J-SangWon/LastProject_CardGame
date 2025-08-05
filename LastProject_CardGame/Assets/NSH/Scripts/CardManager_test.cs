@@ -2,16 +2,21 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// 카드 매니저. 덱을 로드하고 핸드로 드로우하며 카드 효과도 여기서 일부 조정 가능.
+/// 카드 매니저: 덱 로딩, 드로우, 카드 배치 및 일부 카드 효과 처리.
 /// </summary>
 public class CardManager_test : MonoBehaviour
 {
     public static CardManager_test Instance;
 
-    [Header("필드 연결")]
+    [Header("플레이어 카드")]
     public GameObject cardPrefab;
     public Transform deckZone;
     public Transform handZone;
+
+    [Header("적 카드")]
+    public GameObject enemyCardPrefab;
+    public Transform enemyMonsterZone;
+    public BaseCardData[] testEnemyCards;
 
     private List<GameObject> deck = new List<GameObject>();
     public DeckData currentDeckData;
@@ -25,83 +30,50 @@ public class CardManager_test : MonoBehaviour
     void Start()
     {
         LoadDeckFromTransfer();
+        SpawnEnemyTestCards();
     }
 
-    /// <summary>
-    /// 덱 데이터 로드 및 카드 프리팹 생성
-    /// </summary>
+    #region 플레이어 덱 로딩 및 드로우
+
     void LoadDeckFromTransfer()
     {
         currentDeckData = DeckTransferManager.Instance?.GetDeck();
+
         if (currentDeckData == null)
         {
             Debug.LogWarning("DeckTransferManager로부터 덱 데이터를 가져오지 못했습니다.");
             return;
         }
 
-        // 카드 데이터를 Resources에서 재연결
+        // ScriptableObject 재연결
         BaseCardData[] allCards = Resources.LoadAll<BaseCardData>("CardData");
+
         foreach (var entry in currentDeckData.mainDeck)
         {
             if (entry.card == null)
             {
-                foreach (var c in allCards)
-                {
-                    if (c.cardId == entry.cardId)
-                    {
-                        entry.card = c;
-                        break;
-                    }
-                }
+                entry.card = System.Array.Find(allCards, c => c.cardId == entry.cardId);
             }
         }
 
         ClearDeck();
 
         int zIndex = 0;
-        foreach (var cardEntry in currentDeckData.mainDeck)
+        foreach (var entry in currentDeckData.mainDeck)
         {
-            for (int i = 0; i < cardEntry.count; i++)
+            for (int i = 0; i < entry.count; i++)
             {
-                GameObject card = Instantiate(cardPrefab, deckZone);
-                card.transform.localScale = Vector3.one;
+                GameObject card = CreateCard(entry.card, cardPrefab, deckZone, Quaternion.identity);
                 card.transform.localPosition = new Vector3(0, 0, -zIndex * 0.01f);
                 zIndex++;
-
-                // 카드 UI 설정
-                var cardUI = card.GetComponent<CardUI_N>();
-                if (cardUI != null)
-                {
-                    cardUI.SetCard(cardEntry.card);
-                }
-                else
-                {
-                    Debug.LogWarning("CardUI_N 컴포넌트를 찾을 수 없습니다.");
-                }
-
-                // 카드 대상지정 컴포넌트 추가
-                if (card.GetComponent<TargetableCard>() == null)
-                    card.AddComponent<TargetableCard>();
-
-                // 몬스터 소환 효과 설정
-                var effect = card.GetComponent<MonsterEffectOnSummon>();
-                if (effect == null)
-                    effect = card.AddComponent<MonsterEffectOnSummon>();
-
-                effect.cardData = cardEntry.card;
-                effect.cardManager = this;
 
                 deck.Add(card);
             }
         }
 
-        // 초기 드로우
         DrawCards(5);
     }
 
-    /// <summary>
-    /// 덱 클리어
-    /// </summary>
     private void ClearDeck()
     {
         foreach (var card in deck)
@@ -111,9 +83,6 @@ public class CardManager_test : MonoBehaviour
         deck.Clear();
     }
 
-    /// <summary>
-    /// 카드 여러 장 드로우
-    /// </summary>
     public void DrawCards(int count)
     {
         for (int i = 0; i < count && deck.Count > 0; i++)
@@ -128,17 +97,8 @@ public class CardManager_test : MonoBehaviour
         UpdateHandLayout();
     }
 
-    /// <summary>
-    /// 카드 한 장 드로우
-    /// </summary>
-    public void DrawCard()
-    {
-        DrawCards(1);
-    }
+    public void DrawCard() => DrawCards(1);
 
-    /// <summary>
-    /// 핸드 카드 정렬
-    /// </summary>
     private void UpdateHandLayout()
     {
         float spacing = 150f;
@@ -152,14 +112,90 @@ public class CardManager_test : MonoBehaviour
         }
     }
 
+    #endregion
+
+    #region 적 카드 스폰
+
+    void SpawnEnemyTestCards()
+    {
+        if (enemyCardPrefab == null || enemyMonsterZone == null || testEnemyCards == null) return;
+
+        for (int i = 0; i < testEnemyCards.Length; i++)
+        {
+            if (testEnemyCards[i] == null) continue;
+
+            Vector3 position = GetSlotPosition(i, testEnemyCards.Length, 200f);
+            Quaternion rotation = Quaternion.Euler(0, 180, 0);
+
+            GameObject enemyCard = CreateCard(testEnemyCards[i], enemyCardPrefab, enemyMonsterZone, rotation);
+            enemyCard.transform.localPosition = position;
+        }
+    }
+
+    #endregion
+
+    #region 공통 카드 생성 메서드
+
     /// <summary>
-    /// 카드 효과를 발동할 때 호출 (외부에서 사용)
+    /// 카드 생성 및 UI, 효과 초기화
     /// </summary>
+    private GameObject CreateCard(BaseCardData data, GameObject prefab, Transform parent, Quaternion rotation)
+    {
+        GameObject card = Instantiate(prefab, parent);
+        card.transform.localScale = Vector3.one;
+        card.transform.localRotation = rotation;
+
+        // UI 세팅
+        var cardUI = card.GetComponent<CardUI>();
+        if (cardUI != null)
+        {
+            cardUI.SetCard(data);
+            cardUI.SetFace(true);
+            cardUI.EnableCardFlip = rotation == Quaternion.identity; // 플레이어 카드만 클릭 가능
+        }
+
+        // 드래그
+        var dragHandler = card.GetComponent<CardDragHandler>();
+        if (dragHandler != null)
+        {
+            dragHandler.enabled = rotation == Quaternion.identity;
+        }
+
+        // 대상 지정 및 소환 효과는 플레이어 카드만
+        if (rotation == Quaternion.identity)
+        {
+            if (card.GetComponent<TargetableCard>() == null)
+                card.AddComponent<TargetableCard>();
+
+            var effect = card.GetComponent<MonsterEffectOnSummon>();
+            if (effect == null) effect = card.AddComponent<MonsterEffectOnSummon>();
+
+            effect.cardData = data;
+            effect.cardManager = this;
+        }
+
+        return card;
+    }
+
+    /// <summary>
+    /// 몬스터존 위치 계산 (5슬롯 기준 중앙 정렬)
+    /// </summary>
+    private Vector3 GetSlotPosition(int index, int total, float spacing)
+    {
+        float startX = -((total - 1) * spacing) / 2f;
+        return new Vector3(startX + index * spacing, 0, 0);
+    }
+
+    #endregion
+
+    #region 카드 효과 처리
+
     public void ResolveCard(PlayerController_N player, System.Action onComplete)
     {
-        // 효과 발동 시 필요한 추가 로직을 작성
         Debug.Log("카드 효과 해결 중...");
-        DrawCard(); // 예시 효과
+        DrawCard(); // 예시
         onComplete?.Invoke();
     }
+
+    #endregion
 }
