@@ -5,21 +5,22 @@ using UnityEngine.UI;
 
 public class FildMonster : MonoBehaviour, IPointerClickHandler
 {
-    private MonsterCardData monsterCardData;
+    public MonsterCardData monsterCardData { get; private set; }
 
     [SerializeField] private Image illustration;
     [SerializeField] private Text AttackTex;
     [SerializeField] private Text HealthTex;
     private Sprite artWork;
-    private int Attack;
+    public int Attack { get; private set; }
     private int maxHealth;
     private int currentHealth;
 
 	[HideInInspector] public bool isAppeared = false;
+	private bool hasAttackedThisTurn = false;
 
-    void Start()
+	void Start()
     {
-        monsterCardData = GetComponentInParent<MonsterCardData>();
+        monsterCardData = GetComponent<MonsterCardData>();
         InitStatus();
 
         if (monsterCardData.monsterAbilityType == MonsterCardAbilityType.Entrance && isAppeared == false) Entrance(monsterCardData.abilityType, monsterCardData.abiltyValue);
@@ -79,6 +80,18 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
 		HealthTex.text = currentHealth.ToString();
 	}
 
+    public void TakeDamage(int amount)
+    {
+        currentHealth = currentHealth - amount;
+        if (currentHealth <= 0) Destroy(gameObject);
+    }
+
+	public void Heal(int amount)
+	{
+		currentHealth = currentHealth + amount;
+		if (currentHealth > maxHealth) currentHealth = maxHealth;
+	}
+
 	private void Entrance(AbilityType abilityType, int abilityValue) //¡¯¿‘
     {
         switch (abilityType)
@@ -118,5 +131,15 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
 			case AbilityType.Destroy:
 				break;
 		}
+	}
+
+	public bool HasAttackedThisTurn()
+	{
+		return hasAttackedThisTurn;
+	}
+
+	public void SetAttackedThisTurn(bool value)
+	{
+		hasAttackedThisTurn = value;
 	}
 }
