@@ -2279,7 +2279,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   graveyardCountText: {fileID: 0}
-  graveyardListPanel: {fileID: 0}
+  graveyardListPanel: {fileID: 1987241881}
   cardPrefab: {fileID: 0}
   maxVisibleCards: 5
   cardSpacing: 0.8
