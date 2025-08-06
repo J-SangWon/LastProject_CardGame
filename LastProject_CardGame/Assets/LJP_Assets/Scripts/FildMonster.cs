@@ -11,7 +11,7 @@ public class FildMonster : MonoBehaviour
     private Text HealthTex;
     private Sprite artWork;
     private int Attack;
-    private int maxHealth
+    private int maxHealth;
     private int currentHealth;
 
 	[HideInInspector] public bool isAppeared = false;
