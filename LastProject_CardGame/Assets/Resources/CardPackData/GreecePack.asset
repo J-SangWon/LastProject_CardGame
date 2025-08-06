@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: GreecePack
   m_EditorClassIdentifier: 
   packType: 2
-  description: 
-  packArtwork: {fileID: 0}
-  packCost: 0
+  packArtwork: {fileID: 21300000, guid: b3d16dda4c5a91d45aafdd7f417c3140, type: 3}
+  packUpImg: {fileID: 21300000, guid: 4f55280f849878e4eac323f762412f76, type: 3}
+  packDownImg: {fileID: 21300000, guid: 6c2943e870c46294a941d1a06892ea8d, type: 3}
   cards:
   - {fileID: 11400000, guid: 40d9f5494c2feb44083e511994cba11b, type: 2}
   - {fileID: 11400000, guid: bb18ce48b1eade54f8abf19180d80042, type: 2}
@@ -26,3 +26,11 @@ MonoBehaviour:
   - {fileID: 11400000, guid: ddf373db95e31dc44a814fed4e7bf040, type: 2}
   - {fileID: 11400000, guid: 9937dff01bb9be9409c64f14d169c927, type: 2}
   - {fileID: 11400000, guid: 3d813c0416caba74ba60a55a8500c743, type: 2}
+  - {fileID: 11400000, guid: eb8a8727d6ac67b4cbf8368374f1563e, type: 2}
+  - {fileID: 11400000, guid: d40adeb548727de428986deb7610e226, type: 2}
+  - {fileID: 11400000, guid: 3b3f9678106233a4baa03f41fdf2d5f3, type: 2}
+  - {fileID: 11400000, guid: 87e012cafaf246c40b533e2ffe57bb21, type: 2}
+  - {fileID: 11400000, guid: a0f43d69b9a20d647be519872091e93d, type: 2}
+  - {fileID: 11400000, guid: 9588d6e3fa4a1094b9bb64fc2c759c7f, type: 2}
+  - {fileID: 11400000, guid: 79bc8b4e7cd51254298c03f7b80fcb01, type: 2}
+  - {fileID: 11400000, guid: 70b32d23d6087b34587ca0853a9dc131, type: 2}

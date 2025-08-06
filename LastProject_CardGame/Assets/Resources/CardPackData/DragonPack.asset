@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: DragonPack
   m_EditorClassIdentifier: 
   packType: 1
-  description: 
-  packArtwork: {fileID: 0}
-  packCost: 0
+  packArtwork: {fileID: 21300000, guid: b8505db61b639e740abb1f07824cb800, type: 3}
+  packUpImg: {fileID: 21300000, guid: b0a3a6fb2bc7ae4428a9cb18045fb5c2, type: 3}
+  packDownImg: {fileID: 21300000, guid: 8ddbbf1ba1d1a3840bdcdf533ca21595, type: 3}
   cards: []

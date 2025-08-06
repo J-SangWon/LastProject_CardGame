@@ -231,6 +231,33 @@ MonoBehaviour:
     deckName: 
     mainDeck: []
     extraDeck: []
+--- !u!114 &194988875 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 516110549712888436, guid: d1bf92950af282242a33d643000aab89, type: 3}
+  m_PrefabInstance: {fileID: 537158759}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &194988876 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1848978989308894005, guid: d1bf92950af282242a33d643000aab89, type: 3}
+  m_PrefabInstance: {fileID: 537158759}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!1 &194988877 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1507511782490107509, guid: d1bf92950af282242a33d643000aab89, type: 3}
+  m_PrefabInstance: {fileID: 537158759}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &202911133 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7079449102460312784, guid: 37b5a99d7eac42e4a85e1a38e7939581, type: 3}
@@ -674,6 +701,14 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 537158765}
     - target: {fileID: 3457817937308699894, guid: 81c1df92da6640e45b24839b4321c3fa, type: 3}
+      propertyPath: CardPackAnim
+      value: 
+      objectReference: {fileID: 194988877}
+    - target: {fileID: 3457817937308699894, guid: 81c1df92da6640e45b24839b4321c3fa, type: 3}
+      propertyPath: CardPackUpImg
+      value: 
+      objectReference: {fileID: 194988876}
+    - target: {fileID: 3457817937308699894, guid: 81c1df92da6640e45b24839b4321c3fa, type: 3}
       propertyPath: cardPanelExit
       value: 
       objectReference: {fileID: 537158764}
@@ -685,6 +720,10 @@ PrefabInstance:
       propertyPath: cardSpawnPanel
       value: 
       objectReference: {fileID: 537158766}
+    - target: {fileID: 3457817937308699894, guid: 81c1df92da6640e45b24839b4321c3fa, type: 3}
+      propertyPath: CardPackDownImg
+      value: 
+      objectReference: {fileID: 194988875}
     - target: {fileID: 3457817937308699894, guid: 81c1df92da6640e45b24839b4321c3fa, type: 3}
       propertyPath: cardSpawnContent
       value: 

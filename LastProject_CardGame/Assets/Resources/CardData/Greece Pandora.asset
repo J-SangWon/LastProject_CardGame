@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81c0b2c749ce48b4eabfeed24c785b5e, type: 3}
+  m_Name: Greece Pandora
+  m_EditorClassIdentifier: 
+  cardName: "\uD310\uB3C4\uB77C\uC758 \uC0C1\uC790"
+  description: "\uC0C1\uB300 \uD558\uC218\uC778\uC73C 1/1\uB85C \uB9CC\uB4ED\uB2C8\uB2E4."
+  artwork: {fileID: 21300000, guid: effb5face2bb7444eb9a0e67218a78ef, type: 3}
+  cardType: 2
+  rarity: 1
+  cost: 4
+  cardId: 4462f1c8-b214-4d0f-bb32-60666af1b5f3
+  haveLive2D: 0
+  live2DPath: 
+  cardEffect: 0
+  tags: []
+  craftCost: 30
+  disenchantReward: 8
+  canCraft: 1
+  canDisenchant: 1
+  maxHP: 0
+  currentHP: 0
+  trapType: 0
