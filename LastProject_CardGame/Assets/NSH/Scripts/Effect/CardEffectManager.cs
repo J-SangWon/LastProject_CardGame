@@ -1,11 +1,11 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Ä«µå È¿°úµéÀ» °ü¸®ÇÏ´Â ½Ì±ÛÅæ ¸Å´ÏÀú.
-/// Ä«µå È¿°ú Á¾·ùº°·Î Ã³¸®ÇÏ¸ç, ´ë»ó ÁöÁ¤ È¿°úµµ Áö¿ø.
+/// ì¹´ë“œ íš¨ê³¼ë“¤ì„ ê´€ë¦¬í•˜ëŠ” ì‹±ê¸€í†¤ ë§¤ë‹ˆì €.
+/// ì¹´ë“œ íš¨ê³¼ ì¢…ë¥˜ë³„ë¡œ ì²˜ë¦¬í•˜ë©°, ëŒ€ìƒ ì§€ì • íš¨ê³¼ë„ ì§€ì›.
 /// </summary>
 public class CardEffectManager : MonoBehaviour
 {
@@ -13,13 +13,13 @@ public class CardEffectManager : MonoBehaviour
 
     public enum CardEffect
     {
-        DrawCard,           // Ä«µå »Ì±â
-        DestroyCard,        // ÀÚ±â Ä«µå ÆÄ±«
-        TargetDestroyCard,  // ´ë»ó Ä«µå ÆÄ±« (´ë»ó ÁöÁ¤)
-        DamageTarget        // ´ë»ó µ¥¹ÌÁö (´ë»ó ÁöÁ¤)
+        DrawCard,           // ì¹´ë“œ ë½‘ê¸°
+        DestroyCard,        // ìê¸° ì¹´ë“œ íŒŒê´´
+        TargetDestroyCard,  // ëŒ€ìƒ ì¹´ë“œ íŒŒê´´ (ëŒ€ìƒ ì§€ì •)
+        DamageTarget        // ëŒ€ìƒ ë°ë¯¸ì§€ (ëŒ€ìƒ ì§€ì •)
     }
 
-    public List<PlayerController_N> players; // ÇÃ·¹ÀÌ¾î ¸®½ºÆ®(ÇÊ¿ä ½Ã)
+    public List<PlayerController_N> players; // í”Œë ˆì´ì–´ ë¦¬ìŠ¤íŠ¸(í•„ìš” ì‹œ)
 
     private void Awake()
     {
@@ -27,11 +27,11 @@ public class CardEffectManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Ä«µå È¿°ú ½ÇÇà ÁøÀÔÁ¡
+    /// ì¹´ë“œ íš¨ê³¼ ì‹¤í–‰ ì§„ì…ì 
     /// </summary>
     public void ApplyEffect(PlayerController_N player, CardEffect effect, Action onComplete)
     {
-        Debug.Log($"[CardEffectManager] Ä«µå È¿°ú: {effect}");
+        Debug.Log($"[CardEffectManager] ì¹´ë“œ íš¨ê³¼: {effect}");
 
         switch (effect)
         {
@@ -46,19 +46,19 @@ public class CardEffectManager : MonoBehaviour
                 StartCoroutine(EffectWaitForTarget(player, effect, onComplete));
                 break;
             default:
-                Debug.LogWarning("[CardEffectManager] Á¤ÀÇµÇÁö ¾ÊÀº Ä«µå È¿°ú");
+                Debug.LogWarning("[CardEffectManager] ì •ì˜ë˜ì§€ ì•Šì€ ì¹´ë“œ íš¨ê³¼");
                 onComplete?.Invoke();
                 break;
         }
     }
 
-    // Ä«µå »Ì±â ¿¹½Ã (CardManager_test È°¿ë)
+    
     private void EffectDrawCard(PlayerController_N player, Action onComplete)
     {
         PlayerCardManager.Instance.ResolveCard(player, onComplete);
     }
 
-    // ÀÚ±â Ä«µå ÇÏ³ª ÆÄ±« ¿¹½Ã
+    // ìê¸° ì¹´ë“œ í•˜ë‚˜ íŒŒê´´ ì˜ˆì‹œ
     private void EffectDestroyCard(PlayerController_N player, Action onComplete)
     {
         if (player.HasCards)
@@ -67,39 +67,39 @@ public class CardEffectManager : MonoBehaviour
             if (card != null)
             {
                 Destroy(card);
-                Debug.Log($"[CardEffectManager] Ä«µå ÆÄ±«: {card.name}");
+                Debug.Log($"[CardEffectManager] ì¹´ë“œ íŒŒê´´: {card.name}");
             }
             else
             {
-                Debug.Log("[CardEffectManager] ÆÄ±«ÇÒ Ä«µå ¾øÀ½");
+                Debug.Log("[CardEffectManager] íŒŒê´´í•  ì¹´ë“œ ì—†ìŒ");
             }
         }
         else
         {
-            Debug.Log("[CardEffectManager] ÇÃ·¹ÀÌ¾î Ä«µå ¾øÀ½");
+            Debug.Log("[CardEffectManager] í”Œë ˆì´ì–´ ì¹´ë“œ ì—†ìŒ");
         }
         onComplete?.Invoke();
     }
 
-    // ´ë»ó ÁöÁ¤ Ä«µå È¿°ú Ã³¸® ÄÚ·çÆ¾
+    // ëŒ€ìƒ ì§€ì • ì¹´ë“œ íš¨ê³¼ ì²˜ë¦¬ ì½”ë£¨í‹´
     private IEnumerator EffectWaitForTarget(PlayerController_N player, CardEffect effect, Action onComplete)
     {
-        Debug.Log("[CardEffectManager] ´ë»ó ¼±ÅÃ ´ë±â Áß...");
+        Debug.Log("[CardEffectManager] ëŒ€ìƒ ì„ íƒ ëŒ€ê¸° ì¤‘...");
 
         TargetSelector.Instance.StartSelecting(target =>
         {
             if (target == null)
             {
-                Debug.LogWarning("[CardEffectManager] ´ë»óÀÌ ¼±ÅÃµÇÁö ¾ÊÀ½");
+                Debug.LogWarning("[CardEffectManager] ëŒ€ìƒì´ ì„ íƒë˜ì§€ ì•ŠìŒ");
                 onComplete?.Invoke();
                 return;
             }
 
-            // TargetableCard ÄÄÆ÷³ÍÆ® È®ÀÎ (¾È ºÙ¾îÀÖÀ¸¸é °æ°í ÈÄ Á¾·á)
+            // TargetableCard ì»´í¬ë„ŒíŠ¸ í™•ì¸ (ì•ˆ ë¶™ì–´ìˆìœ¼ë©´ ê²½ê³  í›„ ì¢…ë£Œ)
             TargetableCard targetable = target.GetComponent<TargetableCard>();
             if (targetable == null)
             {
-                Debug.LogWarning("[CardEffectManager] ¼±ÅÃ ´ë»ó¿¡ TargetableCard°¡ ¾ø½À´Ï´Ù.");
+                Debug.LogWarning("[CardEffectManager] ì„ íƒ ëŒ€ìƒì— TargetableCardê°€ ì—†ìŠµë‹ˆë‹¤.");
                 onComplete?.Invoke();
                 return;
             }
@@ -108,11 +108,11 @@ public class CardEffectManager : MonoBehaviour
             {
                 case CardEffect.TargetDestroyCard:
                     Destroy(target);
-                    Debug.Log("[CardEffectManager] ´ë»ó Ä«µå ÆÄ±« ¿Ï·á");
+                    Debug.Log("[CardEffectManager] ëŒ€ìƒ ì¹´ë“œ íŒŒê´´ ì™„ë£Œ");
                     break;
 
                 case CardEffect.DamageTarget:
-                    targetable.TakeDamage(500); // ¿¹½Ã: 500 µ¥¹ÌÁö
+                    targetable.TakeDamage(500); // ì˜ˆì‹œ: 500 ë°ë¯¸ì§€
                     break;
             }
 

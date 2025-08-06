@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 public class BattleManager : MonoBehaviour
 {
@@ -16,30 +16,30 @@ public class BattleManager : MonoBehaviour
     }
 
     /// <summary>
-    /// °ø°İÀÚ°¡ ÇöÀç ÁöÁ¤µÇ¾ú´ÂÁö ¿©ºÎ
+    /// ê³µê²©ìê°€ í˜„ì¬ ì§€ì •ë˜ì—ˆëŠ”ì§€ ì—¬ë¶€
     /// </summary>
     public bool HasAttacker() => attacker != null;
 
     /// <summary>
-    /// °ø°İÇÒ ¸ó½ºÅÍ ÁöÁ¤
+    /// ê³µê²©í•  ëª¬ìŠ¤í„° ì§€ì •
     /// </summary>
     public void SetAttacker(GameObject card)
     {
-        UI_test cardUI = card.GetComponent<UI_test>();
+        CardUI cardUI = card.GetComponent<CardUI>();
         if (cardUI == null || !cardUI.isOnField) return;
 
         if (cardUI.hasAttackedThisTurn)
         {
-            Debug.Log("ÀÌ Ä«µå´Â ÀÌ¹Ì °ø°İÇß½À´Ï´Ù.");
+            Debug.Log("ì´ ì¹´ë“œëŠ” ì´ë¯¸ ê³µê²©í–ˆìŠµë‹ˆë‹¤.");
             return;
         }
 
         attacker = card;
-        Debug.Log($"°ø°İÀÚ ¼³Á¤µÊ: {cardUI.CardName}");
+        Debug.Log($"ê³µê²©ì ì„¤ì •ë¨: {cardUI.cardName}");
     }
 
     /// <summary>
-    /// °ø°İ ´ë»ó ÁöÁ¤ ¡æ ÀüÅõ ½ÇÇà
+    /// ê³µê²© ëŒ€ìƒ ì§€ì • â†’ ì „íˆ¬ ì‹¤í–‰
     /// </summary>
     public void SetTarget(GameObject card)
     {
@@ -51,19 +51,19 @@ public class BattleManager : MonoBehaviour
     }
 
     /// <summary>
-    /// ÀüÅõ ½ÇÇà
+    /// ì „íˆ¬ ì‹¤í–‰
     /// </summary>
     private void ExecuteBattle()
     {
-        UI_test atkUI = attacker.GetComponent<UI_test>();
-        UI_test tgtUI = target.GetComponent<UI_test>();
+        CardUI atkUI = attacker.GetComponent<CardUI>();
+        CardUI tgtUI = target.GetComponent<CardUI>();
 
         if (atkUI == null || tgtUI == null) return;
 
-        Debug.Log($"{atkUI.CardName} ÀÌ(°¡) {tgtUI.CardName} À»(¸¦) °ø°İ!");
+        Debug.Log($"{atkUI.cardName} ì´(ê°€) {tgtUI.cardName} ì„(ë¥¼) ê³µê²©!");
 
-        tgtUI.ReduceHealth(atkUI.Attack);
-        atkUI.ReduceHealth(tgtUI.Attack);
+        tgtUI.ReduceHealth(atkUI.attack);
+        atkUI.ReduceHealth(tgtUI.health);
 
         atkUI.hasAttackedThisTurn = true;
 
@@ -77,7 +77,7 @@ public class BattleManager : MonoBehaviour
     }
 
     /// <summary>
-    /// °ø°İÀÚ/´ë»ó ¼öµ¿ ÃÊ±âÈ­
+    /// ê³µê²©ì/ëŒ€ìƒ ìˆ˜ë™ ì´ˆê¸°í™”
     /// </summary>
     public void ResetBattleState()
     {

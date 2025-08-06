@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using System.Collections;
@@ -25,7 +25,7 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     {
         if (isSummoned)
         {
-            Debug.Log("ÀÌ Ä«µå´Â ÀÌ¹Ì ÇÊµå¿¡ ¼ÒÈ¯µÇ¾î µå·¡±×ÇÒ ¼ö ¾ø½À´Ï´Ù.");
+            Debug.Log("ì´ ì¹´ë“œëŠ” ì´ë¯¸ í•„ë“œì— ì†Œí™˜ë˜ì–´ ë“œë˜ê·¸í•  ìˆ˜ ì—†ìŠµë‹ˆë‹¤.");
             return;
         }
 
@@ -42,12 +42,9 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        if (isSummoned) return;
-
-        StartCoroutine(EnableRaycastNextFrame());
+        canvasGroup.blocksRaycasts = true;
 
         bool validDrop = false;
-
         if (eventData.pointerEnter != null)
         {
             Transform dropZone = eventData.pointerEnter.transform;
@@ -66,7 +63,7 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
                     cardUI.isOnField = true;
                 }
 
-                Debug.Log($"{gameObject.name} ÀÌ(°¡) ÇÊµå¿¡ ¼ÒÈ¯µÊ.");
+                Debug.Log($"{gameObject.name} ì´(ê°€) í•„ë“œì— ì†Œí™˜ë¨.");
             }
         }
 
@@ -78,18 +75,9 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         }
 
         droppedOnSlot = false;
-    }
 
-    private IEnumerator EnableRaycastNextFrame()
-    {
-        yield return null; // ÇÑ ÇÁ·¹ÀÓ ´ë±â
-        if (canvasGroup != null)
-        {
-            canvasGroup.blocksRaycasts = true;
-            Debug.Log("blocksRaycasts = true (ÇÑ ÇÁ·¹ÀÓ µÚ¿¡ Àû¿ëµÊ)");
-        }
+        if (isSummoned) return;
     }
-
 
     private bool IsValidDropZone(Transform dropZone)
     {
@@ -108,13 +96,13 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     {
         isSummoned = false;
 
-        // ÇÊµå »óÅÂµµ ÇØÁ¦
+        // í•„ë“œ ìƒíƒœë„ í•´ì œ
         CardUI cardUI = GetComponent<CardUI>();
         if (cardUI != null)
         {
             cardUI.isOnField = false;
         }
 
-        Debug.Log($"{gameObject.name} ¼ÒÈ¯ ÇØÁ¦µÊ. ´Ù½Ã µå·¡±× °¡´É.");
+        Debug.Log($"{gameObject.name} ì†Œí™˜ í•´ì œë¨. ë‹¤ì‹œ ë“œë˜ê·¸ ê°€ëŠ¥.");
     }
 }
