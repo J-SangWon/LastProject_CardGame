@@ -6,7 +6,7 @@ public class MonsterEffectOnClick : MonoBehaviour
     private bool effectActivated = false;
 
     // 카드 매니저 참조 (카드 드로우 기능을 위해 필요)
-    public CardManager_test cardManager;
+    public PlayerCardManager cardManager;
 
     // 카드가 클릭될 때 발동하는 함수
     private void OnMouseDown()

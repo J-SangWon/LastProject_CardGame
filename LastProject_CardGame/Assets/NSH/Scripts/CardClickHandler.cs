@@ -3,12 +3,9 @@ using UnityEngine.EventSystems;
 
 public class CardClickHandler : MonoBehaviour, IPointerClickHandler
 {
-    public Transform handZone;
-
     public void OnPointerClick(PointerEventData eventData)
     {
-        transform.SetParent(handZone, false);
-        transform.localScale = Vector3.one;
-        transform.SetAsLastSibling();
+        Debug.Log("카드 클릭됨: " + gameObject.name);
+        // 원하는 로직 추가 (공격, 타겟 선택 등)
     }
 }
