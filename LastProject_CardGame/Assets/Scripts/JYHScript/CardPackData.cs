@@ -13,9 +13,8 @@ public enum CardPackType
 public class CardPackData : ScriptableObject
 {
     public CardPackType packType; // 카드 팩 이름
-    public string description; // 카드 팩 설명
     public Sprite packArtwork; // 카드 팩 아트워크
-    public int packCost; // 카드 팩 가격
+    public Sprite packUpImg; // 카드 팩 업 이미지
+    public Sprite packDownImg; // 카드 팩 다운 이미지
     public List<BaseCardData> cards; // 카드 팩에 포함된 카드 목록
-
 }
