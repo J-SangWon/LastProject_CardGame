@@ -28,17 +28,16 @@ public class GameManager : MonoBehaviour
 
     private const int MAX_COST_LIMIT = 10;
 
-    [Header("RPS (Rock Paper Scissors)")]
-    public GameObject rpsUI;         // 가위 바위 보 선택 UI
-    public Button rockButton;
-    public Button paperButton;
-    public Button scissorsButton;
-    public TextMeshProUGUI resultText;
+    //[Header("RPS (Rock Paper Scissors)")]
+    //public GameObject rpsUI;         // 가위 바위 보 선택 UI
+    //public Button rockButton;
+    //public Button paperButton;
+    //public Button scissorsButton;
+    //public TextMeshProUGUI resultText;
 
-    private enum RPSChoice { Rock, Paper, Scissors }
-    private RPSChoice playerChoice;
-    private RPSChoice enemyChoice;
-
+    private enum RPSChoice { Rock, Paper, Scissors } // 가위, 바위, 보 선택을 위한 열거형
+    private RPSChoice playerChoice;  // 플레이어의 선택
+    private RPSChoice enemyChoice;   // 적의 선택
 
     private bool isBattleActive = false;
     private GamePhase currentPhase;
@@ -54,6 +53,17 @@ public class GameManager : MonoBehaviour
     private bool isTimerRunning = false; // 타이머 작동 여부
 
     public GameObject overlayPanel;
+    public static GameManager Instance;
+
+    private void Awake()
+    {
+        if (Instance == null)
+            Instance = this;
+        else
+            Destroy(gameObject);
+    }
+
+    public GamePhase CurrentPhase => currentPhase;
 
     void Start()
     {
@@ -61,19 +71,16 @@ public class GameManager : MonoBehaviour
         UpdatePhaseText();
         turnButton.onClick.AddListener(OnTurnButtonClicked);
 
-        turnButton.onClick.AddListener(OnTurnButtonClicked);
-
         UpdateHealthUI();
         UpdateTimerUI();
-        UpdateCostUI();
-        // 가위 바위 보 UI 활성화
-        rpsUI.SetActive(true);  // 게임 시작 시 가위 바위 보 UI 활성화
-        resultText.text = "Choose Rock, Paper, or Scissors!";
+        UpdateCostUI();  // 코스트 UI 업데이트
+        //rpsUI.SetActive(true);  // 게임 시작 시 가위 바위 보 UI 활성화
+        //resultText.text = "Choose Rock, Paper, or Scissors!";
 
-        // 상대 랜덤 선택
-        enemyChoice = (RPSChoice)Random.Range(0, 3);  // 상대는 게임 시작 시 랜덤으로 선택
+        //// 상대 랜덤 선택
+        //enemyChoice = (RPSChoice)Random.Range(0, 3);  // 상대는 게임 시작 시 랜덤으로 선택
 
-        overlayPanel.SetActive(true);
+        //overlayPanel.SetActive(true);
     }
 
     void Update()
@@ -84,95 +91,149 @@ public class GameManager : MonoBehaviour
             UpdateTimerUI();
         }
     }
+    // 데미지를 처리하고 UI 갱신
+    public void DealDamageToPlayer(bool isPlayer, int dmg)
+    {
+        if (isPlayer)
+        {
+            playerHealth -= dmg;
+            if (playerHealth < 0) playerHealth = 0;
+        }
+        else
+        {
+            enemyHealth -= dmg;
+            if (enemyHealth < 0) enemyHealth = 0;
+        }
+
+        UpdateHealthUI();
+
+        // 사망 처리
+        if (playerHealth <= 0)
+        {
+            Debug.Log("플레이어가 패배했습니다.");
+            // 게임 오버 처리
+        }
+
+        if (enemyHealth <= 0)
+        {
+            Debug.Log("적이 패배했습니다.");
+            // 승리 처리
+        }
+    }
+
+
     void PlayerSelect(RPSChoice choice)
     {
         playerChoice = choice;
 
         // 버튼 비활성화 (선택 후 더 이상 선택할 수 없게)
-        rockButton.interactable = false;
-        paperButton.interactable = false;
-        scissorsButton.interactable = false;
+        //rockButton.interactable = false;
+        //paperButton.interactable = false;
+        //scissorsButton.interactable = false;
 
-        // 결과 계산 및 표시
-        string result = DetermineWinner(playerChoice, enemyChoice);
-        resultText.text = $"Player: {playerChoice}\nEnemy: {enemyChoice}\n{result}";
+        //// 결과 계산 및 표시
+        //string result = DetermineWinner(playerChoice, enemyChoice);
+        //resultText.text = $"Player: {playerChoice}\nEnemy: {enemyChoice}\n{result}";
 
-        // 선후공 결정
-        if (result == "Player Wins")
-        {
-            StartPlayerTurn();
-        }
-        else if (result == "Enemy Wins")
-        {
-            StartEnemyTurn();
-        }
-        else
-        {
-            // 비겼을 경우, 다시 선택 가능
-            RestartRPS();
-        }
-        overlayPanel.SetActive(false);
+        //// 선후공 결정
+        //if (result == "Player Wins")
+        //{
+        //    StartPlayerTurn();
+        //}
+        //else if (result == "Enemy Wins")
+        //{
+        //    StartEnemyTurn();
+        //}
+        //else
+        //{
+        //    // 비겼을 경우, 다시 선택 가능
+        //    RestartRPS();
+        //}
+        //overlayPanel.SetActive(false);
     }
+
     void StartPlayerTurn()
     {
-        // 플레이어가 선공
         phaseText.text = "Player's Turn";
         isPlayerTurn = true;
         currentPhase = GamePhase.MainPhase;
         UpdatePhaseText();
 
-        // 추가 로직: 플레이어 턴 시작
-        rpsUI.SetActive(false);  // 가위 바위 보 UI 비활성화
-       
-        overlayPanel.SetActive(false);
+        // 플레이어 카드들 공격 초기화
+        ResetPlayerCardAttacks();
+
+        // 타이머 & 버튼 활성화
+        isTimerRunning = true;
+        turnButton.interactable = true;
+        turnTimer += 30f;
+        if (turnTimer > 400f) turnTimer = 400f;
+
+        if (playerMaxCost < MAX_COST_LIMIT)
+            playerMaxCost++;
+        playerCurrentCost = playerMaxCost;
+        UpdateCostUI();
     }
+
+    void ResetPlayerCardAttacks()
+    {
+        var cards = FindObjectsByType<CardUI>(FindObjectsSortMode.None);
+        foreach (var cardUI in cards)
+        {
+            if (cardUI.isOnField && cardUI.cardData != null &&
+                GameManager.Instance.isPlayerTurn) // 플레이어 몬스터만
+            {
+                cardUI.ResetAttackFlag();
+            }
+        }
+    }
+
+
     void RestartRPS()
     {
-        rpsUI.SetActive(true);  // 다시 UI 활성화
-        resultText.text = "Choose Rock, Paper, or Scissors!";
+        //rpsUI.SetActive(true);  // 다시 UI 활성화
+        //resultText.text = "Choose Rock, Paper, or Scissors!";
 
-        // 버튼 활성화
-        rockButton.interactable = true;
-        paperButton.interactable = true;
-        scissorsButton.interactable = true;
+        //// 버튼 활성화
+        //rockButton.interactable = true;
+        //paperButton.interactable = true;
+        //scissorsButton.interactable = true;
 
-        overlayPanel.SetActive(true);
+        //overlayPanel.SetActive(true);
     }
 
     void StartEnemyTurn()
     {
-        // 적이 선공
         phaseText.text = "Opponent's Turn";
         isPlayerTurn = false;
         currentPhase = GamePhase.MainPhase;
         UpdatePhaseText();
 
-        // 추가 로직: 적 턴 시작
-        rpsUI.SetActive(false);  // 가위 바위 보 UI 비활성화
-       
-        overlayPanel.SetActive(false);
+        //// 적 턴 시작
+        //rpsUI.SetActive(false);  // 가위 바위 보 UI 비활성화
+        //overlayPanel.SetActive(false);
     }
+
     string DetermineWinner(RPSChoice player, RPSChoice enemy)
     {
+        // 가위 바위 보 규칙에 따라 승패를 결정하는 로직
         if (player == enemy)
         {
-            return "It's a Tie";
+            return "It's a Tie";  // 비겼을 경우
         }
         else if ((player == RPSChoice.Rock && enemy == RPSChoice.Scissors) ||
                  (player == RPSChoice.Paper && enemy == RPSChoice.Rock) ||
                  (player == RPSChoice.Scissors && enemy == RPSChoice.Paper))
         {
-            return "Player Wins";
+            return "Player Wins";  // 플레이어 승리
         }
         else
         {
-            return "Enemy Wins";
+            return "Enemy Wins";  // 적 승리
         }
     }
 
     void OnTurnButtonClicked()
     {
-        // 각 페이즈 진행: 버튼 클릭 시 순차적으로 진행
         if (currentPhase == GamePhase.MainPhase)
         {
             StartBattlePhase();
@@ -183,7 +244,7 @@ public class GameManager : MonoBehaviour
         }
         else if (currentPhase == GamePhase.EndPhase)
         {
-            EndPlayerTurn();  // 엔드 페이즈 끝나면 턴 전환
+            EndPlayerTurn();
         }
     }
 
@@ -197,53 +258,40 @@ public class GameManager : MonoBehaviour
     {
         currentPhase = GamePhase.EndPhase;
         UpdatePhaseText();
-
-        StartCoroutine(EndPhaseAndAutoTurn());  // 엔드 페이즈 끝난 후 자동으로 상대 턴
+        StartCoroutine(EndPhaseAndAutoTurn());
     }
 
     IEnumerator EndPhaseAndAutoTurn()
     {
-        // 엔드 페이즈가 끝나면 상대 턴으로 넘어갑니다.
-        yield return new WaitForSeconds(1f); // 1초 대기 (엔드 페이즈 후)
-
-        EndPlayerTurn();  // 자동으로 상대 턴 시작
+        yield return new WaitForSeconds(1f);
+        EndPlayerTurn();
     }
 
     void EndPlayerTurn()
     {
         isTimerRunning = false;
-
-        // 턴 전환 버튼 비활성화 (상대 턴)
         turnButton.interactable = false;
 
         if (isPlayerTurn)
         {
-            // 플레이어 턴이 끝났으므로 상대 턴으로 전환
             isPlayerTurn = false;
             phaseText.text = "Opponent's Turn";
-            Debug.Log("Opponent's turn begins...");
             StartCoroutine(EnemyTurn());
         }
         else
         {
-            // 상대 턴이 끝났으면 다시 플레이어 턴으로 전환
             isPlayerTurn = true;
             currentPhase = GamePhase.MainPhase;
             UpdatePhaseText();
-
-            // 내 턴 시작 시 타이머에 30초 추가
             turnTimer += 30f;
-            if (turnTimer > 400f) turnTimer = 400f;  // 타이머 상한선 400초
+            if (turnTimer > 400f) turnTimer = 400f;
             isTimerRunning = true;
-
-            // 턴 전환 버튼 활성화 (플레이어 턴)
             turnButton.interactable = true;
 
-            // 플레이어 코스트 회복
             if (playerMaxCost < MAX_COST_LIMIT)
                 playerMaxCost++;
             playerCurrentCost = playerMaxCost;
-            UpdateCostUI();
+            UpdateCostUI();  // 코스트 UI 업데이트
         }
     }
 
@@ -252,11 +300,11 @@ public class GameManager : MonoBehaviour
         if (enemyMaxCost < MAX_COST_LIMIT)
             enemyMaxCost++;
         enemyCurrentCost = enemyMaxCost;
-        UpdateCostUI();
-        // 상대 턴 2초 대기 후 플레이어 턴으로 전환
+        UpdateCostUI();  // 코스트 UI 업데이트
         yield return new WaitForSeconds(2f);
-        EndPlayerTurn();  // 상대 턴 끝내고 플레이어 턴 시작
+        EndPlayerTurn();
     }
+
     bool TryUseCost(int amount)
     {
         if (playerCurrentCost >= amount)
@@ -294,31 +342,13 @@ public class GameManager : MonoBehaviour
 
     void UpdateTimerUI()
     {
-        // 초 단위로 표시 (분/초 대신)
-        timerText.text = $"Time Left: {Mathf.FloorToInt(turnTimer)}s"; // 초만 표시
+        timerText.text = $"Time: {Mathf.FloorToInt(turnTimer)}s";
     }
+
+    // 코스트 UI를 갱신하는 함수
     void UpdateCostUI()
     {
-        playerCostText.text = $"Cost: {playerCurrentCost}/{playerMaxCost}";
-        enemyCostText.text = $"Cost: {enemyCurrentCost}/{enemyMaxCost}";
-    }
-
-
-    void OnTimerEnded()
-    {
-        Debug.Log("시간 종료! 플레이어 패배!");
-        OnPlayerDefeat();
-    }
-
-    void OnPlayerVictory()
-    {
-        Debug.Log("플레이어 승리!");
-        // TODO: 승리 처리 (게임 종료 UI 표시 등)
-    }
-
-    void OnPlayerDefeat()
-    {
-        Debug.Log("플레이어 패배...");
-        // TODO: 패배 처리 (게임 종료 UI 표시 등)
+        playerCostText.text = $"Player Cost: {playerCurrentCost}/{playerMaxCost}";
+        enemyCostText.text = $"Enemy Cost: {enemyCurrentCost}/{enemyMaxCost}";
     }
 }

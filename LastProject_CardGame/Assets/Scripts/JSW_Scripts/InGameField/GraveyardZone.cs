@@ -27,7 +27,7 @@ public class GraveyardZone : MonoBehaviour, IPointerClickHandler
     void Start()
     {
         UpdateVisual();
-        cardPrefab = CardManager_test.Instance.cardPrefab;
+        cardPrefab = PlayerCardManager.Instance.cardPrefab;
     }
 
     /// <summary>

@@ -27,7 +27,7 @@ public class ExtraDeckZone : MonoBehaviour, IPointerClickHandler
 
     void Start()
     {
-        cardPrefab = CardManager_test.Instance.cardPrefab;
+        cardPrefab = PlayerCardManager.Instance.cardPrefab;
         UpdateVisual();
         
         // Image 컴포넌트가 없으면 추가
