@@ -10,7 +10,7 @@ public class MonsterEffectOnSummon : MonoBehaviour
 
     // 누락된 public 필드 선언
     public BaseCardData cardData;
-    public CardManager_test cardManager;
+    public PlayerCardManager cardManager;
 
     public void SetEffect(CardEffectType effect, int value, PlayerController_N owner)
     {

@@ -2,21 +2,16 @@
 using UnityEngine;
 
 /// <summary>
-/// 카드 매니저: 덱 로딩, 드로우, 카드 배치 및 일부 카드 효과 처리.
+/// 플레이어 카드 매니저: 덱 로딩, 드로우, 카드 배치 및 일부 카드 효과 처리.
 /// </summary>
-public class CardManager_test : MonoBehaviour
+public class PlayerCardManager : MonoBehaviour
 {
-    public static CardManager_test Instance;
+    public static PlayerCardManager Instance;
 
     [Header("플레이어 카드")]
     public GameObject cardPrefab;
     public Transform deckZone;
     public Transform handZone;
-
-    [Header("적 카드")]
-    public GameObject enemyCardPrefab;
-    public Transform enemyMonsterZone;
-    public BaseCardData[] testEnemyCards;
 
     private List<GameObject> deck = new List<GameObject>();
     public DeckData currentDeckData;
@@ -30,7 +25,6 @@ public class CardManager_test : MonoBehaviour
     void Start()
     {
         LoadDeckFromTransfer();
-        SpawnEnemyTestCards();
     }
 
     #region 플레이어 덱 로딩 및 드로우
@@ -115,26 +109,6 @@ public class CardManager_test : MonoBehaviour
 
     #endregion
 
-    #region 적 카드 스폰
-
-    void SpawnEnemyTestCards()
-    {
-        if (enemyCardPrefab == null || enemyMonsterZone == null || testEnemyCards == null) return;
-
-        for (int i = 0; i < testEnemyCards.Length; i++)
-        {
-            if (testEnemyCards[i] == null) continue;
-
-            Vector3 position = GetSlotPosition(i, testEnemyCards.Length, 200f);
-            Quaternion rotation = Quaternion.Euler(0, 180, 0);
-
-            GameObject enemyCard = CreateCard(testEnemyCards[i], enemyCardPrefab, enemyMonsterZone, rotation);
-            enemyCard.transform.localPosition = position;
-        }
-    }
-
-    #endregion
-
     #region 공통 카드 생성 메서드
 
     /// <summary>
@@ -174,6 +148,19 @@ public class CardManager_test : MonoBehaviour
             effect.cardData = data;
             effect.cardManager = this;
         }
+        // Collider 자동 추가 (UI 카드에 Raycast 되도록 BoxCollider2D 사용 권장)
+        if (card.GetComponent<Collider2D>() == null)
+        {
+            var collider = card.AddComponent<BoxCollider2D>();
+
+            // 크기 자동 설정 (필요에 따라 조절 가능)
+            var rect = card.GetComponent<RectTransform>();
+            if (rect != null)
+            {
+                collider.offset = rect.rect.center;
+                collider.size = rect.rect.size;
+            }
+        }
 
         return card;
     }
@@ -186,6 +173,37 @@ public class CardManager_test : MonoBehaviour
         float startX = -((total - 1) * spacing) / 2f;
         return new Vector3(startX + index * spacing, 0, 0);
     }
+    public Transform fieldZone; // 필드 영역 참조 필요
+
+    public void PlayCardToField(GameObject card)
+    {
+        card.transform.SetParent(fieldZone, false);
+        card.transform.localScale = Vector3.one;
+
+        var cardUI = card.GetComponent<CardUI>();
+        if (cardUI != null)
+        {
+            cardUI.isOnField = true;
+        }
+
+        // 위치 정렬 예시 (필요시 커스터마이즈 가능)
+        UpdateFieldLayout();
+    }
+
+
+    private void UpdateFieldLayout()
+    {
+        float spacing = 160f;
+        for (int i = 0; i < fieldZone.childCount; i++)
+        {
+            RectTransform rt = fieldZone.GetChild(i).GetComponent<RectTransform>();
+            if (rt != null)
+            {
+                rt.anchoredPosition = new Vector2(i * spacing, 0);
+            }
+        }
+    }
+
 
     #endregion
 
