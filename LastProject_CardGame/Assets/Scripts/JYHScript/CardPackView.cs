@@ -10,10 +10,10 @@ public class CardPackView : MonoBehaviour
 
     void Start()
     {
-        //if (cardPackData != null)
-        //{
-        //    artworkImage.sprite = cardPackData.packArtwork;
-        //    packNameText.text = cardPackData.packType.ToString();
-        //}
+        if (cardPackData != null)
+        {
+            artworkImage.sprite = cardPackData.packArtwork;
+            //packNameText.text = cardPackData.packType.ToString();
+        }
     }
 }

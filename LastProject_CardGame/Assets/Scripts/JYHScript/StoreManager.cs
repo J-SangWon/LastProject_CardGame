@@ -24,6 +24,9 @@ public class StoreManager : MonoBehaviour
     // ────────────────── 연출용 오브젝트 ──────────────────
     [Header("연출 오브젝트")]
     public Transform cardPackContainer;        // 카드팩 중앙 표시 위치
+    public GameObject CardPackAnim;
+    public Image CardPackUpImg;
+    public Image CardPackDownImg;          // 카드팩 업/다운 오브젝트
     public GameObject[] rarityEffects;            // 0~3 : Normal/Rare/SR/UR 파티클 등
 
     // ────────────────── 카드 소환용 ──────────────────
@@ -44,7 +47,6 @@ public class StoreManager : MonoBehaviour
 
     // ────────────────── 내부 상태 ──────────────────
     private bool isOpening = false;
-    private GameObject currentPack;
     private GameObject particle;
     private readonly List<CardRarity> rarityList = new();   // 희귀도만 저장
     private readonly List<BaseCardData> cardList = new();   // 클릭 후 실제 카드 정보 저장
@@ -115,7 +117,10 @@ public class StoreManager : MonoBehaviour
         CardSpawnPanel.SetActive(true);
 
         // 스크롤 셀 복제 대신, 연출 전용 모델 Prefab을 CardPackData에 넣어두는 편이 좋음
-        if (currentPack) Destroy(currentPack);
+        CardPackAnim.SetActive(false); // 연출용 카드팩 비활성화
+        CardPackDownImg.gameObject.SetActive(false); // 카드팩 다운 오브젝트 비활성화
+        CardPackUpImg.gameObject.SetActive(false);
+
         if (particle) Destroy(particle);
 
         // 카드팩 나타내기
@@ -132,13 +137,14 @@ public class StoreManager : MonoBehaviour
     // ────────────────── 이펙트 연출 ──────────────────
     IEnumerator CardPackAppear()
     {
-        GameObject packPrefab = packViewController.selectedCardPackView.gameObject;
-        currentPack = Instantiate(packPrefab,cardPackContainer);
-        RectTransform rect = currentPack.GetComponent<RectTransform>();
-        rect.sizeDelta = new Vector2(400, 540);
-        rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 0.5f);
-        currentPack.transform.localScale = Vector3.zero;
-        currentPack.transform.localPosition = Vector3.zero;
+        CardPackAnim.SetActive(true); // 연출용 카드팩 활성화
+        CardPackAnim.transform.localScale = Vector3.zero; // 초기 스케일 0
+
+        CardPackUpImg.gameObject.SetActive(true); // 카드팩 업 오브젝트 활성화
+        CardPackDownImg.gameObject.SetActive(true); // 카드팩 다운 오브젝트 활성화
+
+        CardPackUpImg.sprite = packViewController.selectedCardPackView.cardPackData.packUpImg;
+        CardPackDownImg.sprite = packViewController.selectedCardPackView.cardPackData.packDownImg;
 
         ShowEffect(GetHighestRarity());
 
@@ -146,7 +152,7 @@ public class StoreManager : MonoBehaviour
         while (t < 1f)
         {
             t += Time.deltaTime * 2f;
-            currentPack.transform.localScale = Vector3.one * Mathf.SmoothStep(0, 1, t);
+            CardPackAnim.transform.localScale = Vector3.one * Mathf.SmoothStep(0, 1, t);
             yield return null;
         }
     }
@@ -172,31 +178,30 @@ public class StoreManager : MonoBehaviour
     //카드팩 진동 및 사라짐
     IEnumerator AnimatePackVanish()
     {
-        float shakeStrength = 10f;
-        float shakeDuration = 0.3f;
+        particle?.gameObject.SetActive(false); // 파티클 비활성화
 
-        switch (GetHighestRarity())
-        {
-            case CardRarity.Rare: shakeStrength = 20f; shakeDuration = 0.5f; break;
-            case CardRarity.SuperRare: shakeStrength = 30f; shakeDuration = 1f; break;
-            case CardRarity.UltraRare: shakeStrength = 40f; shakeDuration = 1.5f; break;
-        }
+        RectTransform topRect = CardPackUpImg.rectTransform;
+        RectTransform downRect = CardPackDownImg.rectTransform;
 
-        currentPack.transform.DOShakeRotation(shakeDuration, shakeStrength);
-        yield return new WaitForSeconds(shakeDuration + 0.1f);
+        // 종이 찢듯이 회전하면서 올라가기
+        Sequence seq = DOTween.Sequence();
 
-        RectTransform rect = currentPack.GetComponent<RectTransform>();
-        Vector2 endPos = rect.anchoredPosition + Vector2.down * 800f;
+        // 1. 상단 찢어짐: 회전 + 이동
+        seq.Join(topRect.DOLocalRotate(new Vector3(0, 0, -25f), 0.4f).SetEase(Ease.InOutSine));
+        seq.Join(topRect.DOLocalMove(new Vector3(150f, 600f, 0f), 0.6f).SetEase(Ease.InBack));
 
-        if (particle) Destroy(particle);
+        // 2. 잠깐 텀을 두고
+        seq.AppendInterval(0.2f);
 
-        Sequence vanish = DOTween.Sequence();
-        vanish.Append(rect.DOAnchorPos(endPos, 0.5f).SetEase(Ease.InBack));
-        vanish.Join(currentPack.transform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.InBack));
+        // 3. 하단 내려가기
+        seq.Append(downRect.DOLocalMoveY(-620f, 0.6f).SetEase(Ease.InBack));
 
-        yield return vanish.WaitForCompletion();
+        // 4. 비활성화
+        seq.OnComplete(() => {
+            CardPackUpImg.gameObject.SetActive(false);
+        });
 
-        Destroy(currentPack);
+        yield return seq.WaitForCompletion();
     }
 
     // ────────────────── 3) 희귀도 → 실제 카드 변환 ──────────────────
@@ -285,6 +290,7 @@ public class StoreManager : MonoBehaviour
             }
         }
 
+        CardPackDownImg.gameObject.SetActive(false); // 카드팩 다운 오브젝트 활성화
         cardOpenBtn.gameObject.SetActive(true);
     }
 
@@ -351,7 +357,6 @@ public class StoreManager : MonoBehaviour
         cardList.Clear();
 
         foreach (Transform child in cardSpawnContent) Destroy(child.gameObject);
-        if (currentPack) Destroy(currentPack);
 
         StoreMenu.SetActive(true);
         CardSpawnPanel.SetActive(false);
