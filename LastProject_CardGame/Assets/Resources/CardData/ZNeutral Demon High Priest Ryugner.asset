@@ -15,19 +15,25 @@ MonoBehaviour:
   cardName: "\uC545\uB9C8\uC81C\uC0AC\uC7A5 \uB958\uADF8\uB108"
   description: "\uB0B4 \uB371\uC5D0 \uC788\uB294 \uBAA8\uB4E0 \uC545\uB9C8\uB97C
     \uC18C\uD658\uD569\uB2C8\uB2E4."
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: 387535da898eb374ab55ce304b1fe2fd, type: 3}
   cardType: 0
   rarity: 3
   cost: 9
   cardId: 94ef40a0-113d-4aa1-8d09-2244fdcde96e
   haveLive2D: 0
   live2DPath: 
+  cardEffect: 0
   tags: []
   craftCost: 400
   disenchantReward: 100
   canCraft: 1
   canDisenchant: 1
+  maxHP: 9
+  currentHP: 0
   monsterType: 0
   attack: 7
   health: 9
   race: 5
+  monsterAbilityType: 0
+  abilityType: 0
+  abiltyValue: 0
