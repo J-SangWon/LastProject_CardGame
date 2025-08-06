@@ -22,7 +22,7 @@ public class FieldSpellZone : MonoBehaviour, IPointerClickHandler
     void Start()
     {
         RemoveFieldSpell();
-        cardPrefab = CardManager_test.Instance.cardPrefab;
+        cardPrefab = PlayerCardManager.Instance.cardPrefab;
 
     }
 

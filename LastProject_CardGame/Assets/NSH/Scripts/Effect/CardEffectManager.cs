@@ -55,7 +55,7 @@ public class CardEffectManager : MonoBehaviour
     // 카드 뽑기 예시 (CardManager_test 활용)
     private void EffectDrawCard(PlayerController_N player, Action onComplete)
     {
-        CardManager_test.Instance.ResolveCard(player, onComplete);
+        PlayerCardManager.Instance.ResolveCard(player, onComplete);
     }
 
     // 자기 카드 하나 파괴 예시
