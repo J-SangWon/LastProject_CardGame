@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-
+using System.Collections;
 public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     public enum Owner { Player, Enemy }
@@ -30,7 +30,7 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         }
 
         originalParent = transform.parent;
-        transform.SetParent(canvas.transform); // 드래그 시 캔버스로 옮겨 앞에 보이게
+        transform.SetParent(canvas.transform);
         canvasGroup.blocksRaycasts = false;
     }
 
@@ -44,7 +44,7 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     {
         if (isSummoned) return;
 
-        canvasGroup.blocksRaycasts = true;
+        StartCoroutine(EnableRaycastNextFrame());
 
         bool validDrop = false;
 
@@ -54,22 +54,42 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             if (IsValidDropZone(dropZone))
             {
                 validDrop = true;
-                // 정상적으로 드롭된 경우: 드롭 존 쪽에서 처리
+                transform.SetParent(dropZone);
+                transform.SetAsLastSibling();
+
+                isSummoned = true;
+                droppedOnSlot = true;
+
+                CardUI cardUI = GetComponent<CardUI>();
+                if (cardUI != null)
+                {
+                    cardUI.isOnField = true;
+                }
+
+                Debug.Log($"{gameObject.name} 이(가) 필드에 소환됨.");
             }
         }
 
-        // 유효한 드롭이 아니면 핸드존으로 복귀
         if (!validDrop)
         {
             transform.SetParent(originalParent);
-            transform.SetAsLastSibling(); // 핸드존의 LayoutGroup이 자동 정렬되도록
-
-            // Layout 강제 재적용
+            transform.SetAsLastSibling();
             LayoutRebuilder.ForceRebuildLayoutImmediate(originalParent.GetComponent<RectTransform>());
         }
 
         droppedOnSlot = false;
     }
+
+    private IEnumerator EnableRaycastNextFrame()
+    {
+        yield return null; // 한 프레임 대기
+        if (canvasGroup != null)
+        {
+            canvasGroup.blocksRaycasts = true;
+            Debug.Log("blocksRaycasts = true (한 프레임 뒤에 적용됨)");
+        }
+    }
+
 
     private bool IsValidDropZone(Transform dropZone)
     {
@@ -87,6 +107,14 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     public void Unsummon()
     {
         isSummoned = false;
+
+        // 필드 상태도 해제
+        CardUI cardUI = GetComponent<CardUI>();
+        if (cardUI != null)
+        {
+            cardUI.isOnField = false;
+        }
+
         Debug.Log($"{gameObject.name} 소환 해제됨. 다시 드래그 가능.");
     }
 }

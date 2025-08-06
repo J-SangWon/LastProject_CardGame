@@ -12,6 +12,7 @@ public class DuelZoneManager : MonoBehaviour
     public FieldSpellZone fieldSpellZone;
     public ExtraDeckZone extraDeckZone;
     public GraveyardZone graveyardZone;
+    public MonsterZone monsterZone; 
 
     void Awake()
     {
@@ -116,6 +117,17 @@ public class DuelZoneManager : MonoBehaviour
         if (graveyardZone != null)
         {
             graveyardZone.ShowGraveyard();
+        }
+    }
+
+    /// <summary>
+    /// 몬스터존에 카드 추가
+    /// </summary>
+    public void SendToMonsterZone(BaseCardData card)
+    {
+        if (monsterZone != null)
+        {
+            monsterZone.SendToMonsterZone(card);
         }
     }
 

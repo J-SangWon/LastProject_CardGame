@@ -1,36 +1,53 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
+
 
 public class MonsterSlotDrop : MonoBehaviour, IDropHandler
 {
     public bool isOccupied = false;
     public PlayerController_N ownerPlayer;
+    void Start()
+    {
 
+    }
     public void OnDrop(PointerEventData eventData)
     {
+        
+
         if (isOccupied) return;
 
         GameObject droppedCard = eventData.pointerDrag;
-        if (droppedCard == null) return;
-
-        var dragHandler = droppedCard.GetComponent<CardDragHandler>();
-        if (dragHandler == null) return;
-
-        // 필드에 이미 소환된 카드면 드롭 금지
-        if (dragHandler.isSummoned)
+        if (droppedCard == null)
         {
-            Debug.Log("이 카드는 이미 필드에 존재합니다. 다른 슬롯으로 이동할 수 없습니다.");
+          
             return;
         }
 
-        //  유효한 슬롯일 경우 카드 배치
+        var dragHandler = droppedCard.GetComponent<CardDragHandler>();
+        if (dragHandler == null)
+        {
+          
+            return;
+        }
+
+        if (dragHandler.isSummoned)
+        {
+            return;
+        }
+
         droppedCard.transform.SetParent(transform, false);
         droppedCard.transform.localPosition = Vector3.zero;
         isOccupied = true;
 
-        // 카드 드래그 상태 갱신
         dragHandler.droppedOnSlot = true;
-        dragHandler.isSummoned = true; //  이제 필드에 존재함
+        dragHandler.isSummoned = true;
+
+        //Image slotImage = GetComponent<Image>();
+        //if (slotImage != null)
+        //{
+        //    slotImage.raycastTarget = false;
+        //}
     }
 
     void Update()
