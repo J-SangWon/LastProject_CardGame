@@ -4,6 +4,7 @@ using TMPro;
 using UnityEngine.EventSystems;
 using System.Collections;
 using DG.Tweening;
+using Unity.Android.Gradle.Manifest;
 
 public class CardUI : MonoBehaviour, IPointerClickHandler
 {
@@ -12,6 +13,7 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
 
     [Header("카드 데이터 받아두기")]
     public BaseCardData cardData;
+    private MonsterCardData monsterCardData;
 
     public GameObject Back;
     public Image imageBack;
@@ -40,6 +42,9 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
     private Outline outline;
     private bool isFront = true;
     public bool isOnField = false;
+    public bool IsDead =>
+            cardData != null &&
+            monsterCardData.IsDead();
 
     // [추가] 공격 제한 플래그
     public bool hasAttackedThisTurn = false;
@@ -54,6 +59,14 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
                 image.raycastTarget = false;
             }
         }
+
+        health = textHealth.text.Trim().Length > 0 ? int.Parse(textHealth.text.Trim()) : 0;
+        attack = textAttack.text.Trim().Length > 0 ? int.Parse(textAttack.text.Trim()) : 0;
+
+        if (cardData is MonsterCardData)
+        {
+            monsterCardData = (MonsterCardData)cardData;
+        }
     }
 
     public void ReduceHealth(int damage)
@@ -61,6 +74,12 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
         health -= damage;
         if (health < 0) health = 0;
         textHealth.text = health.ToString();
+
+        if(health == 0)
+        {
+            HandleDeath();
+            DuelZoneManager.Instance.SendToGraveyard(cardData);
+        }
     }
 
     public void SetFace(bool showFront)
@@ -77,9 +96,9 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
             Cost.SetActive(showFront);
         if (description)
             description.SetActive(showFront);
-        if (Attack)
+        if (Attack && cardData is MonsterCardData)
             Attack.SetActive(showFront);
-        if (Health)
+        if (Health && cardData is MonsterCardData)
             Health.SetActive(showFront);
         if (race)
             race.SetActive(showFront);
