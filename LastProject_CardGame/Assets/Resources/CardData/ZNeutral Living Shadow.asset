@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d6e3b89d52292a546aa24ae61a66b65b, type: 3}
-  m_Name: Living Shadow
+  m_Name: ZNeutral Living Shadow
   m_EditorClassIdentifier: 
   cardName: "\uC0B4\uC544\uC788\uB294 \uADF8\uB9BC\uC790"
   description: "\uB0B4 \uC720\uB2DB\uC744 \uC120\uD0DD\uD569\uB2C8\uB2E4. \uBCF5\uC0AC\uD558\uC5EC
