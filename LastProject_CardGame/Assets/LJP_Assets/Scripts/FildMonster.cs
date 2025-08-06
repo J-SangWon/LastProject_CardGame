@@ -1,14 +1,15 @@
 using System.Data;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class FildMonster : MonoBehaviour
+public class FildMonster : MonoBehaviour, IPointerClickHandler
 {
     private MonsterCardData monsterCardData;
 
-    private Image illustration;
-    private Text AttackTex;
-    private Text HealthTex;
+    [SerializeField] private Image illustration;
+    [SerializeField] private Text AttackTex;
+    [SerializeField] private Text HealthTex;
     private Sprite artWork;
     private int Attack;
     private int maxHealth;
@@ -35,7 +36,30 @@ public class FildMonster : MonoBehaviour
 		if(monsterCardData.monsterAbilityType == MonsterCardAbilityType.Reverberation) Reverberation(monsterCardData.abilityType, monsterCardData.abiltyValue);
 	}
 
-    private void InitStatus()
+	public void OnPointerClick(PointerEventData eventData)
+	{
+		Debug.Log($"{monsterCardData.cardName} clicked!");
+
+		if (BattleManager_test.Instance == null)
+		{
+			Debug.LogError("BattleManager_test 인스턴스 없음!");
+			return;
+		}
+
+		if (!BattleManager_test.Instance.HasAttacker())
+		{
+			// 공격자가 아직 없으면 이 카드를 공격자로 등록
+			BattleManager_test.Instance.SetAttacker(gameObject);
+		}
+		else
+		{
+			// 이미 공격자가 선택된 상태면 이 카드를 공격 대상(Target)으로 등록
+			if (BattleManager_test.Instance != null)
+				BattleManager_test.Instance.SetTarget(gameObject);
+		}
+	}
+
+	private void InitStatus()
     {
         if (monsterCardData == null) return;
 
