@@ -1,23 +1,23 @@
-using TMPro;
+Ôªøusing TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class UI_test : MonoBehaviour
 {
-    [Header("ƒ´µÂ µ•¿Ã≈Õ")]
+    [Header("Ïπ¥Îìú Îç∞Ïù¥ÌÑ∞")]
     public MonsterCardData cardData;
 
-    [Header("UI ø‰º“")]
+    [Header("UI ÏöîÏÜå")]
     public TextMeshProUGUI nameText;
     public TextMeshProUGUI attackText;
     public TextMeshProUGUI healthText;
 
-    [Header("ªÛ≈¬ «√∑°±◊")]
+    [Header("ÏÉÅÌÉú ÌîåÎûòÍ∑∏")]
     public bool isOnField = true;
     public bool hasAttackedThisTurn = false;
 
-    //  ø‹∫Œø°º≠ æ»¿¸«œ∞‘ ¬¸¡∂«“ ºˆ ¿÷¥¬ «¡∑Œ∆€∆ºµÈ
+    //  Ïô∏Î∂ÄÏóêÏÑú ÏïàÏ†ÑÌïòÍ≤å Ï∞∏Ï°∞Ìï† Ïàò ÏûàÎäî ÌîÑÎ°úÌçºÌã∞Îì§
     public string CardName => cardData != null ? cardData.cardName : "???";
     public int Attack => cardData != null ? cardData.attack : 0;
     public int CurrentHP => cardData != null ? cardData.currentHP : 0;
@@ -32,7 +32,7 @@ public class UI_test : MonoBehaviour
     }
     public void OnPointerClick(PointerEventData eventData)
     {
-        OnClick();  // ±‚¡∏ OnClick ∏ﬁº≠µÂ »£√‚
+        OnClick();  // Í∏∞Ï°¥ OnClick Î©îÏÑúÎìú Ìò∏Ï∂ú
     }
     public void UpdateUI()
     {
@@ -53,7 +53,7 @@ public class UI_test : MonoBehaviour
 
     public void HandleDeath()
     {
-        Debug.Log($"{CardName} ªÁ∏¡!");
+        Debug.Log($"{CardName} ÏÇ¨Îßù!");
         Destroy(gameObject);
     }
 

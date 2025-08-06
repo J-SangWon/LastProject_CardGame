@@ -38,4 +38,10 @@ public class MonsterCardData : BaseCardData
             Debug.Log($"{cardName} has died!");
         }
     }
+
+    // 카드가 사망했는지 확인
+    public bool IsDead()
+    {
+        return currentHP <= 0;
+    }
 }
