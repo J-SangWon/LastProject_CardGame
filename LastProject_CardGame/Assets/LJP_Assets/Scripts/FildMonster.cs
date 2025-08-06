@@ -11,7 +11,8 @@ public class FildMonster : MonoBehaviour
     private Text HealthTex;
     private Sprite artWork;
     private int Attack;
-    private int health;
+    private int maxHealth
+    private int currentHealth;
 
 	[HideInInspector] public bool isAppeared = false;
 
@@ -39,18 +40,19 @@ public class FildMonster : MonoBehaviour
         if (monsterCardData == null) return;
 
         Attack = monsterCardData.attack;
-        health = monsterCardData.health;
+		maxHealth = monsterCardData.health;
+        currentHealth = maxHealth;
         artWork = monsterCardData.artwork;
 
         AttackTex.text = Attack.ToString();
-        HealthTex.text = health.ToString();
+        HealthTex.text = maxHealth.ToString();
         illustration.sprite = artWork;
     }
 
     private void UpdateStatus()
     {
 		AttackTex.text = Attack.ToString();
-		HealthTex.text = health.ToString();
+		HealthTex.text = currentHealth.ToString();
 	}
 
 	private void Entrance(AbilityType abilityType, int abilityValue) //¡¯¿‘
@@ -59,11 +61,11 @@ public class FildMonster : MonoBehaviour
         {
             case AbilityType.TakeDamage:
                 break;
-            case AbilityType.TakeAllDamage:
+            case AbilityType.TakeDamageAll:
                 break;
             case AbilityType.Heal:
                 break;
-            case AbilityType.AllHeal:
+            case AbilityType.HealAll:
                 break;
             case AbilityType.Destroy:
                 break;
@@ -83,11 +85,11 @@ public class FildMonster : MonoBehaviour
 		{
 			case AbilityType.TakeDamage:
 				break;
-			case AbilityType.TakeAllDamage:
+			case AbilityType.TakeDamageAll:
 				break;
 			case AbilityType.Heal:
 				break;
-			case AbilityType.AllHeal:
+			case AbilityType.HealAll:
 				break;
 			case AbilityType.Destroy:
 				break;
