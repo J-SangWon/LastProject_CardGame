@@ -10,22 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d6e3b89d52292a546aa24ae61a66b65b, type: 3}
-  m_Name: Greece ZeusAnger
+  m_Name: Greece ArtemisArrow
   m_EditorClassIdentifier: 
-  cardName: "\uC81C\uC6B0\uC2A4\uC758 \uBD84\uB178"
-  description: "\uBB34\uC791\uC704 \uD558\uC218\uC778\uC5D0\uAC8C 30\uC758 \uB370\uBBF8\uC9C0\uB97C
-    3\uC529 \uB098\uB220\uC11C \uC90D\uB2C8\uB2E4."
-  artwork: {fileID: 21300000, guid: cee58adcb07e6314d9c99efaa6ed9dd7, type: 3}
+  cardName: "\uC544\uB974\uD14C\uBBF8\uC2A4\uC758 \uD654\uC0B4"
+  description: 
+  artwork: {fileID: 21300000, guid: 5b0449db8152add45abc89f0ae6dbb2a, type: 3}
   cardType: 1
-  rarity: 1
-  cost: 7
-  cardId: 13978206-960d-40ba-960a-15dcf2bebccb
+  rarity: 0
+  cost: 0
+  cardId: cca31a4e-9abb-408c-a91e-5e45396c8f3e
   haveLive2D: 0
   live2DPath: 
   cardEffect: 0
   tags: []
-  craftCost: 30
-  disenchantReward: 8
+  craftCost: 10
+  disenchantReward: 2
   canCraft: 1
   canDisenchant: 1
   maxHP: 0
