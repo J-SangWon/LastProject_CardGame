@@ -204,9 +204,10 @@ public class ExtraDeckZone : MonoBehaviour, IPointerClickHandler
                     {
                         cardUI.SetCard(entry.card);
                         cardUI.EnableCardFlip = false; // 엑스트라 덱에서는 카드 플립 비활성화
-                        cardUI.Front.SetActive(false);
                         cardUI.GetComponent<Image>().raycastTarget = false; // 클릭 방지
+                        cardUI.Front.SetActive(false);
                         cardUI.Back.SetActive(true); // 뒷면만 표시
+                        cardUI.SetFace(false); // 뒷면으로 설정
                     }
 
                     visualCardObjs.Add(cardObj);

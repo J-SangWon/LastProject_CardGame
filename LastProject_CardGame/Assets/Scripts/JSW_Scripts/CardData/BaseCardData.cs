@@ -72,11 +72,7 @@ public abstract class BaseCardData : ScriptableObject
         }
     }
 
-    // 카드가 사망했는지 확인
-    public bool IsDead()
-    {
-        return currentHP <= 0;
-    }
+
 #if UNITY_EDITOR
     private void OnValidate()
     {
