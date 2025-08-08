@@ -8,6 +8,8 @@ public enum SpellType { Normal, Continuous, QuickPlay, Ritual, Field, Equip }
 public enum TrapType { Normal, Continuous, Counter }
 public enum Race { Null, Undead, Dragon, Warrior, wizard, Fiend, Fairy, Fish, Insect, Beast, Plant, Machine, Angel }
 public enum CardRarity { Normal, Rare, SuperRare, UltraRare }
+public enum AbilityType { TakeDamage, TakeDamageAll, Heal, HealAll, Destroy, Draw, Serch, Create, Buff, Appeared, CloneSummon, Stun }
+
 
 public static class CardCraftConfig
 {
@@ -48,6 +50,8 @@ public abstract class BaseCardData : ScriptableObject
 
     [Header("카드 효과")]
     public CardEffect cardEffect;
+    public CardAbility cardAbility;
+    public int abilityValue;
 
     [Header("기타 정보")]
     public List<string> tags = new List<string>();
