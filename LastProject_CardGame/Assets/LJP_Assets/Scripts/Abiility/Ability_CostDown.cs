@@ -1,8 +1,8 @@
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "CardAbilities/CloneSunmmon")]
+[CreateAssetMenu(menuName = "CardAbilities/CostDown")]
 
-public class Ability_CloneSummon : CardAbility
+public class Ability_CostDown : CardAbility
 {
 	public override void Activate(CardUI card, AbilityParameter param)
 	{

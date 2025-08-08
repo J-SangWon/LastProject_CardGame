@@ -7,36 +7,30 @@ using UnityEngine.UI;
 public class FildMonster : MonoBehaviour, IPointerClickHandler
 {
     public MonsterCardData monsterCardData { get; private set; }
-
-    [SerializeField] private Image illustration;
-    [SerializeField] private Text AttackTex;
-    [SerializeField] private Text HealthTex;
-    private Sprite artWork;
-    public int Attack { get; private set; }
-    private int maxHealth;
-    private int currentHealth;
+	public CardUI cardUI { get; private set; }
 
 	[HideInInspector] public bool isAppeared = false;
-	private bool hasAttackedThisTurn = false;
 	private bool isEntrance = false;
 
 	void Start()
-    {
-        monsterCardData = GetComponent<MonsterCardData>();
-        InitStatus();
-
-        if (monsterCardData.monsterAbilityType == MonsterCardAbilityType.Entrance && isAppeared == false) Entrance(monsterCardData.abilityType, monsterCardData.abiltyValue);
+    { 
+		monsterCardData = GetComponent<MonsterCardData>();
+		cardUI = GetComponent<CardUI>();
     }
 
-    void Update()
+	private void OnEnable()
+	{
+		if (monsterCardData.monsterAbilityType == MonsterCardAbilityType.Entrance && isAppeared == false) Entrance(monsterCardData.cardAbility, monsterCardData.abilityValue);
+	}
+
+	void Update()
     {
         if(monsterCardData.monsterAbilityType == MonsterCardAbilityType.Continuous) Continuous();
-        UpdateStatus();
     }
 
 	private void OnDestroy()
 	{
-		if(monsterCardData.monsterAbilityType == MonsterCardAbilityType.Reverberation) Reverberation(monsterCardData.abilityType, monsterCardData.abiltyValue);
+		if(monsterCardData.monsterAbilityType == MonsterCardAbilityType.Reverberation) Reverberation(monsterCardData.cardAbility, monsterCardData.abilityValue);
 	}
 
 	public void OnPointerClick(PointerEventData eventData)
@@ -69,56 +63,11 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
 		}
 	}
 
-	private void InitStatus()
+	private void Entrance(CardAbility cardAbility, int abilityValue) //진입
     {
-        if (monsterCardData == null) return;
-
-        Attack = monsterCardData.attack;
-		maxHealth = monsterCardData.health;
-        currentHealth = maxHealth;
-        artWork = monsterCardData.artwork;
-
-        AttackTex.text = Attack.ToString();
-        HealthTex.text = maxHealth.ToString();
-        illustration.sprite = artWork;
-    }
-
-    private void UpdateStatus()
-    {
-		AttackTex.text = Attack.ToString();
-		HealthTex.text = currentHealth.ToString();
-	}
-
-    public void TakeDamage(int amount)
-    {
-        currentHealth = currentHealth - amount;
-        if (currentHealth <= 0) Destroy(gameObject);
-    }
-
-	public void Heal(int amount)
-	{
-		currentHealth = currentHealth + amount;
-		if (currentHealth > maxHealth) currentHealth = maxHealth;
-	}
-
-	private void Entrance(AbilityType abilityType, int abilityValue) //진입
-    {
-        switch (abilityType)
-        {
-            case AbilityType.TakeDamage:
-				if (BattleManager_test.Instance != null)
-					BattleManager_test.Instance.SetAttacker(gameObject);
-				isEntrance = true;
-				break;
-            case AbilityType.TakeDamageAll:
-                break;
-            case AbilityType.Heal:
-                break;
-            case AbilityType.HealAll:
-                break;
-            case AbilityType.Destroy:
-                break;
-        }
+		CardUI _target = new CardUI();
+		AbilityParameter parameter = new AbilityParameter() { value = abilityValue, target = _target };
+		cardAbility.Activate(cardUI, parameter);
     }
 
     private void Continuous() // 지속효과
@@ -127,31 +76,10 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
     }
 
 
-	private void Reverberation(AbilityType abilityType, int abilityValue) //여운
-    {
-
-		switch (abilityType)
-		{
-			case AbilityType.TakeDamage:
-				break;
-			case AbilityType.TakeDamageAll:
-				break;
-			case AbilityType.Heal:
-				break;
-			case AbilityType.HealAll:
-				break;
-			case AbilityType.Destroy:
-				break;
-		}
-	}
-
-	public bool HasAttackedThisTurn()
+	private void Reverberation(CardAbility cardAbility, int abilityValue) //여운
 	{
-		return hasAttackedThisTurn;
-	}
-
-	public void SetAttackedThisTurn(bool value)
-	{
-		hasAttackedThisTurn = value;
+		CardUI _target = new CardUI();
+		AbilityParameter parameter = new AbilityParameter() { value = abilityValue, target = _target };
+		cardAbility.Activate(cardUI, parameter);
 	}
 }

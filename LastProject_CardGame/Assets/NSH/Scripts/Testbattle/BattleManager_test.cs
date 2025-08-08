@@ -18,7 +18,7 @@ public class BattleManager_test : MonoBehaviour
 
     public void SetAttacker(GameObject card)
     {
-        FildMonster cardScript = card.GetComponent<FildMonster>();
+		SimpleCard cardScript = card.GetComponent<SimpleCard>();
         if (cardScript == null) return;
 
         if (cardScript.HasAttackedThisTurn())
@@ -28,7 +28,7 @@ public class BattleManager_test : MonoBehaviour
         }
 
         attacker = card;
-        Debug.Log($"공격자 설정됨: {cardScript.monsterCardData.cardName}");
+        Debug.Log($"공격자 설정됨: {cardScript.cardData.cardName}");
     }
 
     public void SetTarget(GameObject card)
@@ -49,15 +49,15 @@ public class BattleManager_test : MonoBehaviour
 
     private void ExecuteBattle()
     {
-		FildMonster atkCard = attacker.GetComponent<FildMonster>();
-		FildMonster tgtCard = target.GetComponent<FildMonster>();
+		SimpleCard atkCard = attacker.GetComponent<SimpleCard>();
+		SimpleCard tgtCard = target.GetComponent<SimpleCard>();
 
         if (atkCard == null || tgtCard == null) return;
 
-        Debug.Log($"{atkCard.monsterCardData.cardName} 이(가) {tgtCard.monsterCardData.cardName} 을(를) 공격!");
+        Debug.Log($"{atkCard.cardData.cardName} 이(가) {tgtCard.cardData.cardName} 을(를) 공격!");
 
-        tgtCard.TakeDamage(atkCard.Attack);
-        atkCard.TakeDamage(tgtCard.Attack);
+        tgtCard.ReduceHealth(atkCard.cardData.attack);
+        atkCard.ReduceHealth(tgtCard.cardData.attack);
 
         atkCard.SetAttackedThisTurn(true);
 
@@ -67,14 +67,14 @@ public class BattleManager_test : MonoBehaviour
 
     private void ExecuteAbility(int amount)
     {
-		FildMonster atkCard = attacker.GetComponent<FildMonster>();
-		FildMonster tgtCard = target.GetComponent<FildMonster>();
+		SimpleCard atkCard = attacker.GetComponent<SimpleCard>();
+		SimpleCard tgtCard = target.GetComponent<SimpleCard>();
 
 		if (atkCard == null || tgtCard == null) return;
 
-		Debug.Log($"{atkCard.monsterCardData.cardName} 이(가) {tgtCard.monsterCardData.cardName} 을(를) 효과발동!");
+		Debug.Log($"{atkCard.cardData.cardName} 이(가) {tgtCard.cardData.cardName} 을(를) 효과발동!");
 
-        tgtCard.TakeDamage(amount);
+        tgtCard.ReduceHealth(amount);
 
         atkCard = null;
         target = null;

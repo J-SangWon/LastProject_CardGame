@@ -1,5 +1,4 @@
 using UnityEngine;
-using static Unity.VisualScripting.Member;
 
 [CreateAssetMenu(menuName = "CardAbilities/TakeDamage")]
 public class Ability_TakeDamage : CardAbility
