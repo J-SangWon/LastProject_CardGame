@@ -1,14 +1,14 @@
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Àû Ä«µå ¸Å´ÏÀú: µ¦ ·Îµù, µå·Î¿ì, Ä«µå ¹èÄ¡.
+/// ì  ì¹´ë“œ ë§¤ë‹ˆì €: ë± ë¡œë”©, ë“œë¡œìš°, ì¹´ë“œ ë°°ì¹˜.
 /// </summary>
 public class OpponentCardManager : MonoBehaviour
 {
     public static OpponentCardManager Instance;
 
-    [Header("Àû Ä«µå")]
+    [Header("ì  ì¹´ë“œ")]
     public GameObject cardPrefab;
     public Transform deckZone;
     public Transform handZone;
@@ -27,7 +27,7 @@ public class OpponentCardManager : MonoBehaviour
         LoadDeckFromTransfer();
     }
 
-    #region Àû µ¦ ·Îµù ¹× µå·Î¿ì
+    #region ì  ë± ë¡œë”© ë° ë“œë¡œìš°
 
     void LoadDeckFromTransfer()
     {
@@ -35,11 +35,11 @@ public class OpponentCardManager : MonoBehaviour
 
         if (currentDeckData == null)
         {
-            Debug.LogWarning("DeckTransferManager·ÎºÎÅÍ µ¦ µ¥ÀÌÅÍ¸¦ °¡Á®¿ÀÁö ¸øÇß½À´Ï´Ù.");
+            Debug.LogWarning("DeckTransferManagerë¡œë¶€í„° ë± ë°ì´í„°ë¥¼ ê°€ì ¸ì˜¤ì§€ ëª»í–ˆìŠµë‹ˆë‹¤.");
             return;
         }
 
-        // ScriptableObject Àç¿¬°á
+        // ScriptableObject ì¬ì—°ê²°
         BaseCardData[] allCards = Resources.LoadAll<BaseCardData>("CardData");
 
         foreach (var entry in currentDeckData.mainDeck)
@@ -60,6 +60,7 @@ public class OpponentCardManager : MonoBehaviour
                 GameObject card = CreateCard(entry.card, cardPrefab, deckZone, Quaternion.identity);
                 card.transform.localPosition = new Vector3(0, 0, -zIndex * 0.01f);
                 card.GetComponent<CardUI>().EnableCardFlip = false;
+                card.GetComponent<CardUI>().cardData.ownerType = OwnerType.Opponent; // ì  ì¹´ë“œë¡œ ì„¤ì •
                 zIndex++;
 
                 deck.Add(card);
@@ -109,10 +110,10 @@ public class OpponentCardManager : MonoBehaviour
 
     #endregion
 
-    #region °øÅë Ä«µå »ı¼º ¸Ş¼­µå
+    #region ê³µí†µ ì¹´ë“œ ìƒì„± ë©”ì„œë“œ
 
     /// <summary>
-    /// Ä«µå »ı¼º ¹× UI, ÃÊ±âÈ­
+    /// ì¹´ë“œ ìƒì„± ë° UI, ì´ˆê¸°í™”
     /// </summary>
     private GameObject CreateCard(BaseCardData data, GameObject prefab, Transform parent, Quaternion rotation)
     {
@@ -120,28 +121,28 @@ public class OpponentCardManager : MonoBehaviour
         card.transform.localScale = Vector3.one;
         card.transform.localRotation = rotation;
 
-        // UI ¼¼ÆÃ
+        // UI ì„¸íŒ…
         var cardUI = card.GetComponent<CardUI>();
         if (cardUI != null)
         {
             cardUI.SetCard(data);
             cardUI.SetFace(true);
-            cardUI.EnableCardFlip = rotation == Quaternion.identity; // ÇÃ·¹ÀÌ¾î Ä«µå¸¸ Å¬¸¯ °¡´É
+            cardUI.EnableCardFlip = rotation == Quaternion.identity; // í”Œë ˆì´ì–´ ì¹´ë“œë§Œ í´ë¦­ ê°€ëŠ¥
         }
 
-        // µå·¡±×
+        // ë“œë˜ê·¸
         var dragHandler = card.GetComponent<CardDragHandler>();
         if (dragHandler != null)
         {
             dragHandler.enabled = rotation == Quaternion.identity;
         }
 
-        // Collider ÀÚµ¿ Ãß°¡ (UI Ä«µå¿¡ Raycast µÇµµ·Ï BoxCollider2D »ç¿ë ±ÇÀå)
+        // Collider ìë™ ì¶”ê°€ (UI ì¹´ë“œì— Raycast ë˜ë„ë¡ BoxCollider2D ì‚¬ìš© ê¶Œì¥)
         if (card.GetComponent<Collider2D>() == null)
         {
             var collider = card.AddComponent<BoxCollider2D>();
 
-            // Å©±â ÀÚµ¿ ¼³Á¤ (ÇÊ¿ä¿¡ µû¶ó Á¶Àı °¡´É)
+            // í¬ê¸° ìë™ ì„¤ì • (í•„ìš”ì— ë”°ë¼ ì¡°ì ˆ ê°€ëŠ¥)
             var rect = card.GetComponent<RectTransform>();
             if (rect != null)
             {
@@ -154,7 +155,7 @@ public class OpponentCardManager : MonoBehaviour
     }
 
     /// <summary>
-    /// ¸ó½ºÅÍÁ¸ À§Ä¡ °è»ê (5½½·Ô ±âÁØ Áß¾Ó Á¤·Ä)
+    /// ëª¬ìŠ¤í„°ì¡´ ìœ„ì¹˜ ê³„ì‚° (5ìŠ¬ë¡¯ ê¸°ì¤€ ì¤‘ì•™ ì •ë ¬)
     /// </summary>
     private Vector3 GetSlotPosition(int index, int total, float spacing)
     {
@@ -162,7 +163,7 @@ public class OpponentCardManager : MonoBehaviour
         return new Vector3(startX + index * spacing, 0, 0);
     }
 
-    public Transform fieldZone; // ÇÊµå ¿µ¿ª ÂüÁ¶ ÇÊ¿ä
+    public Transform fieldZone; // í•„ë“œ ì˜ì—­ ì°¸ì¡° í•„ìš”
 
     public void PlayCardToField(GameObject card)
     {
@@ -175,7 +176,7 @@ public class OpponentCardManager : MonoBehaviour
             cardUI.isOnField = true;
         }
 
-        // À§Ä¡ Á¤·Ä ¿¹½Ã (ÇÊ¿ä½Ã Ä¿½ºÅÍ¸¶ÀÌÁî °¡´É)
+        // ìœ„ì¹˜ ì •ë ¬ ì˜ˆì‹œ (í•„ìš”ì‹œ ì»¤ìŠ¤í„°ë§ˆì´ì¦ˆ ê°€ëŠ¥)
         UpdateFieldLayout();
     }
 

@@ -52,35 +52,23 @@ public class PlayerCardManager : MonoBehaviour
 
         ClearDeck();
 
-        //  덱 카드 단위로 리스트화
-        List<BaseCardData> flatDeck = new List<BaseCardData>();
+        int zIndex = 0;
         foreach (var entry in currentDeckData.mainDeck)
         {
             for (int i = 0; i < entry.count; i++)
             {
-                flatDeck.Add(entry.card);
+                GameObject card = CreateCard(entry.card, cardPrefab, deckZone, Quaternion.identity);
+                card.transform.localPosition = new Vector3(0, 0, -zIndex * 0.01f);
+                card.GetComponent<CardUI>().EnableCardFlip = false;
+                card.GetComponent<CardUI>().cardData.ownerType = OwnerType.Player; // 플레이어 카드로 설정
+                zIndex++;
+
+                deck.Add(card);
             }
         }
 
-        // 셔플
-        ShuffleDeck(flatDeck);
-
-        //  셔플된 순서로 덱에 카드 생성
-        int zIndex = 0;
-        foreach (var cardData in flatDeck)
-        {
-            GameObject card = CreateCard(cardData, cardPrefab, deckZone, Quaternion.identity);
-            card.transform.localPosition = new Vector3(0, 0, -zIndex * 0.01f);
-            card.GetComponent<CardUI>().EnableCardFlip = false;
-            zIndex++;
-
-            deck.Add(card);
-        }
-
-        // ✅ 드로우
         DrawCards(5);
     }
-
 
     private void ClearDeck()
     {
@@ -117,14 +105,6 @@ public class PlayerCardManager : MonoBehaviour
             {
                 rt.anchoredPosition = new Vector2(i * spacing, 0);
             }
-        }
-    }
-    void ShuffleDeck(List<BaseCardData> list)
-    {
-        for (int i = 0; i < list.Count; i++)
-        {
-            int randomIndex = Random.Range(i, list.Count);
-            (list[i], list[randomIndex]) = (list[randomIndex], list[i]);
         }
     }
 
