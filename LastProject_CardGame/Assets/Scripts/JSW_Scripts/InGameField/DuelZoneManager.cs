@@ -12,6 +12,7 @@ public class DuelZoneManager : MonoBehaviour
     public FieldSpellZone fieldSpellZone;
     public ExtraDeckZone extraDeckZone;
     public GraveyardZone graveyardZone;
+    public GraveyardZone enemyGraveyardZone;
 
     void Awake()
     {

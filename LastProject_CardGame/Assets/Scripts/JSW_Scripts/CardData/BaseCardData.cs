@@ -10,7 +10,7 @@ public enum Race { Null, Undead, Dragon, Warrior, wizard, Fiend, Fairy, Fish, In
 public enum CardRarity { Normal, Rare, SuperRare, UltraRare }
 public enum AbilityType { TakeDamage, TakeDamageAll, Heal, HealAll, Destroy, Draw, Serch, Create, Buff, Appeared, CloneSummon, Stun }
 
-
+public enum OwnerType { Player, Opponent }
 public static class CardCraftConfig
 {
     public static readonly Dictionary<CardRarity, int> CraftCostByRarity = new Dictionary<CardRarity, int>
@@ -55,7 +55,8 @@ public abstract class BaseCardData : ScriptableObject
 
     [Header("기타 정보")]
     public List<string> tags = new List<string>();
-    
+    public OwnerType ownerType = OwnerType.Player;
+
     public int craftCost = 0;
     public int disenchantReward = 0;
     public bool canCraft = true;

@@ -7,6 +7,8 @@ TagManager:
   - Enemy
   - PlayerZone
   - EnemyZone
+  - PlayerGraveyard
+  - EnemyGraveyard
   layers:
   - Default
   - TransparentFX
