@@ -1,15 +1,19 @@
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 using UnityEngine;
 
 public class AbilityParameter
 {
-	public int value;              // ¿¹: µ¥¹ÌÁö·®, Èú·® µî
-	public CardUI target;     // ´ÜÀÏ ´ë»ó
-	public List<CardUI> targets; // º¹¼ö ´ë»ó (¿É¼Ç)
-	public string keyword;         // °Ë»ö µî ±âÅ¸ ¿ëµµ
+	public int value;              // ì˜ˆ: ë°ë¯¸ì§€ëŸ‰, íëŸ‰ ë“±
+	public CardUI target;     // ë‹¨ì¼ ëŒ€ìƒ
+	public List<CardUI> targets; // ë³µìˆ˜ ëŒ€ìƒ (ì˜µì…˜)
+	public string keyword;         // ê²€ìƒ‰ ë“± ê¸°íƒ€ ìš©ë„
 }
 
 public abstract class CardAbility : ScriptableObject
 {
 	public abstract void Activate(CardUI card, AbilityParameter param);
+
+    [Header("ë°œë™ ì¡°ê±´")]
+    public EffectCondition condition;
+
 }

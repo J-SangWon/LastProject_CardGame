@@ -79,8 +79,8 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
 
         if(currentHealth == 0)
         {
-            HandleDeath();
             DuelZoneManager.Instance.SendToGraveyard(cardData);
+            HandleDeath();
         }
     }
 
