@@ -5,6 +5,7 @@ using UnityEngine;
 public class Ability_Create : CardAbility
 {
 	[SerializeField] private GameObject cardPrefab;
+
 	public override void Activate(CardUI card, AbilityParameter param)
 	{
 		GameObject cardGo = Instantiate(cardPrefab);
