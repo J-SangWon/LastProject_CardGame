@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections;
@@ -10,11 +10,11 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI playerHealthText;
     public TextMeshProUGUI enemyHealthText;
     public TextMeshProUGUI timerText;
-    public Button turnButton;  // ÅÏ ÀüÈ¯ ¹öÆ°
+    public Button turnButton;  // í„´ ì „í™˜ ë²„íŠ¼
 
     [Header("Cards")]
-    public GameObject cardObject;       // ÇÃ·¹ÀÌ¾î Ä«µå ¿ÀºêÁ§Æ®
-    public GameObject enemyCardObject;  // Àû Ä«µå ¿ÀºêÁ§Æ®
+    public GameObject cardObject;       // í”Œë ˆì´ì–´ ì¹´ë“œ ì˜¤ë¸Œì íŠ¸
+    public GameObject enemyCardObject;  // ì  ì¹´ë“œ ì˜¤ë¸Œì íŠ¸
 
     [Header("Cost System")]
     public TextMeshProUGUI playerCostText;
@@ -29,15 +29,15 @@ public class GameManager : MonoBehaviour
     private const int MAX_COST_LIMIT = 10;
 
     //[Header("RPS (Rock Paper Scissors)")]
-    //public GameObject rpsUI;         // °¡À§ ¹ÙÀ§ º¸ ¼±ÅÃ UI
+    //public GameObject rpsUI;         // ê°€ìœ„ ë°”ìœ„ ë³´ ì„ íƒ UI
     //public Button rockButton;
     //public Button paperButton;
     //public Button scissorsButton;
     //public TextMeshProUGUI resultText;
 
-    private enum RPSChoice { Rock, Paper, Scissors } // °¡À§, ¹ÙÀ§, º¸ ¼±ÅÃÀ» À§ÇÑ ¿­°ÅÇü
-    private RPSChoice playerChoice;  // ÇÃ·¹ÀÌ¾îÀÇ ¼±ÅÃ
-    private RPSChoice enemyChoice;   // ÀûÀÇ ¼±ÅÃ
+    private enum RPSChoice { Rock, Paper, Scissors } // ê°€ìœ„, ë°”ìœ„, ë³´ ì„ íƒì„ ìœ„í•œ ì—´ê±°í˜•
+    private RPSChoice playerChoice;  // í”Œë ˆì´ì–´ì˜ ì„ íƒ
+    private RPSChoice enemyChoice;   // ì ì˜ ì„ íƒ
 
     private bool isBattleActive = false;
     private GamePhase currentPhase;
@@ -49,8 +49,8 @@ public class GameManager : MonoBehaviour
     private int playerHealth = 40;
     private int enemyHealth = 40;
 
-    private float turnTimer = 300f;      // ÃÊ±â Å¸ÀÌ¸Ó (ÃÊ)
-    private bool isTimerRunning = false; // Å¸ÀÌ¸Ó ÀÛµ¿ ¿©ºÎ
+    private float turnTimer = 300f;      // ì´ˆê¸° íƒ€ì´ë¨¸ (ì´ˆ)
+    private bool isTimerRunning = false; // íƒ€ì´ë¨¸ ì‘ë™ ì—¬ë¶€
 
     public GameObject overlayPanel;
     public static GameManager Instance;
@@ -67,18 +67,18 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        currentPhase = GamePhase.MainPhase;
+        currentPhase = GamePhase.FirstPhase;
         UpdatePhaseText();
         turnButton.onClick.AddListener(OnTurnButtonClicked);
 
         UpdateHealthUI();
         UpdateTimerUI();
-        UpdateCostUI();  // ÄÚ½ºÆ® UI ¾÷µ¥ÀÌÆ®
-        //rpsUI.SetActive(true);  // °ÔÀÓ ½ÃÀÛ ½Ã °¡À§ ¹ÙÀ§ º¸ UI È°¼ºÈ­
+        UpdateCostUI();  // ì½”ìŠ¤íŠ¸ UI ì—…ë°ì´íŠ¸
+        //rpsUI.SetActive(true);  // ê²Œì„ ì‹œì‘ ì‹œ ê°€ìœ„ ë°”ìœ„ ë³´ UI í™œì„±í™”
         //resultText.text = "Choose Rock, Paper, or Scissors!";
 
-        //// »ó´ë ·£´ı ¼±ÅÃ
-        //enemyChoice = (RPSChoice)Random.Range(0, 3);  // »ó´ë´Â °ÔÀÓ ½ÃÀÛ ½Ã ·£´ıÀ¸·Î ¼±ÅÃ
+        //// ìƒëŒ€ ëœë¤ ì„ íƒ
+        //enemyChoice = (RPSChoice)Random.Range(0, 3);  // ìƒëŒ€ëŠ” ê²Œì„ ì‹œì‘ ì‹œ ëœë¤ìœ¼ë¡œ ì„ íƒ
 
         //overlayPanel.SetActive(true);
     }
@@ -91,7 +91,7 @@ public class GameManager : MonoBehaviour
             UpdateTimerUI();
         }
     }
-    // µ¥¹ÌÁö¸¦ Ã³¸®ÇÏ°í UI °»½Å
+    // ë°ë¯¸ì§€ë¥¼ ì²˜ë¦¬í•˜ê³  UI ê°±ì‹ 
     public void DealDamageToPlayer(bool isPlayer, int dmg)
     {
         if (isPlayer)
@@ -107,17 +107,17 @@ public class GameManager : MonoBehaviour
 
         UpdateHealthUI();
 
-        // »ç¸Á Ã³¸®
+        // ì‚¬ë§ ì²˜ë¦¬
         if (playerHealth <= 0)
         {
-            Debug.Log("ÇÃ·¹ÀÌ¾î°¡ ÆĞ¹èÇß½À´Ï´Ù.");
-            // °ÔÀÓ ¿À¹ö Ã³¸®
+            Debug.Log("í”Œë ˆì´ì–´ê°€ íŒ¨ë°°í–ˆìŠµë‹ˆë‹¤.");
+            // ê²Œì„ ì˜¤ë²„ ì²˜ë¦¬
         }
 
         if (enemyHealth <= 0)
         {
-            Debug.Log("ÀûÀÌ ÆĞ¹èÇß½À´Ï´Ù.");
-            // ½Â¸® Ã³¸®
+            Debug.Log("ì ì´ íŒ¨ë°°í–ˆìŠµë‹ˆë‹¤.");
+            // ìŠ¹ë¦¬ ì²˜ë¦¬
         }
     }
 
@@ -126,16 +126,16 @@ public class GameManager : MonoBehaviour
     {
         playerChoice = choice;
 
-        // ¹öÆ° ºñÈ°¼ºÈ­ (¼±ÅÃ ÈÄ ´õ ÀÌ»ó ¼±ÅÃÇÒ ¼ö ¾ø°Ô)
+        // ë²„íŠ¼ ë¹„í™œì„±í™” (ì„ íƒ í›„ ë” ì´ìƒ ì„ íƒí•  ìˆ˜ ì—†ê²Œ)
         //rockButton.interactable = false;
         //paperButton.interactable = false;
         //scissorsButton.interactable = false;
 
-        //// °á°ú °è»ê ¹× Ç¥½Ã
+        //// ê²°ê³¼ ê³„ì‚° ë° í‘œì‹œ
         //string result = DetermineWinner(playerChoice, enemyChoice);
         //resultText.text = $"Player: {playerChoice}\nEnemy: {enemyChoice}\n{result}";
 
-        //// ¼±ÈÄ°ø °áÁ¤
+        //// ì„ í›„ê³µ ê²°ì •
         //if (result == "Player Wins")
         //{
         //    StartPlayerTurn();
@@ -146,7 +146,7 @@ public class GameManager : MonoBehaviour
         //}
         //else
         //{
-        //    // ºñ°åÀ» °æ¿ì, ´Ù½Ã ¼±ÅÃ °¡´É
+        //    // ë¹„ê²¼ì„ ê²½ìš°, ë‹¤ì‹œ ì„ íƒ ê°€ëŠ¥
         //    RestartRPS();
         //}
         //overlayPanel.SetActive(false);
@@ -159,10 +159,10 @@ public class GameManager : MonoBehaviour
         currentPhase = GamePhase.MainPhase;
         UpdatePhaseText();
 
-        // ÇÃ·¹ÀÌ¾î Ä«µåµé °ø°İ ÃÊ±âÈ­
+        // í”Œë ˆì´ì–´ ì¹´ë“œë“¤ ê³µê²© ì´ˆê¸°í™”
         ResetPlayerCardAttacks();
 
-        // Å¸ÀÌ¸Ó & ¹öÆ° È°¼ºÈ­
+        // íƒ€ì´ë¨¸ & ë²„íŠ¼ í™œì„±í™”
         isTimerRunning = true;
         turnButton.interactable = true;
         turnTimer += 30f;
@@ -180,7 +180,7 @@ public class GameManager : MonoBehaviour
         foreach (var cardUI in cards)
         {
             if (cardUI.isOnField && cardUI.cardData != null &&
-                GameManager.Instance.isPlayerTurn) // ÇÃ·¹ÀÌ¾î ¸ó½ºÅÍ¸¸
+                GameManager.Instance.isPlayerTurn) // í”Œë ˆì´ì–´ ëª¬ìŠ¤í„°ë§Œ
             {
                 cardUI.ResetAttackFlag();
             }
@@ -190,10 +190,10 @@ public class GameManager : MonoBehaviour
 
     void RestartRPS()
     {
-        //rpsUI.SetActive(true);  // ´Ù½Ã UI È°¼ºÈ­
+        //rpsUI.SetActive(true);  // ë‹¤ì‹œ UI í™œì„±í™”
         //resultText.text = "Choose Rock, Paper, or Scissors!";
 
-        //// ¹öÆ° È°¼ºÈ­
+        //// ë²„íŠ¼ í™œì„±í™”
         //rockButton.interactable = true;
         //paperButton.interactable = true;
         //scissorsButton.interactable = true;
@@ -208,33 +208,38 @@ public class GameManager : MonoBehaviour
         currentPhase = GamePhase.MainPhase;
         UpdatePhaseText();
 
-        //// Àû ÅÏ ½ÃÀÛ
-        //rpsUI.SetActive(false);  // °¡À§ ¹ÙÀ§ º¸ UI ºñÈ°¼ºÈ­
+        //// ì  í„´ ì‹œì‘
+        //rpsUI.SetActive(false);  // ê°€ìœ„ ë°”ìœ„ ë³´ UI ë¹„í™œì„±í™”
         //overlayPanel.SetActive(false);
     }
 
     string DetermineWinner(RPSChoice player, RPSChoice enemy)
     {
-        // °¡À§ ¹ÙÀ§ º¸ ±ÔÄ¢¿¡ µû¶ó ½ÂÆĞ¸¦ °áÁ¤ÇÏ´Â ·ÎÁ÷
+        // ê°€ìœ„ ë°”ìœ„ ë³´ ê·œì¹™ì— ë”°ë¼ ìŠ¹íŒ¨ë¥¼ ê²°ì •í•˜ëŠ” ë¡œì§
         if (player == enemy)
         {
-            return "It's a Tie";  // ºñ°åÀ» °æ¿ì
+            return "It's a Tie";  // ë¹„ê²¼ì„ ê²½ìš°
         }
         else if ((player == RPSChoice.Rock && enemy == RPSChoice.Scissors) ||
                  (player == RPSChoice.Paper && enemy == RPSChoice.Rock) ||
                  (player == RPSChoice.Scissors && enemy == RPSChoice.Paper))
         {
-            return "Player Wins";  // ÇÃ·¹ÀÌ¾î ½Â¸®
+            return "Player Wins";  // í”Œë ˆì´ì–´ ìŠ¹ë¦¬
         }
         else
         {
-            return "Enemy Wins";  // Àû ½Â¸®
+            return "Enemy Wins";  // ì  ìŠ¹ë¦¬
         }
     }
 
     void OnTurnButtonClicked()
     {
-        if (currentPhase == GamePhase.MainPhase)
+        if (!isPlayerTurn) return;
+        if(currentPhase == GamePhase.FirstPhase)
+        {
+            StartPlayerTurn();
+        }
+        else if (currentPhase == GamePhase.MainPhase)
         {
             StartBattlePhase();
         }
@@ -281,7 +286,7 @@ public class GameManager : MonoBehaviour
         else
         {
             isPlayerTurn = true;
-            currentPhase = GamePhase.MainPhase;
+            currentPhase = GamePhase.FirstPhase;
             UpdatePhaseText();
             turnTimer += 30f;
             if (turnTimer > 400f) turnTimer = 400f;
@@ -291,7 +296,7 @@ public class GameManager : MonoBehaviour
             if (playerMaxCost < MAX_COST_LIMIT)
                 playerMaxCost++;
             playerCurrentCost = playerMaxCost;
-            UpdateCostUI();  // ÄÚ½ºÆ® UI ¾÷µ¥ÀÌÆ®
+            UpdateCostUI();  // ì½”ìŠ¤íŠ¸ UI ì—…ë°ì´íŠ¸
         }
     }
 
@@ -300,7 +305,7 @@ public class GameManager : MonoBehaviour
         if (enemyMaxCost < MAX_COST_LIMIT)
             enemyMaxCost++;
         enemyCurrentCost = enemyMaxCost;
-        UpdateCostUI();  // ÄÚ½ºÆ® UI ¾÷µ¥ÀÌÆ®
+        UpdateCostUI();  // ì½”ìŠ¤íŠ¸ UI ì—…ë°ì´íŠ¸
         yield return new WaitForSeconds(2f);
         EndPlayerTurn();
     }
@@ -320,6 +325,9 @@ public class GameManager : MonoBehaviour
     {
         switch (currentPhase)
         {
+            case GamePhase.FirstPhase:
+                phaseText.text = "First Phase";
+                break;
             case GamePhase.MainPhase:
                 phaseText.text = "Main Phase";
                 break;
@@ -345,7 +353,7 @@ public class GameManager : MonoBehaviour
         timerText.text = $"Time: {Mathf.FloorToInt(turnTimer)}s";
     }
 
-    // ÄÚ½ºÆ® UI¸¦ °»½ÅÇÏ´Â ÇÔ¼ö
+    // ì½”ìŠ¤íŠ¸ UIë¥¼ ê°±ì‹ í•˜ëŠ” í•¨ìˆ˜
     void UpdateCostUI()
     {
         playerCostText.text = $"Player Cost: {playerCurrentCost}/{playerMaxCost}";
