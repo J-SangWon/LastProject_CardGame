@@ -1,4 +1,5 @@
 using System.Data;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -17,6 +18,7 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
 
 	[HideInInspector] public bool isAppeared = false;
 	private bool hasAttackedThisTurn = false;
+	private bool isEntrance = false;
 
 	void Start()
     {
@@ -47,16 +49,23 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
 			return;
 		}
 
-		if (!BattleManager_test.Instance.HasAttacker())
+		if (!isEntrance)
 		{
-			// 공격자가 아직 없으면 이 카드를 공격자로 등록
-			BattleManager_test.Instance.SetAttacker(gameObject);
+			if (!BattleManager_test.Instance.HasAttacker())
+			{
+				// 공격자가 아직 없으면 이 카드를 공격자로 등록
+				BattleManager_test.Instance.SetAttacker(gameObject);
+			}
+			else
+			{
+				// 이미 공격자가 선택된 상태면 이 카드를 공격 대상(Target)으로 등록
+				if (BattleManager_test.Instance != null)
+					BattleManager_test.Instance.SetTarget(gameObject);
+			}
 		}
 		else
 		{
-			// 이미 공격자가 선택된 상태면 이 카드를 공격 대상(Target)으로 등록
-			if (BattleManager_test.Instance != null)
-				BattleManager_test.Instance.SetTarget(gameObject);
+			isEntrance = false;
 		}
 	}
 
@@ -97,7 +106,10 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
         switch (abilityType)
         {
             case AbilityType.TakeDamage:
-                break;
+				if (BattleManager_test.Instance != null)
+					BattleManager_test.Instance.SetAttacker(gameObject);
+				isEntrance = true;
+				break;
             case AbilityType.TakeDamageAll:
                 break;
             case AbilityType.Heal:

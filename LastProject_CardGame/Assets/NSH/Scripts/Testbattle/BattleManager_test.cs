@@ -39,6 +39,14 @@ public class BattleManager_test : MonoBehaviour
         ExecuteBattle();
     }
 
+    public void SetAbilityTarget(GameObject card)
+    {
+		if (attacker == null) return;
+
+		target = card;
+
+	}
+
     private void ExecuteBattle()
     {
 		FildMonster atkCard = attacker.GetComponent<FildMonster>();
@@ -56,6 +64,21 @@ public class BattleManager_test : MonoBehaviour
         attacker = null;
         target = null;
     }
+
+    private void ExecuteAbility(int amount)
+    {
+		FildMonster atkCard = attacker.GetComponent<FildMonster>();
+		FildMonster tgtCard = target.GetComponent<FildMonster>();
+
+		if (atkCard == null || tgtCard == null) return;
+
+		Debug.Log($"{atkCard.monsterCardData.cardName} 이(가) {tgtCard.monsterCardData.cardName} 을(를) 효과발동!");
+
+        tgtCard.TakeDamage(amount);
+
+        atkCard = null;
+        target = null;
+	}
 
     public void ResetBattleState()
     {

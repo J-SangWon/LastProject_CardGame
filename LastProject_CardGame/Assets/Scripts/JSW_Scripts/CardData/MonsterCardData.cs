@@ -8,7 +8,7 @@ public enum MonsterCardAbilityType
 	Continuous          //지속효과
 }
 
-public enum AbilityType { TakeDamage, TakeDamageAll, Heal, HealAll, Destroy, Draw}
+public enum AbilityType { TakeDamage, TakeDamageAll, Heal, HealAll, Destroy, Draw, Serch, Create, Buff, Appeared, CloneSummon, Stun }
 
 [CreateAssetMenu(menuName = "Card/MonsterCard")]
 public class MonsterCardData : BaseCardData
