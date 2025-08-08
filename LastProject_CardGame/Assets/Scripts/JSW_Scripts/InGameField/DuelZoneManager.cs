@@ -11,8 +11,8 @@ public class DuelZoneManager : MonoBehaviour
     [Header("존 참조")]
     public FieldSpellZone fieldSpellZone;
     public ExtraDeckZone extraDeckZone;
-    public GraveyardZone graveyardZone;
-    public GraveyardZone enemyGraveyardZone;
+    public PlayerGraveyardZone graveyardZone;
+    public EnemyGraveyardZone enemyGraveyardZone;
 
     void Awake()
     {
@@ -101,12 +101,20 @@ public class DuelZoneManager : MonoBehaviour
     /// <summary>
     /// 카드를 묘지로 보내기
     /// </summary>
-    public void SendToGraveyard(BaseCardData card)
+    public void SendToGraveyard(BaseCardData card, OwnerType ownerType)
     {
-        if (graveyardZone != null)
+        Debug.Log($"SendToGraveyard / {card.cardName}, OwnerType: {ownerType}");
+        if (ownerType == OwnerType.Player)
         {
-            graveyardZone.SendToGraveyard(card);
+            if (graveyardZone != null)
+                graveyardZone.SendToGraveyard(card);
         }
+        else if (ownerType == OwnerType.Opponent)
+        {
+            if (enemyGraveyardZone != null)
+                enemyGraveyardZone.SendToGraveyard(card);
+        }
+
     }
 
     /// <summary>

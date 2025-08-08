@@ -60,7 +60,7 @@ public class PlayerCardManager : MonoBehaviour
                 GameObject card = CreateCard(entry.card, cardPrefab, deckZone, Quaternion.identity);
                 card.transform.localPosition = new Vector3(0, 0, -zIndex * 0.01f);
                 card.GetComponent<CardUI>().EnableCardFlip = false;
-                card.GetComponent<CardUI>().cardData.ownerType = OwnerType.Player; // 플레이어 카드로 설정
+                card.GetComponent<CardUI>().ownerType = OwnerType.Player; // 플레이어 카드로 설정
                 zIndex++;
 
                 deck.Add(card);
@@ -95,7 +95,7 @@ public class PlayerCardManager : MonoBehaviour
 
     public void DrawCard() => DrawCards(1);
 
-    private void UpdateHandLayout()
+    public void UpdateHandLayout()
     {
         float spacing = 150f;
         for (int i = 0; i < handZone.childCount; i++)
