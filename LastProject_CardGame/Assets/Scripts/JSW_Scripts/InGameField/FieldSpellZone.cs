@@ -52,6 +52,24 @@ public class FieldSpellZone : MonoBehaviour, IPointerClickHandler
         CreateFieldSpellVisual();
 
         Debug.Log($"필드마법 발동: {fieldSpell.cardName}");
+        if(currentFieldSpellCardObj != null)
+        {
+            // 필드마법 카드 오브젝트가 생성되었을 때
+            var objDragHandler = currentFieldSpellCardObj.GetComponent<CardDragHandler>();
+            if (objDragHandler != null)
+            {
+                objDragHandler.isSummoned = true;
+            }
+            else
+            {
+                Debug.LogWarning("필드마법 카드 오브젝트에 드래그 핸들러가 없습니다.");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("필드마법 카드 오브젝트가 생성되지 않았습니다.");
+        }
+
         return true;
     }
 
@@ -69,7 +87,7 @@ public class FieldSpellZone : MonoBehaviour, IPointerClickHandler
         }
     }
     /// <summary>
-    /// 필드마법 시각적 표현 생성
+    /// 필드마법 표현 생성
     /// </summary>
     void CreateFieldSpellVisual()
     {
@@ -139,6 +157,7 @@ public class FieldSpellZone : MonoBehaviour, IPointerClickHandler
             if (success)
             {
                 // 드롭 성공 시 처리
+                currentFieldSpellCardObj = cardObject;
                 // 기존 카드 오브젝트 제거
                 Destroy(cardObject);
             }

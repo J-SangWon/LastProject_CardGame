@@ -12,7 +12,6 @@ public class DuelZoneManager : MonoBehaviour
     public FieldSpellZone fieldSpellZone;
     public ExtraDeckZone extraDeckZone;
     public GraveyardZone graveyardZone;
-    public MonsterZone monsterZone; 
 
     void Awake()
     {
@@ -64,7 +63,7 @@ public class DuelZoneManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 엑스트라 덱에서 카드 제거 (DrawFromExtraDeck으로 메서드명 변경)
+    /// 엑스트라 덱에서 카드 제거
     /// </summary>
     public BaseCardData RemoveFromExtraDeck()
     {
@@ -117,17 +116,6 @@ public class DuelZoneManager : MonoBehaviour
         if (graveyardZone != null)
         {
             graveyardZone.ShowGraveyard();
-        }
-    }
-
-    /// <summary>
-    /// 몬스터존에 카드 추가
-    /// </summary>
-    public void SendToMonsterZone(BaseCardData card)
-    {
-        if (monsterZone != null)
-        {
-            monsterZone.SendToMonsterZone(card);
         }
     }
 
