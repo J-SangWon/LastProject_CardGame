@@ -3,9 +3,12 @@ using UnityEngine;
 public class BattleManager_test : MonoBehaviour
 {
     public static BattleManager_test Instance;
+    [SerializeField] private GameObject uiProjectilePrefab;
+    [SerializeField] private RectTransform projectileParent;
 
     private GameObject attacker;
     private GameObject target;
+ 
 
     private void Awake()
     {
@@ -18,7 +21,7 @@ public class BattleManager_test : MonoBehaviour
 
     public void SetAttacker(GameObject card)
     {
-		SimpleCard cardScript = card.GetComponent<SimpleCard>();
+        SimpleCard cardScript = card.GetComponent<SimpleCard>();
         if (cardScript == null) return;
 
         if (cardScript.HasAttackedThisTurn())
@@ -36,21 +39,33 @@ public class BattleManager_test : MonoBehaviour
         if (attacker == null) return;
 
         target = card;
-        ExecuteBattle();
+
+        LaunchUIProjectile(); // 실제 전투는 여기서만
+    }
+    private void LaunchUIProjectile()
+    {
+        RectTransform attackerRT = attacker.GetComponent<RectTransform>();
+        RectTransform targetRT = target.GetComponent<RectTransform>();
+
+        GameObject proj = Instantiate(uiProjectilePrefab, projectileParent);
+        RectTransform projRT = proj.GetComponent<RectTransform>();
+        projRT.anchoredPosition = attackerRT.anchoredPosition;
+
+        UIProjectile projScript = proj.GetComponent<UIProjectile>();
+        projScript.Initialize(targetRT);
     }
 
-    public void SetAbilityTarget(GameObject card)
+    public void ResetBattleState()
     {
-		if (attacker == null) return;
-
-		target = card;
-
-	}
-
-    private void ExecuteBattle()
+        attacker = null;
+        target = null;
+    }
+    public void OnProjectileHit()
     {
-		SimpleCard atkCard = attacker.GetComponent<SimpleCard>();
-		SimpleCard tgtCard = target.GetComponent<SimpleCard>();
+        if (attacker == null || target == null) return;
+
+        SimpleCard atkCard = attacker.GetComponent<SimpleCard>();
+        SimpleCard tgtCard = target.GetComponent<SimpleCard>();
 
         if (atkCard == null || tgtCard == null) return;
 
@@ -61,27 +76,6 @@ public class BattleManager_test : MonoBehaviour
 
         atkCard.SetAttackedThisTurn(true);
 
-        attacker = null;
-        target = null;
-    }
-
-    private void ExecuteAbility(int amount)
-    {
-		SimpleCard atkCard = attacker.GetComponent<SimpleCard>();
-		SimpleCard tgtCard = target.GetComponent<SimpleCard>();
-
-		if (atkCard == null || tgtCard == null) return;
-
-		Debug.Log($"{atkCard.cardData.cardName} 이(가) {tgtCard.cardData.cardName} 을(를) 효과발동!");
-
-        tgtCard.ReduceHealth(amount);
-
-        atkCard = null;
-        target = null;
-	}
-
-    public void ResetBattleState()
-    {
         attacker = null;
         target = null;
     }
