@@ -52,24 +52,43 @@ public class PlayerCardManager : MonoBehaviour
 
         ClearDeck();
 
-        int zIndex = 0;
+        //  덱 카드 단위로 리스트화
+        List<BaseCardData> flatDeck = new List<BaseCardData>();
         foreach (var entry in currentDeckData.mainDeck)
         {
             for (int i = 0; i < entry.count; i++)
             {
-                GameObject card = CreateCard(entry.card, cardPrefab, deckZone, Quaternion.identity);
-                card.transform.localPosition = new Vector3(0, 0, -zIndex * 0.01f);
-                card.GetComponent<CardUI>().EnableCardFlip = false;
-                card.GetComponent<CardUI>().ownerType = OwnerType.Player; // 플레이어 카드로 설정
-                zIndex++;
-
-                deck.Add(card);
+                flatDeck.Add(entry.card);
             }
         }
 
+        // 셔플
+        ShuffleDeck(flatDeck);
+
+        //  셔플된 순서로 덱에 카드 생성
+        int zIndex = 0;
+        foreach (var cardData in flatDeck)
+        {
+            GameObject card = CreateCard(cardData, cardPrefab, deckZone, Quaternion.identity);
+            card.transform.localPosition = new Vector3(0, 0, -zIndex * 0.01f);
+            card.GetComponent<CardUI>().EnableCardFlip = false;
+            zIndex++;
+
+            deck.Add(card);
+        }
+
+        //  드로우
         DrawCards(5);
     }
 
+    private void ShuffleDeck(List<BaseCardData> list)
+    {
+        for (int i = 0; i < list.Count; i++)
+        {
+            int randomIndex = Random.Range(i, list.Count);
+            (list[i], list[randomIndex]) = (list[randomIndex], list[i]);
+        }
+    }
     private void ClearDeck()
     {
         foreach (var card in deck)
