@@ -85,6 +85,15 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
         }
     }
 
+    public void Heal(int value)
+    {
+        currentHealth += value;
+
+        if(currentHealth > maxHealth) currentHealth = maxHealth;
+
+        textHealth.text = currentHealth.ToString();
+    }
+
     public void SetFace(bool showFront)
     {
         if (imageBack)
