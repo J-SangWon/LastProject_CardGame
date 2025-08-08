@@ -60,7 +60,7 @@ public class OpponentCardManager : MonoBehaviour
                 GameObject card = CreateCard(entry.card, cardPrefab, deckZone, Quaternion.identity);
                 card.transform.localPosition = new Vector3(0, 0, -zIndex * 0.01f);
                 card.GetComponent<CardUI>().EnableCardFlip = false;
-                card.GetComponent<CardUI>().cardData.ownerType = OwnerType.Opponent; // 적 카드로 설정
+                card.GetComponent<CardUI>().ownerType = OwnerType.Opponent; // 적 카드로 설정
                 zIndex++;
 
                 deck.Add(card);
