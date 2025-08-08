@@ -44,6 +44,14 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     {
         canvasGroup.blocksRaycasts = true;
 
+        // ❗ MainPhase가 아닐 경우 소환 불가
+        if (cardOwner == Owner.Player && GameManager.Instance.CurrentPhase != GamePhase.MainPhase)
+        {
+            Debug.Log("메인 페이즈가 아니므로 소환할 수 없습니다.");
+            ReturnToOriginalPosition();
+            return;
+        }
+
         bool validDrop = false;
         if (eventData.pointerEnter != null)
         {
@@ -69,9 +77,7 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
         if (!validDrop)
         {
-            transform.SetParent(originalParent);
-            transform.SetAsLastSibling();
-            LayoutRebuilder.ForceRebuildLayoutImmediate(originalParent.GetComponent<RectTransform>());
+            ReturnToOriginalPosition();
         }
 
         droppedOnSlot = false;
@@ -79,6 +85,12 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         if (isSummoned) return;
     }
 
+    private void ReturnToOriginalPosition()
+    {
+        transform.SetParent(originalParent);
+        transform.SetAsLastSibling();
+        LayoutRebuilder.ForceRebuildLayoutImmediate(originalParent.GetComponent<RectTransform>());
+    }
     private bool IsValidDropZone(Transform dropZone)
     {
         string zoneTag = dropZone.tag;
