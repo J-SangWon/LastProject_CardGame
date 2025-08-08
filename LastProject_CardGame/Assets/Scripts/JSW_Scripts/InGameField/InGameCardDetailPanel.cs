@@ -2,39 +2,43 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CardDetailUI : MonoBehaviour
+public class InGameCardDetailPanel : MonoBehaviour
 {
-    public static CardDetailUI Instance;
+    public static InGameCardDetailPanel Instance;
 
+    [Header("UI 요소")]
+    public GameObject panelRoot;
     public Image cardImage;
     public TMP_Text nameText;
     public TMP_Text descriptionText;
-
     public TextMeshProUGUI costText;
     public TextMeshProUGUI attackText;
     public TextMeshProUGUI healthText;
     public TextMeshProUGUI raceText;
 
-    public Button craftButton;
-    public Button disenchantButton;
-    public TextMeshProUGUI craftCostText;
-    public TextMeshProUGUI disenchantRewardText;
+    public bool IsOpen => panelRoot.activeSelf;
 
     void Awake()
     {
-        if(Instance == null)
+        if (Instance == null)
             Instance = this;
         else
             Destroy(this);
-
     }
 
-    public void SetCardDetail(BaseCardData card)
+    void Start()
     {
+        
+    }
+
+    public void ShowCard(BaseCardData card)
+    {
+        if (card == null) return;
+
         cardImage.sprite = card.artwork;
         nameText.text = card.cardName;
-        costText.text = $"비용: {card.cost}";
         descriptionText.text = card.description;
+        costText.text = $"비용: {card.cost}";
 
         if (card is MonsterCardData monster)
         {
@@ -57,9 +61,9 @@ public class CardDetailUI : MonoBehaviour
                 default: raceText.text = ""; break;
             }
         }
-        else if (card is SpellCardData spell)
+        else if(card is SpellCardData spell)
         {
-            if (spell.spellType == SpellType.Continuous)
+            if(spell.spellType == SpellType.Continuous)
             {
                 raceText.text = "지속 마법";
             }
@@ -101,40 +105,12 @@ public class CardDetailUI : MonoBehaviour
             raceText.text = "";
         }
 
-        craftButton.gameObject.SetActive(card.canCraft);
-        disenchantButton.gameObject.SetActive(card.canDisenchant);
 
-        craftCostText.text = $"제작 : {card.craftCost.ToString()}";
-        disenchantRewardText.text = $"분해 : {card.disenchantReward.ToString()}";
+        panelRoot.SetActive(true);
+    }
 
-        // 버튼 리스너 등록
-        craftButton.onClick.RemoveAllListeners();
-        disenchantButton.onClick.RemoveAllListeners();
-
-        craftButton.onClick.AddListener(() => {
-            bool result = CardManager.Instance.TryCraftCard(card.cardId);
-            if (result)
-            {
-                SetCardDetail(card); 
-                DeckMakingUI.Instance?.RefreshCraftPointUI();
-                DeckMakingUI.Instance?.RefreshAllCardList();
-            }
-            else
-            {
-            }
-        });
-
-        disenchantButton.onClick.AddListener(() => {
-            bool result = CardManager.Instance.TryDisenchantCard(card.cardId);
-            if (result)
-            {
-                SetCardDetail(card);
-                DeckMakingUI.Instance?.RefreshCraftPointUI();
-                DeckMakingUI.Instance?.RefreshAllCardList();
-            }
-            else
-            {
-            }
-        });
+    public void Hide()
+    {
+        panelRoot.SetActive(false);
     }
 }

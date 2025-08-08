@@ -5,6 +5,7 @@ using UnityEngine.EventSystems;
 using System.Collections;
 using DG.Tweening;
 using Unity.Android.Gradle.Manifest;
+using UnityEngine.SceneManagement;
 
 public class CardUI : MonoBehaviour, IPointerClickHandler
 {
@@ -211,9 +212,16 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
             return;
         }
 
-        if (!isFront || cardData == null || !(cardData is MonsterCardData))
+        if (!isFront || cardData == null)
             return;
 
+        if (SceneManager.GetActiveScene().name == "InGame")
+        {
+            ShowDetailPanel(cardData);
+        }
+
+        if (!(cardData is MonsterCardData))
+            return;
         if (GameManager.Instance.CurrentPhase != GamePhase.BattlePhase)
         {
             Debug.Log("BattlePhase가 아니라 공격할 수 없습니다.");
@@ -235,6 +243,18 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
     {
         get { return enableCardFlip; }
         set { enableCardFlip = value; }
+    }
+
+    public void ShowDetailPanel(BaseCardData cardData)
+    {
+        if (InGameCardDetailPanel.Instance != null)
+        {
+            InGameCardDetailPanel.Instance.ShowCard(cardData);
+        }
+        else
+        {
+            Debug.LogWarning("InGameCardDetailPanel 인스턴스가 없습니다.");
+        }
     }
 
     public void UpdateHealth()

@@ -57,15 +57,17 @@ public class FieldSpellSlotDrop : MonoBehaviour, IDropHandler
             return;
         }
 
-        // 필드 마법 발동
-        fieldSpellZone.OnCardDropped(dropped);
-        isOccupied = true;
-
         // 드래그 핸들러 업데이트
         var dragHandler = dropped.GetComponent<CardDragHandler>();
         if (dragHandler != null)
         {
             dragHandler.droppedOnSlot = true;
+            dragHandler.isSummoned = true;
         }
+
+        // 필드 마법 발동
+        fieldSpellZone.OnCardDropped(dropped);
+        isOccupied = true;
+
     }
 }
