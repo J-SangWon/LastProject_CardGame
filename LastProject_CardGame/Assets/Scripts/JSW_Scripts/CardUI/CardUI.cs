@@ -50,6 +50,7 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
 
     // [추가] 공격 제한 플래그
     public bool hasAttackedThisTurn = false;
+    public OwnerType ownerType = OwnerType.Player;
 
     private void Start()
     {
@@ -79,7 +80,7 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
 
         if(currentHealth == 0)
         {
-            DuelZoneManager.Instance.SendToGraveyard(cardData);
+            DuelZoneManager.Instance.SendToGraveyard(cardData, ownerType);
             HandleDeath();
         }
     }

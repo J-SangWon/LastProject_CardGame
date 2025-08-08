@@ -122,7 +122,9 @@ public class FieldSpellZone : MonoBehaviour, IPointerClickHandler
     {
         if (currentFieldSpellCardObj != null)
         {
-            DuelZoneManager.Instance.SendToGraveyard(currentFieldSpell);
+            
+            DuelZoneManager.Instance.SendToGraveyard(currentFieldSpell, 
+                currentFieldSpellCardObj.GetComponent<CardUI>().ownerType);
             Destroy(currentFieldSpellCardObj);
             currentFieldSpellCardObj = null;
         }
