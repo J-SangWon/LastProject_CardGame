@@ -237,7 +237,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Health
+  m_text: Race
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 710f5712d51534843b941aa70b8c50a9, type: 2}
   m_sharedMaterial: {fileID: 1548498032563481537, guid: 710f5712d51534843b941aa70b8c50a9, type: 2}

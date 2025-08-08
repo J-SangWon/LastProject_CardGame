@@ -1,9 +1,9 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 public class MonsterZoneTestManager : MonoBehaviour
 {
-    public KeyCode addToMonsterZoneKey = KeyCode.M; // ¸ó½ºÅÍÁ¸¿¡ Ãß°¡ÇÏ´Â Å° (±âº»: M)
-    public BaseCardData testCard;  // Ãß°¡ÇÒ Å×½ºÆ® Ä«µå
+    public KeyCode addToMonsterZoneKey = KeyCode.M; // ëª¬ìŠ¤í„°ì¡´ì— ì¶”ê°€í•˜ëŠ” í‚¤ (ê¸°ë³¸: M)
+    public BaseCardData testCard;  // ì¶”ê°€í•  í…ŒìŠ¤íŠ¸ ì¹´ë“œ
 
     void Update()
     {
@@ -16,15 +16,15 @@ public class MonsterZoneTestManager : MonoBehaviour
 
     void AddTestCardToMonsterZone()
     {
-        // ¸ó½ºÅÍÁ¸¿¡ Ä«µå Ãß°¡
-        if (DuelZoneManager.Instance != null && DuelZoneManager.Instance.monsterZone != null)
-        {
-            DuelZoneManager.Instance.monsterZone.SendToMonsterZone(testCard);
-            Debug.Log("¸ó½ºÅÍÁ¸¿¡ Å×½ºÆ® Ä«µå Ãß°¡µÊ");
-        }
-        else
-        {
-            Debug.LogWarning("DuelZoneManager ¶Ç´Â MonsterZoneÀ» Ã£À» ¼ö ¾ø½À´Ï´Ù!");
-        }
+        // ëª¬ìŠ¤í„°ì¡´ì— ì¹´ë“œ ì¶”ê°€
+        //if (DuelZoneManager.Instance != null && DuelZoneManager.Instance.monsterZone != null)
+        //{
+        //    DuelZoneManager.Instance.monsterZone.SendToMonsterZone(testCard);
+        //    Debug.Log("ëª¬ìŠ¤í„°ì¡´ì— í…ŒìŠ¤íŠ¸ ì¹´ë“œ ì¶”ê°€ë¨");
+        //}
+        //else
+        //{
+        //    Debug.LogWarning("DuelZoneManager ë˜ëŠ” MonsterZoneì„ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤!");
+        //}
     }
 }
