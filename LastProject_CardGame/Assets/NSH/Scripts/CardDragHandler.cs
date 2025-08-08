@@ -2,6 +2,7 @@
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using System.Collections;
+
 public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     public enum Owner { Player, Enemy }
@@ -23,6 +24,13 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
     public void OnBeginDrag(PointerEventData eventData)
     {
+        //  턴 확인: 내 턴이 아니라면 드래그 금지
+        if (cardOwner == Owner.Player && !GameManager.Instance.IsPlayerTurn())
+        {
+            Debug.Log("당신의 턴이 아닙니다. 드래그 불가.");
+            return;
+        }
+
         if (isSummoned)
         {
             Debug.Log("이 카드는 이미 필드에 소환되어 드래그할 수 없습니다.");
@@ -36,6 +44,13 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
     public void OnDrag(PointerEventData eventData)
     {
+        //  메인페이즈 + 내 턴이 아닌 경우 금지
+        if (cardOwner == Owner.Player &&
+            (!GameManager.Instance.IsPlayerTurn() || GameManager.Instance.CurrentPhase != GamePhase.MainPhase))
+        {
+            return;
+        }
+
         if (isSummoned) return;
         rectTransform.anchoredPosition += eventData.delta / canvas.scaleFactor;
     }
@@ -44,7 +59,7 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     {
         canvasGroup.blocksRaycasts = true;
 
-        // ❗ MainPhase가 아닐 경우 소환 불가
+        //  메인페이즈가 아닐 경우 소환 금지
         if (cardOwner == Owner.Player && GameManager.Instance.CurrentPhase != GamePhase.MainPhase)
         {
             Debug.Log("메인 페이즈가 아니므로 소환할 수 없습니다.");
@@ -81,8 +96,6 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         }
 
         droppedOnSlot = false;
-
-        if (isSummoned) return;
     }
 
     private void ReturnToOriginalPosition()
@@ -91,6 +104,7 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         transform.SetAsLastSibling();
         LayoutRebuilder.ForceRebuildLayoutImmediate(originalParent.GetComponent<RectTransform>());
     }
+
     private bool IsValidDropZone(Transform dropZone)
     {
         string zoneTag = dropZone.tag;
@@ -108,7 +122,6 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     {
         isSummoned = false;
 
-        // 필드 상태도 해제
         CardUI cardUI = GetComponent<CardUI>();
         if (cardUI != null)
         {
