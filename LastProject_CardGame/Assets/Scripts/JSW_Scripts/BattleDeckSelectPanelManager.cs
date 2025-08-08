@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 using TMPro;
+using System.Linq;
 
 public class BattleDeckSelectPanelManager : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class BattleDeckSelectPanelManager : MonoBehaviour
     public GameObject deckButtonPrefab; // 덱 버튼 프리팹
     public GameObject battleStartCheckPanel; // BattleStartCheckPanel
     public Button startButton;   // 인스펙터에서 할당
+    public TextMeshProUGUI startButtonText;
     public Button cancelButton;  // 인스펙터에서 할당
     public TextMeshProUGUI checkPanelText; // 체크 패널에 표시할 텍스트
     private DeckData selectedDeck;
@@ -44,11 +46,26 @@ public class BattleDeckSelectPanelManager : MonoBehaviour
 
             btnUI.selectButton.onClick.RemoveAllListeners();
             btnUI.selectButton.onClick.AddListener(() => {
+                int totalCardCount = deck.mainDeck.Sum(entry => entry.count);
+
+                if (totalCardCount < 30)
+                {
+                    // 덱이 30장 미만일 때 경고 메시지 출력
+                    battleStartCheckPanel.SetActive(true);
+                    if (checkPanelText != null)
+                        checkPanelText.text = "덱은 최소 30장이 필요합니다.";
+                    startButton.interactable = false; // 시작 버튼 비활성화
+                    startButtonText.text = "시작 불가";
+                    return;
+                }
+
                 selectedDeck = deck;
                 DeckTransferManager.Instance.SetDeck(deck); // 덱 정보 임시 저장
                 battleStartCheckPanel.SetActive(true);      // 체크 패널 활성화
                 if (checkPanelText != null)
                     checkPanelText.text = $"'{deck.deckName}' 덱으로 시작하시겠습니까?";
+                startButton.interactable = true; // 시작 버튼 활성화
+                startButtonText.text = "시작"; 
 
                 // battleStartCheckPanel.GetComponent<BattleStartCheckPanel>().SetDeckInfo(deck);
             });
@@ -70,7 +87,7 @@ public class BattleDeckSelectPanelManager : MonoBehaviour
     public void OnStartBattleButton()
     {
         // 덱 정보는 이미 DeckTransferManager.Instance에 저장됨
-        UnityEngine.SceneManagement.SceneManager.LoadScene("InGame");
+        SceneManager.LoadScene("InGame");
     }
     
     public void OnCancelBattleButton()
