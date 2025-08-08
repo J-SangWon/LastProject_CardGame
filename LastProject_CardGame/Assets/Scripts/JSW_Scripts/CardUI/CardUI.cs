@@ -38,7 +38,8 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
     public Sprite[] rarityImages;
 
     public int attack;
-    public int health;
+    public int maxHealth;
+    public int currentHealth;
 
     private Outline outline;
     private bool isFront = true;
@@ -61,7 +62,7 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
             }
         }
 
-        health = textHealth.text.Trim().Length > 0 ? int.Parse(textHealth.text.Trim()) : 0;
+        currentHealth = textHealth.text.Trim().Length > 0 ? int.Parse(textHealth.text.Trim()) : 0;
         attack = textAttack.text.Trim().Length > 0 ? int.Parse(textAttack.text.Trim()) : 0;
 
         if (cardData is MonsterCardData)
@@ -72,11 +73,11 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
 
     public void ReduceHealth(int damage)
     {
-        health -= damage;
-        if (health < 0) health = 0;
-        textHealth.text = health.ToString();
+        currentHealth -= damage;
+        if (currentHealth < 0) currentHealth = 0;
+        textHealth.text = currentHealth.ToString();
 
-        if(health == 0)
+        if(currentHealth == 0)
         {
             HandleDeath();
             DuelZoneManager.Instance.SendToGraveyard(cardData);

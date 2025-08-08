@@ -63,7 +63,7 @@ public class BattleManager : MonoBehaviour
         Debug.Log($"{atkUI.cardName} 이(가) {tgtUI.cardName} 을(를) 공격!");
 
         tgtUI.ReduceHealth(atkUI.attack);
-        atkUI.ReduceHealth(tgtUI.health);
+        atkUI.ReduceHealth(tgtUI.currentHealth);
 
         atkUI.hasAttackedThisTurn = true;
 

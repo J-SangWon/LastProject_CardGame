@@ -18,7 +18,7 @@ public class BattleManager_test : MonoBehaviour
 
     public void SetAttacker(GameObject card)
     {
-        SimpleCard cardScript = card.GetComponent<SimpleCard>();
+		SimpleCard cardScript = card.GetComponent<SimpleCard>();
         if (cardScript == null) return;
 
         if (cardScript.HasAttackedThisTurn())
@@ -39,10 +39,18 @@ public class BattleManager_test : MonoBehaviour
         ExecuteBattle();
     }
 
+    public void SetAbilityTarget(GameObject card)
+    {
+		if (attacker == null) return;
+
+		target = card;
+
+	}
+
     private void ExecuteBattle()
     {
-        SimpleCard atkCard = attacker.GetComponent<SimpleCard>();
-        SimpleCard tgtCard = target.GetComponent<SimpleCard>();
+		SimpleCard atkCard = attacker.GetComponent<SimpleCard>();
+		SimpleCard tgtCard = target.GetComponent<SimpleCard>();
 
         if (atkCard == null || tgtCard == null) return;
 
@@ -56,6 +64,21 @@ public class BattleManager_test : MonoBehaviour
         attacker = null;
         target = null;
     }
+
+    private void ExecuteAbility(int amount)
+    {
+		SimpleCard atkCard = attacker.GetComponent<SimpleCard>();
+		SimpleCard tgtCard = target.GetComponent<SimpleCard>();
+
+		if (atkCard == null || tgtCard == null) return;
+
+		Debug.Log($"{atkCard.cardData.cardName} 이(가) {tgtCard.cardData.cardName} 을(를) 효과발동!");
+
+        tgtCard.ReduceHealth(amount);
+
+        atkCard = null;
+        target = null;
+	}
 
     public void ResetBattleState()
     {

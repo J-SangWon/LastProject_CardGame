@@ -1,73 +1,73 @@
 using System.Data;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class FildMonster : MonoBehaviour
+public class FildMonster : MonoBehaviour, IPointerClickHandler
 {
-    private MonsterCardData monsterCardData;
-
-    private Image illustration;
-    private Text AttackTex;
-    private Text HealthTex;
-    private Sprite artWork;
-    private int Attack;
-    private int health;
+    public MonsterCardData monsterCardData { get; private set; }
+	public CardUI cardUI { get; private set; }
 
 	[HideInInspector] public bool isAppeared = false;
+	private bool isEntrance = false;
 
-    void Start()
-    {
-        monsterCardData = GetComponentInParent<MonsterCardData>();
-        InitStatus();
-
-        if (monsterCardData.monsterAbilityType == MonsterCardAbilityType.Entrance && isAppeared == false) Entrance(monsterCardData.abilityType, monsterCardData.abiltyValue);
+	void Start()
+    { 
+		monsterCardData = GetComponent<MonsterCardData>();
+		cardUI = GetComponent<CardUI>();
     }
 
-    void Update()
+	private void OnEnable()
+	{
+		if (monsterCardData.monsterAbilityType == MonsterCardAbilityType.Entrance && isAppeared == false) Entrance(monsterCardData.cardAbility, monsterCardData.abilityValue);
+	}
+
+	void Update()
     {
         if(monsterCardData.monsterAbilityType == MonsterCardAbilityType.Continuous) Continuous();
-        UpdateStatus();
     }
 
 	private void OnDestroy()
 	{
-		if(monsterCardData.monsterAbilityType == MonsterCardAbilityType.Reverberation) Reverberation(monsterCardData.abilityType, monsterCardData.abiltyValue);
+		if(monsterCardData.monsterAbilityType == MonsterCardAbilityType.Reverberation) Reverberation(monsterCardData.cardAbility, monsterCardData.abilityValue);
 	}
 
-    private void InitStatus()
-    {
-        if (monsterCardData == null) return;
+	public void OnPointerClick(PointerEventData eventData)
+	{
+		Debug.Log($"{monsterCardData.cardName} clicked!");
 
-        Attack = monsterCardData.attack;
-        health = monsterCardData.health;
-        artWork = monsterCardData.artwork;
+		if (BattleManager_test.Instance == null)
+		{
+			Debug.LogError("BattleManager_test 인스턴스 없음!");
+			return;
+		}
 
-        AttackTex.text = Attack.ToString();
-        HealthTex.text = health.ToString();
-        illustration.sprite = artWork;
-    }
-
-    private void UpdateStatus()
-    {
-		AttackTex.text = Attack.ToString();
-		HealthTex.text = health.ToString();
+		if (!isEntrance)
+		{
+			if (!BattleManager_test.Instance.HasAttacker())
+			{
+				// 공격자가 아직 없으면 이 카드를 공격자로 등록
+				BattleManager_test.Instance.SetAttacker(gameObject);
+			}
+			else
+			{
+				// 이미 공격자가 선택된 상태면 이 카드를 공격 대상(Target)으로 등록
+				if (BattleManager_test.Instance != null)
+					BattleManager_test.Instance.SetTarget(gameObject);
+			}
+		}
+		else
+		{
+			isEntrance = false;
+		}
 	}
 
-	private void Entrance(AbilityType abilityType, int abilityValue) //진입
+	private void Entrance(CardAbility cardAbility, int abilityValue) //진입
     {
-        switch (abilityType)
-        {
-            case AbilityType.TakeDamage:
-                break;
-            case AbilityType.TakeAllDamage:
-                break;
-            case AbilityType.Heal:
-                break;
-            case AbilityType.AllHeal:
-                break;
-            case AbilityType.Destroy:
-                break;
-        }
+		CardUI _target = new CardUI();
+		AbilityParameter parameter = new AbilityParameter() { value = abilityValue, target = _target };
+		cardAbility.Activate(cardUI, parameter);
     }
 
     private void Continuous() // 지속효과
@@ -76,21 +76,10 @@ public class FildMonster : MonoBehaviour
     }
 
 
-	private void Reverberation(AbilityType abilityType, int abilityValue) //여운
-    {
-
-		switch (abilityType)
-		{
-			case AbilityType.TakeDamage:
-				break;
-			case AbilityType.TakeAllDamage:
-				break;
-			case AbilityType.Heal:
-				break;
-			case AbilityType.AllHeal:
-				break;
-			case AbilityType.Destroy:
-				break;
-		}
+	private void Reverberation(CardAbility cardAbility, int abilityValue) //여운
+	{
+		CardUI _target = new CardUI();
+		AbilityParameter parameter = new AbilityParameter() { value = abilityValue, target = _target };
+		cardAbility.Activate(cardUI, parameter);
 	}
 }
