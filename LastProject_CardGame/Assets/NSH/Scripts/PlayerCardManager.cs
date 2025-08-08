@@ -94,7 +94,7 @@ public class PlayerCardManager : MonoBehaviour
 
     public void DrawCard() => DrawCards(1);
 
-    private void UpdateHandLayout()
+    public void UpdateHandLayout()
     {
         float spacing = 150f;
         for (int i = 0; i < handZone.childCount; i++)

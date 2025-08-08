@@ -1,11 +1,30 @@
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "CardAbilities/Serch")]
+public enum SerchType
+{
+	CardType, 
+	Cost,
+	Race,
+	CardID
+}
 
+[CreateAssetMenu(menuName = "CardAbilities/Serch")]
 public class Ability_Serch : CardAbility
 {
+	public SerchType SerchType;
+
 	public override void Activate(CardUI card, AbilityParameter param)
 	{
-		throw new System.NotImplementedException();
+		switch (SerchType)
+		{
+			case SerchType.CardType:
+				break;
+			case SerchType.Cost:
+				break;
+			case SerchType.Race:
+				break;
+			case SerchType.CardID:
+				break;
+		}
 	}
 }
