@@ -52,6 +52,12 @@ public class StoreManager : MonoBehaviour
     private readonly List<BaseCardData> cardList = new();   // 클릭 후 실제 카드 정보 저장
     private bool skipRemaining = false; // 클릭 시 이후 카드 즉시 배치 여부  
 
+    // ─────────────────── 카드팩 연출 초기 상태 ───────────────────
+    private Vector3 packUpInitPos;
+    private Quaternion packUpInitRot;
+    private Vector3 packUpInitScale;
+    private Vector3 packDownInitPos;
+
     // ────────────────── 초기화 ──────────────────
     void Start()
     {
@@ -67,6 +73,8 @@ public class StoreManager : MonoBehaviour
         CardSpawnPanel.SetActive(false);
         cardOpenBtn.gameObject.SetActive(false);
         cardPanelExit.gameObject.SetActive(false);
+
+        CardPackInit();
     }
 
     void Update()
@@ -79,6 +87,15 @@ public class StoreManager : MonoBehaviour
                 cardPanelExit.gameObject.SetActive(true);
             }
         }
+    }
+
+    private void CardPackInit()
+    {
+        // transform 초기 상태 저장
+        packUpInitPos = CardPackUpImg.rectTransform.localPosition;
+        packUpInitRot = CardPackUpImg.rectTransform.localRotation;
+        packUpInitScale = CardPackUpImg.rectTransform.localScale;
+        packDownInitPos = CardPackDownImg.rectTransform.localPosition;
     }
 
     // ────────────────── Buy 클릭 ──────────────────
@@ -97,6 +114,7 @@ public class StoreManager : MonoBehaviour
     // ────────────────── 1) 희귀도 뽑기 ──────────────────
     void GenerateRarityList()
     {
+        rarityList.Clear();
         for (int i = 0; i < cardCount; i++)
             rarityList.Add(RandomRarity());
     }
@@ -118,8 +136,6 @@ public class StoreManager : MonoBehaviour
 
         // 스크롤 셀 복제 대신, 연출 전용 모델 Prefab을 CardPackData에 넣어두는 편이 좋음
         CardPackAnim.SetActive(false); // 연출용 카드팩 비활성화
-        CardPackDownImg.gameObject.SetActive(false); // 카드팩 다운 오브젝트 비활성화
-        CardPackUpImg.gameObject.SetActive(false);
 
         if (particle) Destroy(particle);
 
@@ -207,16 +223,17 @@ public class StoreManager : MonoBehaviour
     // ────────────────── 3) 희귀도 → 실제 카드 변환 ──────────────────
     void GenerateCardsFromRarities()
     {
+        cardList.Clear();
         var packData = packViewController.selectedCardPackView.cardPackData;
 
         foreach (CardRarity r in rarityList)
         {
-            BaseCardData[] carddatas = packData.cards.FindAll(BaseCardData => BaseCardData.rarity == r).ToArray();
+            var carddatas = packData.cards.FindAll(BaseCardData => BaseCardData.rarity == r);
 
-            if(carddatas.Length > 0)
+            if(carddatas.Count > 0)
             {
                 // 랜덤으로 카드 선택
-                BaseCardData selectedCard = carddatas[Random.Range(0, carddatas.Length)];
+                BaseCardData selectedCard = carddatas[Random.Range(0, carddatas.Count)];
                 cardList.Add(selectedCard);
             }
             else
@@ -251,6 +268,7 @@ public class StoreManager : MonoBehaviour
              totalHeight / 2f - cellH / 2f + 50
         );
 
+        //클릭감지 카드 소환 스킵
         StartCoroutine(DetectClickToSkip());
 
         for (int i = 0; i < cardList.Count; i++)
@@ -290,6 +308,7 @@ public class StoreManager : MonoBehaviour
             }
         }
 
+        //카드 소환 다 되었을때
         CardPackDownImg.gameObject.SetActive(false); // 카드팩 다운 오브젝트 활성화
         cardOpenBtn.gameObject.SetActive(true);
     }
@@ -358,10 +377,24 @@ public class StoreManager : MonoBehaviour
 
         foreach (Transform child in cardSpawnContent) Destroy(child.gameObject);
 
+        CardPackAnim.SetActive(false);
+        ResetCardPackTransforms();
+
         StoreMenu.SetActive(true);
         CardSpawnPanel.SetActive(false);
         cardPanelExit.gameObject.SetActive(false);
         isOpening = false;
+    }
+
+    void ResetCardPackTransforms()
+    {
+        RectTransform top = CardPackUpImg.rectTransform;
+        RectTransform down = CardPackDownImg.rectTransform;
+
+        top.localPosition = packUpInitPos;
+        top.localRotation = packUpInitRot;
+        top.localScale = packUpInitScale;
+        down.localPosition = packDownInitPos;
     }
 
 }
