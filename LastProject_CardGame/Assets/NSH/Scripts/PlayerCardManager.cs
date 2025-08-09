@@ -72,6 +72,10 @@ public class PlayerCardManager : MonoBehaviour
             GameObject card = CreateCard(cardData, cardPrefab, deckZone, Quaternion.identity);
             card.transform.localPosition = new Vector3(0, 0, -zIndex * 0.01f);
             card.GetComponent<CardUI>().EnableCardFlip = false;
+            if(cardData is MonsterCardData)
+            {
+                card.AddComponent<FildMonster>();
+            }
             zIndex++;
 
             deck.Add(card);
@@ -128,8 +132,7 @@ public class PlayerCardManager : MonoBehaviour
                 Debug.Log(card?.GetComponent<CardUI>().cardName + "찾기 성공!");
 			}
 		}
-
-		UpdateHandLayout();
+        UpdateHandLayout();
 	}
 
 	public void UpdateHandLayout()
