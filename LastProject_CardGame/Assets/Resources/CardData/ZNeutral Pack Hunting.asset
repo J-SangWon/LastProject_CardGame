@@ -15,16 +15,19 @@ MonoBehaviour:
   cardName: "\uBB34\uB9AC\uC0AC\uB0E5"
   description: "\uC801 \uC720\uB2DB\uC744 \uC9C0\uC815\uD569\uB2C8\uB2E4.\n\uB0B4
     \uC720\uB2DB\uB4E4\uC774 \uD574\uB2F9 \uC720\uB2DB\uC744 \uACF5\uACA9\uD569\uB2C8\uB2E4."
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: c42bbd4dbd0cbc0428d3b231d6b0909e, type: 3}
   cardType: 1
   rarity: 0
   cost: 2
   cardId: 7b74c0df-1d93-4134-a14b-b66401262ff2
   haveLive2D: 0
   live2DPath: 
+  cardEffect: 0
   tags: []
   craftCost: 10
   disenchantReward: 2
   canCraft: 1
   canDisenchant: 1
+  maxHP: 0
+  currentHP: 0
   spellType: 0

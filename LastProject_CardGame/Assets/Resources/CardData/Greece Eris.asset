@@ -10,23 +10,29 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5e8e2555d73122b43b44cc301395f4ad, type: 3}
-  m_Name: ZNeutral Great Captain Merin
+  m_Name: Greece Eris
   m_EditorClassIdentifier: 
-  cardName: "\uC704\uB300\uD55C \uCEA1\uD2F4 \uBA54\uB9B0"
+  cardName: "\uC5D0\uB9AC\uC2A4"
   description: 
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: 6d974b0d1e120fa47939e9169bb1842a, type: 3}
   cardType: 0
-  rarity: 3
-  cost: 7
-  cardId: 72eee9d4-93ac-4fc5-b49b-d8d9462323ad
+  rarity: 0
+  cost: 0
+  cardId: 61c36a0f-c8f5-4727-965a-ca36c9eacfed
   haveLive2D: 0
   live2DPath: 
+  cardEffect: 0
   tags: []
-  craftCost: 400
-  disenchantReward: 100
+  craftCost: 10
+  disenchantReward: 2
   canCraft: 1
   canDisenchant: 1
+  maxHP: 0
+  currentHP: 0
   monsterType: 0
-  attack: 7
-  health: 7
+  attack: 0
+  health: 0
   race: 0
+  monsterAbilityType: 0
+  abilityType: 0
+  abiltyValue: 0

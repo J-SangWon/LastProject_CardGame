@@ -876,6 +876,10 @@ PrefabInstance:
       propertyPath: m_SizeDelta.x
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5916629184633851021, guid: d1bf92950af282242a33d643000aab89, type: 3}
+      propertyPath: m_Color.a
+      value: 0.78431374
+      objectReference: {fileID: 0}
     - target: {fileID: 6512561721610829204, guid: d1bf92950af282242a33d643000aab89, type: 3}
       propertyPath: m_Name
       value: StoreUI
@@ -964,6 +968,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7602465316746876444, guid: d1bf92950af282242a33d643000aab89, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8506161144068353858, guid: d1bf92950af282242a33d643000aab89, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -1015,6 +1023,10 @@ PrefabInstance:
     - target: {fileID: 8651581815318978861, guid: d1bf92950af282242a33d643000aab89, type: 3}
       propertyPath: m_Sprite
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 9081631960369188208, guid: d1bf92950af282242a33d643000aab89, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

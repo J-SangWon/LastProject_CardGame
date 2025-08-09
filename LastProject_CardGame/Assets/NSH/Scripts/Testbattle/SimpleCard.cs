@@ -51,12 +51,17 @@ public class SimpleCard : MonoBehaviour, IPointerClickHandler
         {
             // 공격자가 아직 없으면 이 카드를 공격자로 등록
             BattleManager_test.Instance.SetAttacker(gameObject);
+
+            //Arrow 효과를 시작
+            BattleManager_test.Instance.BeginAttack(this.gameObject);
         }
         else
         {
             // 이미 공격자가 선택된 상태면 이 카드를 공격 대상(Target)으로 등록
             if (BattleManager_test.Instance != null)
                 BattleManager_test.Instance.SetTarget(gameObject);
+
+            BattleManager_test.Instance.EndAttack(this.gameObject);
         }
     }
 
