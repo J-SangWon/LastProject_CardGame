@@ -226,6 +226,13 @@ public class PlayerCardManager : MonoBehaviour
             cardUI.isOnField = true;
         }
 
+        // 소환 시점 효과 트리거
+        var fm = card.GetComponent<FildMonster>();
+        if (fm != null)
+        {
+            fm.OnPlacedOnField();
+        }
+
         // 위치 정렬 예시 (필요시 커스터마이즈 가능)
         UpdateFieldLayout();
     }

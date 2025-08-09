@@ -25,18 +25,34 @@ public class Ability_Search : CardAbility
 
 	private void InitConditions(CardUI cardUI)
 	{
-		searchConditions = new Dictionary<SearchType, Func<GameObject, bool>>()
-		{
-			{ SearchType.CardType, card => cardUI.cardData.cardType == cardType },
-			{ SearchType.Cost, card => cardUI.cardData.cost == cost },
-			{ SearchType.Race, card =>
-				{
-					var data = cardUI.monsterCardData;
-					return data != null && data.race == race;
-				}
-			},
-			{ SearchType.CardID, card => cardUI.cardData.cardId == cardID }
-		};
+        searchConditions = new Dictionary<SearchType, Func<GameObject, bool>>()
+        {
+            { SearchType.CardType, card =>
+                {
+                    var ui = card.GetComponent<CardUI>();
+                    return ui != null && ui.cardData != null && ui.cardData.cardType == cardType;
+                }
+            },
+            { SearchType.Cost, card =>
+                {
+                    var ui = card.GetComponent<CardUI>();
+                    return ui != null && ui.cardData != null && ui.cardData.cost == cost;
+                }
+            },
+            { SearchType.Race, card =>
+                {
+                    var ui = card.GetComponent<CardUI>();
+                    var data = ui != null ? ui.monsterCardData : null;
+                    return data != null && data.race == race;
+                }
+            },
+            { SearchType.CardID, card =>
+                {
+                    var ui = card.GetComponent<CardUI>();
+                    return ui != null && ui.cardData != null && ui.cardData.cardId == cardID;
+                }
+            }
+        };
 	}
 
 	public override void Activate(CardUI card, AbilityParameter param)
@@ -51,7 +67,7 @@ public class Ability_Search : CardAbility
 			}
 			else
 			{
-				Debug.LogWarning($"[Ability_Search] SearchType {searchType}¿¡ ´ëÇÑ Á¶°ÇÀÌ ¾ø½À´Ï´Ù.");
+				Debug.LogWarning($"[Ability_Search] SearchType {searchType}ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.");
 			}
 		}
 	}
