@@ -14,7 +14,7 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
 
     [Header("카드 데이터 받아두기")]
     public BaseCardData cardData;
-    private MonsterCardData monsterCardData;
+    public MonsterCardData monsterCardData;
 
     public GameObject Back;
     public Image imageBack;

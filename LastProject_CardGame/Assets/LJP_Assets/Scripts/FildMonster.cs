@@ -1,4 +1,4 @@
-using System.Data;
+ï»¿using System.Data;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -6,16 +6,21 @@ using UnityEngine.UI;
 
 public class FildMonster : MonoBehaviour, IPointerClickHandler
 {
-    public MonsterCardData monsterCardData { get; private set; }
-	public CardUI cardUI { get; private set; }
+    public MonsterCardData monsterCardData; 
+//{ get; private set; }
+	public CardUI cardUI; 
+//{ get; private set; }
 
 	[HideInInspector] public bool isAppeared = false;
 	private bool isEntrance = false;
 
-	void Start()
+	void Awake()
     { 
-		monsterCardData = GetComponent<MonsterCardData>();
 		cardUI = GetComponent<CardUI>();
+		if(cardUI.cardData is MonsterCardData)
+		{
+			monsterCardData = (MonsterCardData)cardUI.cardData;
+        }
     }
 
 	private void OnEnable()
@@ -35,48 +40,47 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
 
 	public void OnPointerClick(PointerEventData eventData)
 	{
-		Debug.Log($"{monsterCardData.cardName} clicked!");
+		//Debug.Log($"{monsterCardData.cardName} clicked!");
 
-		if (BattleManager_test.Instance == null)
-		{
-			Debug.LogError("BattleManager_test ÀÎ½ºÅÏ½º ¾øÀ½!");
-			return;
-		}
+		//if (BattleManager.Instance == null)
+		//{
+		//	Debug.LogError("BattleManager_test ì¸ìŠ¤í„´ìŠ¤ ì—†ìŒ!");
+		//	return;
+		//}
 
-		if (!isEntrance)
-		{
-			if (!BattleManager_test.Instance.HasAttacker())
-			{
-				// °ø°İÀÚ°¡ ¾ÆÁ÷ ¾øÀ¸¸é ÀÌ Ä«µå¸¦ °ø°İÀÚ·Î µî·Ï
-				BattleManager_test.Instance.SetAttacker(gameObject);
-			}
-			else
-			{
-				// ÀÌ¹Ì °ø°İÀÚ°¡ ¼±ÅÃµÈ »óÅÂ¸é ÀÌ Ä«µå¸¦ °ø°İ ´ë»ó(Target)À¸·Î µî·Ï
-				if (BattleManager_test.Instance != null)
-					BattleManager_test.Instance.SetTarget(gameObject);
-			}
-		}
-		else
-		{
-			isEntrance = false;
-		}
+		//if (!isEntrance)
+		//{
+		//	if (!BattleManager.Instance.HasAttacker())
+		//	{
+		//		// ê³µê²©ìê°€ ì•„ì§ ì—†ìœ¼ë©´ ì´ ì¹´ë“œë¥¼ ê³µê²©ìë¡œ ë“±ë¡
+		//		BattleManager_test.Instance.SetAttacker(gameObject);
+		//	}
+		//	else
+		//	{
+		//		// ì´ë¯¸ ê³µê²©ìê°€ ì„ íƒëœ ìƒíƒœë©´ ì´ ì¹´ë“œë¥¼ ê³µê²© ëŒ€ìƒ(Target)ìœ¼ë¡œ ë“±ë¡
+		//		if (BattleManager.Instance != null)
+		//			BattleManager.Instance.SetTarget(gameObject);
+		//	}
+		//}
+		//else
+		//{
+		//	isEntrance = false;
+		//}
 	}
 
-	private void Entrance(CardAbility cardAbility, int abilityValue) //ÁøÀÔ
+	private void Entrance(CardAbility cardAbility, int abilityValue) //ì§„ì…
     {
-		CardUI _target = new CardUI();
-		AbilityParameter parameter = new AbilityParameter() { value = abilityValue, target = _target };
+		AbilityParameter parameter = new AbilityParameter() { value = abilityValue };
 		cardAbility.Activate(cardUI, parameter);
     }
 
-    private void Continuous() // Áö¼ÓÈ¿°ú
+    private void Continuous() // ì§€ì†íš¨ê³¼
     {
 
     }
 
 
-	private void Reverberation(CardAbility cardAbility, int abilityValue) //¿©¿î
+	private void Reverberation(CardAbility cardAbility, int abilityValue) //ì—¬ìš´
 	{
 		CardUI _target = new CardUI();
 		AbilityParameter parameter = new AbilityParameter() { value = abilityValue, target = _target };
