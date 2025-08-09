@@ -13,18 +13,21 @@ MonoBehaviour:
   m_Name: ZNeutral Flowering
   m_EditorClassIdentifier: 
   cardName: "\uAC1C\uD654"
-  description: "\uB0B4 \uC190\uD328\uC5D0\uC11C 4\uCF54\uC2A4\uD2B8 \uC774\uD558\uC758
+  description: "\uB0B4 \uC190\uD328\uC5D0\uC11C \uBE44\uC6A9\uC774 4 \uC774\uD558\uC758
     \uC2DD\uBB3C \uC720\uB2DB\uC744 \uB458 \uBCF5\uC0AC\uD558\uC5EC \uC18C\uD658\uD569\uB2C8\uB2E4."
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: df7d2d31408f8af45a2b44186bcdeb01, type: 3}
   cardType: 1
   rarity: 0
   cost: 5
   cardId: d9ecce32-5cd4-4b74-a7d4-5c78e19cf509
   haveLive2D: 0
   live2DPath: 
+  cardEffect: 0
   tags: []
   craftCost: 10
   disenchantReward: 2
   canCraft: 1
   canDisenchant: 1
+  maxHP: 0
+  currentHP: 0
   spellType: 0

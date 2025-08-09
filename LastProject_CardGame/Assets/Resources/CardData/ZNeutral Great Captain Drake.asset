@@ -10,23 +10,29 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5e8e2555d73122b43b44cc301395f4ad, type: 3}
-  m_Name: ZNeutral Great Captain Merin
+  m_Name: ZNeutral Great Captain Drake
   m_EditorClassIdentifier: 
-  cardName: "\uC704\uB300\uD55C \uCEA1\uD2F4 \uBA54\uB9B0"
+  cardName: "\uC704\uD55C \uCEA1\uD2F4 \uB4DC\uB808\uC774\uD06C"
   description: 
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: 5976774ed9865cb40b15cd6abfc97a83, type: 3}
   cardType: 0
   rarity: 3
   cost: 7
   cardId: 72eee9d4-93ac-4fc5-b49b-d8d9462323ad
   haveLive2D: 0
   live2DPath: 
+  cardEffect: 0
   tags: []
   craftCost: 400
   disenchantReward: 100
   canCraft: 1
   canDisenchant: 1
+  maxHP: 7
+  currentHP: 7
   monsterType: 0
   attack: 7
   health: 7
   race: 0
+  monsterAbilityType: 0
+  abilityType: 0
+  abiltyValue: 0
