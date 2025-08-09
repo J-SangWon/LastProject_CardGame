@@ -31,11 +31,11 @@ namespace Kalkatos.DottedArrow
 			Setup();
 		}
 
-		private void Setup ()
+		private void Setup()
 		{
 			if (origin == null)
 				return;
-			Vector2 originPosOnScreen = mainCamera.WorldToScreenPoint(origin.position);
+            Vector2 originPosOnScreen = origin.position;
 			myRect.anchoredPosition = new Vector2(originPosOnScreen.x - Screen.width / 2, originPosOnScreen.y - Screen.height / 2) / canvas.scaleFactor;
 			Vector2 differenceToMouse = Input.mousePosition - (Vector3)originPosOnScreen;
 			differenceToMouse.Scale(new Vector2(1f / myRect.localScale.x, 1f / myRect.localScale.y));
