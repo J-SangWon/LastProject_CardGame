@@ -14,8 +14,8 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
 
 	void Start()
     { 
-		monsterCardData = GetComponent<MonsterCardData>();
 		cardUI = GetComponent<CardUI>();
+		monsterCardData = cardUI.monsterCardData;
     }
 
 	private void OnEnable()
