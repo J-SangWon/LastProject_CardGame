@@ -72,6 +72,10 @@ public class PlayerCardManager : MonoBehaviour
             GameObject card = CreateCard(cardData, cardPrefab, deckZone, Quaternion.identity);
             card.transform.localPosition = new Vector3(0, 0, -zIndex * 0.01f);
             card.GetComponent<CardUI>().EnableCardFlip = false;
+            if(cardData is MonsterCardData)
+            {
+                card.AddComponent<FildMonster>();
+            }
             zIndex++;
 
             deck.Add(card);
@@ -114,22 +118,25 @@ public class PlayerCardManager : MonoBehaviour
 
 	public void DrawCard() => DrawCards(1);
 
-	public void SearchCard(System.Func<GameObject, bool> condition)
-	{
-		for (int i = 0; i < deck.Count; i++)
-		{
-			if (deck[i] != null && condition(deck[i]))
-			{
-				GameObject card = deck[i];
-				deck.RemoveAt(i);
+    public void SearchCard(System.Func<GameObject, bool> condition, int count = 1)
+    {
+        int movedCount = 0;
+        for (int i = 0; i < deck.Count && movedCount < count; i++)
+        {
+            if (deck[i] != null && condition(deck[i]))
+            {
+                GameObject card = deck[i];
+                deck.RemoveAt(i);
+                i--; // 리스트에서 제거했으니 인덱스 보정
 
-				card.transform.SetParent(handZone, false);
-				card.transform.localScale = Vector3.one;
-			}
-		}
+                card.transform.SetParent(handZone, false);
+                card.transform.localScale = Vector3.one;
 
-		UpdateHandLayout();
-	}
+                movedCount++;
+            }
+        }
+        UpdateHandLayout();
+    }
 
 	public void UpdateHandLayout()
     {
@@ -221,6 +228,13 @@ public class PlayerCardManager : MonoBehaviour
         if (cardUI != null)
         {
             cardUI.isOnField = true;
+        }
+
+        // 소환 시점 효과 트리거
+        var fm = card.GetComponent<FildMonster>();
+        if (fm != null)
+        {
+            fm.OnPlacedOnField();
         }
 
         // 위치 정렬 예시 (필요시 커스터마이즈 가능)

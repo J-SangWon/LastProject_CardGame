@@ -28,6 +28,7 @@ public class CardPrefab : MonoBehaviour, IPointerClickHandler
 
     [Header("희귀도에 따른 이펙트")]
     public GameObject[] ParticlePrefab;
+    public GameObject[] OpenParticle;
     private GameObject particleprefab;
 
     private BaseCardData cardData;
@@ -41,7 +42,7 @@ public class CardPrefab : MonoBehaviour, IPointerClickHandler
         imageArtwork.sprite = cardData.artwork;
         textCost.text = cardData.cost.ToString();
         textDescription.text = cardData.description;
-        
+
         SetRarity(cardData.rarity);
         SetRace(cardData);
         SetFace(isFlipped); // 초기에는 뒷면만 보이도록 설정
@@ -137,7 +138,7 @@ public class CardPrefab : MonoBehaviour, IPointerClickHandler
 
     void GetRarityEffect(CardRarity rarity)
     {
-        if(rarity == CardRarity.Rare)
+        if (rarity == CardRarity.Rare)
             particleprefab = Instantiate(ParticlePrefab[0], transform);
         else if (rarity == CardRarity.SuperRare)
             particleprefab = Instantiate(ParticlePrefab[1], transform);
@@ -150,11 +151,20 @@ public class CardPrefab : MonoBehaviour, IPointerClickHandler
     {
         isFlipped = showFront;
 
+        //openParticle 설정
+        GameObject openparticle = null;
+        if (cardData.rarity == CardRarity.SuperRare)
+            openparticle = Instantiate(OpenParticle[0], transform);
+        else if (cardData.rarity == CardRarity.UltraRare)
+            openparticle = Instantiate(OpenParticle[1], transform);
+        Destroy(openparticle, 0.5f); // 1초 후 파티클 제거
+
         Destroy(particleprefab);
 
         // 0.15초 동안 Y축 90도 회전 → 앞/뒷면 교체 → 다시 0도로 회전
         transform.DORotate(new Vector3(0, 90, 0), 0.15f)
-            .OnComplete(() => {
+            .OnComplete(() =>
+            {
                 SetFace(showFront); // 앞/뒷면 교체
                 transform.DORotate(Vector3.zero, 0.15f);
             });

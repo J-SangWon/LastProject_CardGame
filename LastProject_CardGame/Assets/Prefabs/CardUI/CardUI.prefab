@@ -1952,6 +1952,7 @@ GameObject:
   - component: {fileID: 6451283996007634016}
   - component: {fileID: 8906740630591169565}
   - component: {fileID: 6632694000808256612}
+  - component: {fileID: -7862638550791164232}
   m_Layer: 5
   m_Name: CardUI
   m_TagString: Untagged
@@ -2056,3 +2057,24 @@ MonoBehaviour:
   - {fileID: 21300000, guid: cc36f2a37c9195740ac4273a96292c51, type: 3}
   - {fileID: 21300000, guid: 1906798b2a0d44b4887a5fbf5e2cc42a, type: 3}
   - {fileID: 21300000, guid: 9fe1280375f047e41b9f24c55a91a308, type: 3}
+  attack: 0
+  maxHealth: 0
+  currentHealth: 0
+  isOnField: 0
+  hasAttackedThisTurn: 0
+  ownerType: 0
+--- !u!114 &-7862638550791164232
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9154549864915518465}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EffectColor: {r: 0.094770074, g: 1, b: 0, a: 0.5}
+  m_EffectDistance: {x: 3, y: -3}
+  m_UseGraphicAlpha: 1
