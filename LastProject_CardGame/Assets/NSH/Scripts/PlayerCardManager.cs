@@ -118,21 +118,25 @@ public class PlayerCardManager : MonoBehaviour
 
 	public void DrawCard() => DrawCards(1);
 
-	public void SearchCard(System.Func<GameObject, bool> condition)
-	{
-		for (int i = 0; i < deck.Count; i++)
-		{
-			if (deck[i] != null && condition(deck[i]))
-			{
-				GameObject card = deck[i];
-				deck.RemoveAt(i);
+    public void SearchCard(System.Func<GameObject, bool> condition, int count = 1)
+    {
+        int movedCount = 0;
+        for (int i = 0; i < deck.Count && movedCount < count; i++)
+        {
+            if (deck[i] != null && condition(deck[i]))
+            {
+                GameObject card = deck[i];
+                deck.RemoveAt(i);
+                i--; // 리스트에서 제거했으니 인덱스 보정
 
-				card.transform.SetParent(handZone, false);
-				card.transform.localScale = Vector3.one;
-			}
-		}
+                card.transform.SetParent(handZone, false);
+                card.transform.localScale = Vector3.one;
+
+                movedCount++;
+            }
+        }
         UpdateHandLayout();
-	}
+    }
 
 	public void UpdateHandLayout()
     {

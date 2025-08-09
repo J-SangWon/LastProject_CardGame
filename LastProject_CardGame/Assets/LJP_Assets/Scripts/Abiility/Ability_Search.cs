@@ -59,16 +59,13 @@ public class Ability_Search : CardAbility
 	{
 		if (searchConditions == null) InitConditions(card);
 
-		for (int i = 0; i < param.value; i++)
-		{
-			if (searchConditions.TryGetValue(searchType, out var condition))
-			{
-				PlayerCardManager.Instance.SearchCard(condition);
-			}
-			else
-			{
-				Debug.LogWarning($"[Ability_Search] SearchType {searchType}�� ���� ������ �����ϴ�.");
-			}
-		}
+        if (searchConditions.TryGetValue(searchType, out var condition))
+        {
+            PlayerCardManager.Instance.SearchCard(condition, Mathf.Max(1, param.value));
+        }
+        else
+        {
+            Debug.LogWarning($"[Ability_Search] SearchType {searchType} 이(가) 유효하지 않습니다.");
+        }
 	}
 }
