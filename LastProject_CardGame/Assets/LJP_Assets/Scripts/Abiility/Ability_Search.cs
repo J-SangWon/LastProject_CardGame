@@ -23,25 +23,25 @@ public class Ability_Search : CardAbility
 
 	private Dictionary<SearchType, Func<GameObject, bool>> searchConditions;
 
-	private void InitConditions()
+	private void InitConditions(CardUI cardUI)
 	{
 		searchConditions = new Dictionary<SearchType, Func<GameObject, bool>>()
 		{
-			{ SearchType.CardType, card => card.GetComponent<BaseCardData>().cardType == cardType },
-			{ SearchType.Cost, card => card.GetComponent<BaseCardData>().cost == cost },
+			{ SearchType.CardType, card => cardUI.cardData.cardType == cardType },
+			{ SearchType.Cost, card => cardUI.cardData.cost == cost },
 			{ SearchType.Race, card =>
 				{
-					var data = card.GetComponent<MonsterCardData>();
+					var data = cardUI.monsterCardData;
 					return data != null && data.race == race;
 				}
 			},
-			{ SearchType.CardID, card => card.GetComponent<BaseCardData>().cardId == cardID }
+			{ SearchType.CardID, card => cardUI.cardData.cardId == cardID }
 		};
 	}
 
 	public override void Activate(CardUI card, AbilityParameter param)
 	{
-		if (searchConditions == null) InitConditions();
+		if (searchConditions == null) InitConditions(card);
 
 		for (int i = 0; i < param.value; i++)
 		{
