@@ -12,18 +12,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6e3b89d52292a546aa24ae61a66b65b, type: 3}
   m_Name: ZNeutral Double Play
   m_EditorClassIdentifier: 
-  cardName: "\uB354\uBE14 \uD50C\uB808"
+  cardName: "\uB354\uBE14 \uD50C\uB808\uC774"
   description: 
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: 74a142237f192ee4492a22a5c9b0a297, type: 3}
   cardType: 1
   rarity: 0
   cost: 0
   cardId: f6dcc520-654c-4cc4-b0a4-a409d107dabb
   haveLive2D: 0
   live2DPath: 
+  cardEffect: 0
   tags: []
   craftCost: 10
   disenchantReward: 2
   canCraft: 1
   canDisenchant: 1
+  maxHP: 0
+  currentHP: 0
   spellType: 0

@@ -14,19 +14,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardName: "\uB0A0\uB6F0\uB294 \uC545\uB9C8"
   description: 
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: f0a6ab310a6888247a71699171106d4b, type: 3}
   cardType: 0
   rarity: 0
   cost: 1
   cardId: 9ee1060d-f64f-4093-8bad-26fb4a5a46a1
   haveLive2D: 0
   live2DPath: 
+  cardEffect: 0
   tags: []
   craftCost: 10
   disenchantReward: 2
   canCraft: 1
   canDisenchant: 1
+  maxHP: 1
+  currentHP: 0
   monsterType: 0
   attack: 1
   health: 1
   race: 5
+  monsterAbilityType: 0
+  abilityType: 0
+  abiltyValue: 0
