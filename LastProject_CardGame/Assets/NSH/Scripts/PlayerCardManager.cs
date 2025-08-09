@@ -52,7 +52,7 @@ public class PlayerCardManager : MonoBehaviour
 
         ClearDeck();
 
-        //  덱 카드 단위로 리스트화
+        // 덱 카드 단위로 리스트화
         List<BaseCardData> flatDeck = new List<BaseCardData>();
         foreach (var entry in currentDeckData.mainDeck)
         {
@@ -65,11 +65,16 @@ public class PlayerCardManager : MonoBehaviour
         // 셔플
         ShuffleDeck(flatDeck);
 
-        //  셔플된 순서로 덱에 카드 생성
+        // 셔플된 순서로 덱에 카드 생성
         int zIndex = 0;
         foreach (var cardData in flatDeck)
         {
             GameObject card = CreateCard(cardData, cardPrefab, deckZone, Quaternion.identity);
+
+            // 카드 클릭 시 핸드로 이동시키는 컴포넌트 추가
+            var clickHandler = card.AddComponent<CardClickHandler>();
+            clickHandler.cardManager = this;
+
             card.transform.localPosition = new Vector3(0, 0, -zIndex * 0.01f);
             card.GetComponent<CardUI>().EnableCardFlip = false;
             zIndex++;
@@ -77,9 +82,10 @@ public class PlayerCardManager : MonoBehaviour
             deck.Add(card);
         }
 
-        //  드로우
+        // 드로우
         DrawCards(5);
     }
+
 
     private void ShuffleDeck(List<BaseCardData> list)
     {
@@ -113,16 +119,40 @@ public class PlayerCardManager : MonoBehaviour
     }
 
     public void DrawCard() => DrawCards(1);
-
     public void UpdateHandLayout()
     {
-        float spacing = 150f;
-        for (int i = 0; i < handZone.childCount; i++)
+        int cardCount = handZone.childCount;
+        if (cardCount == 0) return;
+
+        RectTransform handRect = handZone.GetComponent<RectTransform>();
+        float maxWidth = handRect.rect.width;
+
+        float cardWidth = 150f;    // 카드 너비 (실제 카드 크기로 맞춰야 함)
+        float minSpacing = 30f;    // 최소 간격
+
+        // 카드 간격 기본값
+        float spacing = cardWidth;
+
+        // 전체 카드 너비 = 카드 한 장 너비 + 간격 * (개수 - 1)
+        float totalWidth = cardWidth + spacing * (cardCount - 1);
+
+        if (totalWidth > maxWidth)
+        {
+            spacing = (maxWidth - cardWidth) / (cardCount - 1);
+            spacing = Mathf.Max(spacing, minSpacing);
+            totalWidth = cardWidth + spacing * (cardCount - 1);
+        }
+
+        // 시작 위치: 핸드존 왼쪽 끝 기준 (pivot이 (0,0.5)라면 anchoredPosition.x=0이 왼쪽 끝)
+        float startX = -(totalWidth / 2) + (cardWidth / 2); // 왼쪽 끝부터 시작하도록 조정
+
+        for (int i = 0; i < cardCount; i++)
         {
             RectTransform rt = handZone.GetChild(i).GetComponent<RectTransform>();
             if (rt != null)
             {
-                rt.anchoredPosition = new Vector2(i * spacing, 0);
+                // 카드 Pivot도 (0,0.5)여서 anchoredPosition은 카드 왼쪽 위치 기준임
+                rt.anchoredPosition = new Vector2(startX + spacing * i, 0);
             }
         }
     }
