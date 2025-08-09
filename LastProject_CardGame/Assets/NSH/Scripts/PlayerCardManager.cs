@@ -125,6 +125,7 @@ public class PlayerCardManager : MonoBehaviour
 
 				card.transform.SetParent(handZone, false);
 				card.transform.localScale = Vector3.one;
+                Debug.Log(card?.GetComponent<CardUI>().cardName + "찾기 성공!");
 			}
 		}
 
