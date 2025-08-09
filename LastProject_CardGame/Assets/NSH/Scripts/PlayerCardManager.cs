@@ -72,6 +72,10 @@ public class PlayerCardManager : MonoBehaviour
             GameObject card = CreateCard(cardData, cardPrefab, deckZone, Quaternion.identity);
             card.transform.localPosition = new Vector3(0, 0, -zIndex * 0.01f);
             card.GetComponent<CardUI>().EnableCardFlip = false;
+            if(cardData is MonsterCardData)
+            {
+                card.AddComponent<FildMonster>();
+            }
             zIndex++;
 
             deck.Add(card);
@@ -127,8 +131,7 @@ public class PlayerCardManager : MonoBehaviour
 				card.transform.localScale = Vector3.one;
 			}
 		}
-
-		UpdateHandLayout();
+        UpdateHandLayout();
 	}
 
 	public void UpdateHandLayout()
