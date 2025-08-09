@@ -86,6 +86,13 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
                     cardUI.isOnField = true;
                 }
 
+                // 소환 시점 효과 트리거
+                var fildMonster = GetComponent<FildMonster>();
+                if (fildMonster != null)
+                {
+                    fildMonster.OnPlacedOnField();
+                }
+
                 Debug.Log($"{gameObject.name} 이(가) 필드에 소환됨.");
             }
         }

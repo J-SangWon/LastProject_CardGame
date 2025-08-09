@@ -43,6 +43,20 @@ public class MonsterSlotDrop : MonoBehaviour, IDropHandler
         dragHandler.droppedOnSlot = true;
         dragHandler.isSummoned = true;
 
+        // í•„ë“œ ìƒíƒœ í”Œë˜ê·¸ ì—…ë°ì´íŠ¸
+        var ui = droppedCard.GetComponent<CardUI>();
+        if (ui != null)
+        {
+            ui.isOnField = true;
+        }
+
+        // ì†Œí™˜ ì‹œì  íš¨ê³¼ íŠ¸ë¦¬ê±°
+        var fm = droppedCard.GetComponent<FildMonster>();
+        if (fm != null)
+        {
+            fm.OnPlacedOnField();
+        }
+
         //Image slotImage = GetComponent<Image>();
         //if (slotImage != null)
         //{
@@ -52,13 +66,13 @@ public class MonsterSlotDrop : MonoBehaviour, IDropHandler
 
     void Update()
     {
-        // ½½·ÔÀÌ ºñ¾î ÀÖÀ¸¸é »óÅÂ ÃÊ±âÈ­
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½È­
         if (isOccupied && transform.childCount == 0)
         {
             isOccupied = false;
         }
 
-        // ½½·Ô¿¡ ÀÚ½ÄÀÌ ÀÖÁö¸¸ ºñÈ°¼ºÈ­µÈ °æ¿ìµµ Ã³¸®
+        // ï¿½ï¿½ï¿½Ô¿ï¿½ ï¿½Ú½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È°ï¿½ï¿½È­ï¿½ï¿½ ï¿½ï¿½ìµµ Ã³ï¿½ï¿½
         if (isOccupied && transform.childCount > 0)
         {
             bool allInactive = true;

@@ -23,10 +23,17 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
         }
     }
 
-	private void OnEnable()
-	{
-		if (monsterCardData.monsterAbilityType == MonsterCardAbilityType.Entrance && isAppeared == false) Entrance(monsterCardData.cardAbility, monsterCardData.abilityValue);
-	}
+    private void OnEnable()
+    {
+        // 필드에 올라간 상태에서만 진입 효과 1회 발동
+        if (monsterCardData.monsterAbilityType == MonsterCardAbilityType.Entrance 
+            && isAppeared == false 
+            && cardUI != null && cardUI.isOnField)
+        {
+            Entrance(monsterCardData.cardAbility, monsterCardData.abilityValue);
+            isAppeared = true;
+        }
+    }
 
 	void Update()
     {
@@ -68,10 +75,10 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
 		//}
 	}
 
-	private void Entrance(CardAbility cardAbility, int abilityValue) //진입
+    private void Entrance(CardAbility cardAbility, int abilityValue) //진입
     {
-		AbilityParameter parameter = new AbilityParameter() { value = abilityValue };
-		cardAbility.Activate(cardUI, parameter);
+        AbilityParameter parameter = new AbilityParameter() { value = abilityValue };
+        cardAbility?.Activate(cardUI, parameter);
     }
 
     private void Continuous() // 지속효과
@@ -80,10 +87,18 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
     }
 
 
-	private void Reverberation(CardAbility cardAbility, int abilityValue) //여운
-	{
-		CardUI _target = new CardUI();
-		AbilityParameter parameter = new AbilityParameter() { value = abilityValue, target = _target };
-		cardAbility.Activate(cardUI, parameter);
-	}
+    private void Reverberation(CardAbility cardAbility, int abilityValue) //여운
+    {
+        AbilityParameter parameter = new AbilityParameter() { value = abilityValue };
+        cardAbility?.Activate(cardUI, parameter);
+    }
+
+    public void OnPlacedOnField()
+    {
+        if (monsterCardData.monsterAbilityType == MonsterCardAbilityType.Entrance && !isAppeared)
+        {
+            Entrance(monsterCardData.cardAbility, monsterCardData.abilityValue);
+            isAppeared = true;
+        }
+    }
 }

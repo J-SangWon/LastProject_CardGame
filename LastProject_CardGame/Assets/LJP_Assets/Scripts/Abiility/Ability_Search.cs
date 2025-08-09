@@ -25,34 +25,47 @@ public class Ability_Search : CardAbility
 
 	private void InitConditions(CardUI cardUI)
 	{
-		searchConditions = new Dictionary<SearchType, Func<GameObject, bool>>()
-		{
-			{ SearchType.CardType, card => cardUI.cardData.cardType == cardType },
-			{ SearchType.Cost, card => cardUI.cardData.cost == cost },
-			{ SearchType.Race, card =>
-				{
-					var data = cardUI.monsterCardData;
-					return data != null && data.race == race;
-				}
-			},
-			{ SearchType.CardID, card => cardUI.cardData.cardId == cardID }
-		};
+        searchConditions = new Dictionary<SearchType, Func<GameObject, bool>>()
+        {
+            { SearchType.CardType, card =>
+                {
+                    var ui = card.GetComponent<CardUI>();
+                    return ui != null && ui.cardData != null && ui.cardData.cardType == cardType;
+                }
+            },
+            { SearchType.Cost, card =>
+                {
+                    var ui = card.GetComponent<CardUI>();
+                    return ui != null && ui.cardData != null && ui.cardData.cost == cost;
+                }
+            },
+            { SearchType.Race, card =>
+                {
+                    var ui = card.GetComponent<CardUI>();
+                    var data = ui != null ? ui.monsterCardData : null;
+                    return data != null && data.race == race;
+                }
+            },
+            { SearchType.CardID, card =>
+                {
+                    var ui = card.GetComponent<CardUI>();
+                    return ui != null && ui.cardData != null && ui.cardData.cardId == cardID;
+                }
+            }
+        };
 	}
 
 	public override void Activate(CardUI card, AbilityParameter param)
 	{
 		if (searchConditions == null) InitConditions(card);
 
-		for (int i = 0; i < param.value; i++)
-		{
-			if (searchConditions.TryGetValue(searchType, out var condition))
-			{
-				PlayerCardManager.Instance.SearchCard(condition);
-			}
-			else
-			{
-				Debug.LogWarning($"[Ability_Search] SearchType {searchType}¿¡ ´ëÇÑ Á¶°ÇÀÌ ¾ø½À´Ï´Ù.");
-			}
-		}
+        if (searchConditions.TryGetValue(searchType, out var condition))
+        {
+            PlayerCardManager.Instance.SearchCard(condition, Mathf.Max(1, param.value));
+        }
+        else
+        {
+            Debug.LogWarning($"[Ability_Search] SearchType {searchType} ì´(ê°€) ìœ íš¨í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤.");
+        }
 	}
 }
