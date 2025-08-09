@@ -112,9 +112,26 @@ public class PlayerCardManager : MonoBehaviour
         UpdateHandLayout();
     }
 
-    public void DrawCard() => DrawCards(1);
+	public void DrawCard() => DrawCards(1);
 
-    public void UpdateHandLayout()
+	public void SearchCard(System.Func<GameObject, bool> condition)
+	{
+		for (int i = 0; i < deck.Count; i++)
+		{
+			if (deck[i] != null && condition(deck[i]))
+			{
+				GameObject card = deck[i];
+				deck.RemoveAt(i);
+
+				card.transform.SetParent(handZone, false);
+				card.transform.localScale = Vector3.one;
+			}
+		}
+
+		UpdateHandLayout();
+	}
+
+	public void UpdateHandLayout()
     {
         float spacing = 150f;
         for (int i = 0; i < handZone.childCount; i++)
