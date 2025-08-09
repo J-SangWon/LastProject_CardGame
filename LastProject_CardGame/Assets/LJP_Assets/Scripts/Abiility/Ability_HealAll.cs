@@ -10,8 +10,8 @@ public class Ability_HealAll : CardAbility
 			foreach (var target in param.targets)
 			{
 				param.target.ReduceHealth(param.value);
+				Debug.Log($"{card.name}가 {param.target.name}에게 {param.value} 회복함");
 			}
-			Debug.Log($"{card.name}가 {param.target.name}에게 {param.value} 회복함");
 		}
 	}
 }
