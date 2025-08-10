@@ -29,7 +29,13 @@ namespace Kalkatos.DottedArrow
 			if (!isActive)
 				return;
 			Setup();
-		}
+
+			if(Input.GetMouseButtonDown(1))	
+            {
+                if (baseRect.gameObject.activeSelf)
+                    Deactivate();
+            }
+        }
 
 		private void Setup()
 		{

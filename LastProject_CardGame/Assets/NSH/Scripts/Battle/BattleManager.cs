@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using Kalkatos.DottedArrow;
+using System.Collections;
+using UnityEngine;
 
 public class BattleManager : MonoBehaviour
 {
@@ -6,6 +8,11 @@ public class BattleManager : MonoBehaviour
 
     private GameObject attacker;
     private GameObject target;
+
+    public Arrow Arrow { get => arrow; set => arrow = value; }
+    [Header("Arrow Effects")]
+    [SerializeField] private Arrow arrow;
+    [SerializeField] private AnimationCurve attackAnimCurve;
 
     private void Awake()
     {
@@ -122,4 +129,58 @@ public class BattleManager : MonoBehaviour
         attacker = null;
         target = null;
     }
+
+    #region Attack Effect
+    private IEnumerator AttackAnimationCoroutine(GameObject _attacker, GameObject _receiver)
+    {
+        Vector3 originalUp = _attacker.transform.up;
+        Vector3 startPos = _attacker.transform.position;
+        yield return MoveTo(_attacker.transform, startPos + Vector3.back, 0.2f);
+        yield return new WaitForSeconds(0.1f);
+        Vector3 distance = _receiver.transform.position - startPos;
+        distance = Vector3.MoveTowards(distance, distance * 0.001f, 1f);
+        _attacker.transform.up = distance;
+        yield return MoveTo(_attacker.transform, startPos + distance, 0.3f, attackAnimCurve);
+
+        yield return MoveTo(_attacker.transform, startPos, 0.3f);
+        _attacker.transform.up = originalUp;
+    }
+
+    private IEnumerator MoveTo(Transform transform, Vector3 endPos, float time, AnimationCurve curve = null)
+    {
+        float startTime = Time.time;
+        float elapsed = 0;
+        Vector3 startPos = transform.position;
+        while (elapsed < time)
+        {
+            elapsed = Time.time - startTime;
+            float t = curve != null ? curve.Evaluate(elapsed / time) : elapsed / time;
+            transform.position = Vector3.Lerp(startPos, endPos, t);
+            yield return null;
+        }
+        transform.position = endPos;
+    }
+
+    public void BeginAttack(GameObject card)
+    {
+        CancelAttack();
+        arrow.SetupAndActivate(card.transform);
+        attacker = card;
+    }
+
+    public void EndAttack(GameObject target)
+    {
+        arrow.Deactivate();
+        StartCoroutine(AttackAnimationCoroutine(attacker, target));
+    }
+
+    public void CancelAttack()
+    {
+        arrow.Deactivate();
+        if (attacker != null)
+        {
+            attacker = null;
+        }
+    }
+    #endregion
 }
