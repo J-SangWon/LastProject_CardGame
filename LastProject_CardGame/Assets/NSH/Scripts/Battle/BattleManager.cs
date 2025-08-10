@@ -35,7 +35,7 @@ public class BattleManager : MonoBehaviour
         }
 
         attacker = card;
-        Debug.Log($"공격자 설정됨: {cardUI.cardName}");
+        Debug.Log($"공격자 설정됨: {cardUI.cardData.cardName}");
     }
 
     /// <summary>

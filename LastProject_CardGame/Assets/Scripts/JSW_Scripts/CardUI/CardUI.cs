@@ -38,8 +38,10 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
     public Sprite[] rarityImages;
 
     public int attack;
+    public int FixedAttack;
     public int maxHealth;
     public int currentHealth;
+    public int FixedHealth;
 
     private Outline outline;
     private bool isFront = true;
@@ -63,20 +65,29 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
             }
         }
 
-        currentHealth = textHealth.text.Trim().Length > 0 ? int.Parse(textHealth.text.Trim()) : 0;
-        attack = textAttack.text.Trim().Length > 0 ? int.Parse(textAttack.text.Trim()) : 0;
-
         if (cardData is MonsterCardData)
         {
             monsterCardData = (MonsterCardData)cardData;
+            FixedAttack = monsterCardData.attack;
+            FixedHealth = monsterCardData.maxHP;
+            attack = monsterCardData.attack;
+            currentHealth = monsterCardData.currentHP;
         }
+        else
+        {
+            if (textHealth != null && int.TryParse(textHealth.text.Trim(), out var parsedHp))
+                currentHealth = parsedHp;
+            if (textAttack != null && int.TryParse(textAttack.text.Trim(), out var parsedAtk))
+                attack = parsedAtk;
+        }
+        UpdateStatsVisual();
     }
 
     public void ReduceHealth(int damage)
     {
         currentHealth -= damage;
         if (currentHealth < 0) currentHealth = 0;
-        textHealth.text = currentHealth.ToString();
+        UpdateHealth();
 
         if(currentHealth == 0)
         {
@@ -90,8 +101,7 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
         currentHealth += value;
 
         if(currentHealth > maxHealth) currentHealth = maxHealth;
-
-        textHealth.text = currentHealth.ToString();
+        UpdateHealth();
     }
 
     public void SetFace(bool showFront)
@@ -176,8 +186,14 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
 
         if (data is MonsterCardData monsterData)
         {
-            textAttack.text = monsterData.attack.ToString();
-            textHealth.text = monsterData.currentHP.ToString();
+            // 수치 동기화
+            FixedAttack = monsterData.attack;
+            FixedHealth = monsterData.maxHP;
+            attack = monsterData.attack;
+            currentHealth = monsterData.currentHP;
+
+            textAttack.text = attack.ToString();
+            textHealth.text = currentHealth.ToString();
             Attack.gameObject.SetActive(true);
             Health.gameObject.SetActive(true);
         }
@@ -188,6 +204,7 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
             Attack.gameObject.SetActive(false);
             Health.gameObject.SetActive(false);
         }
+        UpdateStatsVisual();
     }
 
     public void SetRarity(CardRarity rarity)
@@ -269,10 +286,56 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
 
     public void UpdateHealth()
     {
-        if (cardData is MonsterCardData monsterData && textHealth != null)
+        if (textHealth == null) return;
+        if (currentHealth < FixedHealth)
         {
-            textHealth.text = monsterData.currentHP.ToString();
+            textHealth.color = Color.red;
         }
+        else if (currentHealth > FixedHealth)
+        {
+            textHealth.color = Color.green;
+        }
+        else
+        {
+            textHealth.color = Color.white;
+        }
+        textHealth.text = currentHealth.ToString();
+    }
+
+    public void UpdateAttack()
+    {
+        if (textAttack == null) return;
+        if (attack < FixedAttack)
+        {
+            textAttack.color = Color.red;
+        }
+        else if (attack > FixedAttack)
+        {
+            textAttack.color = Color.green;
+        }
+        else
+        {
+            textAttack.color = Color.white;
+        }
+        textAttack.text = attack.ToString();
+    }
+
+    public void UpdateStatsVisual()
+    {
+        UpdateAttack();
+        UpdateHealth();
+    }
+
+    public void SetAttack(int newAttack)
+    {
+        attack = newAttack;
+        UpdateAttack();
+    }
+
+    public void AddAttack(int delta)
+    {
+        attack += delta;
+        UpdateAttack();
     }
 
     public void HandleDeath()
