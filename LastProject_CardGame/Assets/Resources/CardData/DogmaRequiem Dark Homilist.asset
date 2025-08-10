@@ -23,7 +23,7 @@ MonoBehaviour:
   haveLive2D: 0
   live2DPath: 
   cardEffect: 0
-  cardAbility: {fileID: 11400000, guid: f59b18cc8b4297142a46c935c39fd7eb, type: 2}
+  cardAbility: {fileID: 11400000, guid: 19f4add510557154aa3a5a636a39eaf9, type: 2}
   abilityValue: 1
   tags: []
   ownerType: 0
