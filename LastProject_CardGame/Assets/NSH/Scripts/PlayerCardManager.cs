@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -138,18 +138,44 @@ public class PlayerCardManager : MonoBehaviour
         UpdateHandLayout();
     }
 
-	public void UpdateHandLayout()
+    public void UpdateHandLayout()
     {
-        float spacing = 150f;
-        for (int i = 0; i < handZone.childCount; i++)
+        int cardCount = handZone.childCount;
+        if (cardCount == 0) return;
+
+        RectTransform handRect = handZone.GetComponent<RectTransform>();
+        float maxWidth = handRect.rect.width;
+
+        float cardWidth = 150f;    // 카드 너비 (실제 카드 크기로 맞춰야 함)
+        float minSpacing = 30f;    // 최소 간격
+
+        // 카드 간격 기본값
+        float spacing = cardWidth;
+
+        // 전체 카드 너비 = 카드 한 장 너비 + 간격 * (개수 - 1)
+        float totalWidth = cardWidth + spacing * (cardCount - 1);
+
+        if (totalWidth > maxWidth)
+        {
+            spacing = (maxWidth - cardWidth) / (cardCount - 1);
+            spacing = Mathf.Max(spacing, minSpacing);
+            totalWidth = cardWidth + spacing * (cardCount - 1);
+        }
+
+        // 시작 위치: 핸드존 왼쪽 끝 기준 (pivot이 (0,0.5)라면 anchoredPosition.x=0이 왼쪽 끝)
+        float startX = -(totalWidth / 2) + (cardWidth / 2); // 왼쪽 끝부터 시작하도록 조정
+
+        for (int i = 0; i < cardCount; i++)
         {
             RectTransform rt = handZone.GetChild(i).GetComponent<RectTransform>();
             if (rt != null)
             {
-                rt.anchoredPosition = new Vector2(i * spacing, 0);
+                // 카드 Pivot도 (0,0.5)여서 anchoredPosition은 카드 왼쪽 위치 기준임
+                rt.anchoredPosition = new Vector2(startX + spacing * i, 0);
             }
         }
     }
+
 
     #endregion
 
@@ -241,6 +267,140 @@ public class PlayerCardManager : MonoBehaviour
         UpdateFieldLayout();
     }
 
+    /// <summary>
+    /// 카드 데이터로부터 새 오브젝트를 생성하여 즉시 필드에 소환
+    /// </summary>
+    public GameObject SummonFromData(BaseCardData data)
+    {
+        if (data == null) return null;
+        GameObject card = CreateCard(data, cardPrefab, fieldZone, Quaternion.identity);
+        PlayCardToField(card);
+        return card;
+    }
+
+    // Monster Slot Summon Utilities
+    private Transform FindFirstFreeMonsterSlot(OwnerType ownerType)
+    {
+        string tag = ownerType == OwnerType.Player ? "PlayerZone" : "EnemyZone";
+        var slots = GameObject.FindGameObjectsWithTag(tag);
+        foreach (var go in slots)
+        {
+            var slot = go.GetComponent<MonsterSlotDrop>();
+            if (slot != null && !slot.isOccupied)
+            {
+                return slot.transform;
+            }
+        }
+        return null;
+    }
+
+    public bool PlaceExistingCardToMonsterSlot(GameObject card, OwnerType ownerType)
+    {
+        if (card == null) return false;
+        Transform slotTr = FindFirstFreeMonsterSlot(ownerType);
+        if (slotTr == null)
+        {
+            Debug.LogWarning("[PlayerCardManager] No free monster slot for " + ownerType);
+            return false;
+        }
+
+        card.transform.SetParent(slotTr, false);
+        card.transform.localPosition = Vector3.zero;
+
+        var cardUI = card.GetComponent<CardUI>();
+        if (cardUI != null)
+        {
+            cardUI.isOnField = true;
+            cardUI.ownerType = ownerType;
+        }
+
+        var drag = card.GetComponent<CardDragHandler>();
+        if (drag != null)
+        {
+            drag.isSummoned = true;
+            drag.droppedOnSlot = true;
+        }
+
+        var slot = slotTr.GetComponent<MonsterSlotDrop>();
+        if (slot != null)
+        {
+            slot.isOccupied = true;
+        }
+
+        var fm = card.GetComponent<FildMonster>();
+        if (fm != null)
+        {
+            fm.OnPlacedOnField();
+        }
+
+        return true;
+    }
+
+    public GameObject SummonFromDataToMonsterZone(BaseCardData data, OwnerType ownerType)
+    {
+        if (data == null) return null;
+        Transform slotTr = FindFirstFreeMonsterSlot(ownerType);
+        if (slotTr == null)
+        {
+            Debug.LogWarning("[PlayerCardManager] No free monster slot for " + ownerType);
+            return null;
+        }
+
+        GameObject card = Instantiate(cardPrefab, slotTr);
+        card.transform.localScale = Vector3.one;
+        card.transform.localPosition = Vector3.zero;
+        if (ownerType == OwnerType.Opponent)
+        {
+            card.transform.localRotation = Quaternion.Euler(0, 180f, 0);
+        }
+
+        var cardUI = card.GetComponent<CardUI>();
+        if (cardUI != null)
+        {
+            cardUI.SetCard(data);
+            cardUI.SetFace(ownerType == OwnerType.Player);
+            cardUI.isOnField = true;
+            cardUI.ownerType = ownerType;
+            cardUI.EnableCardFlip = ownerType == OwnerType.Player;
+        }
+
+        var dragHandler = card.GetComponent<CardDragHandler>();
+        if (dragHandler != null)
+        {
+            dragHandler.enabled = ownerType == OwnerType.Player;
+            dragHandler.isSummoned = true;
+            dragHandler.droppedOnSlot = true;
+        }
+
+        var slot = slotTr.GetComponent<MonsterSlotDrop>();
+        if (slot != null)
+        {
+            slot.isOccupied = true;
+        }
+
+        if (card.GetComponent<Collider2D>() == null)
+        {
+            var collider = card.AddComponent<BoxCollider2D>();
+            var rect = card.GetComponent<RectTransform>();
+            if (rect != null)
+            {
+                collider.offset = rect.rect.center;
+                collider.size = rect.rect.size;
+            }
+        }
+
+        var fm = card.GetComponent<FildMonster>();
+        if (fm == null && data is MonsterCardData)
+        {
+            fm = card.AddComponent<FildMonster>();
+        }
+        if (fm != null)
+        {
+            fm.OnPlacedOnField();
+        }
+
+        return card;
+    }
 
     private void UpdateFieldLayout()
     {

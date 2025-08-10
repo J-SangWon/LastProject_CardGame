@@ -5,55 +5,7 @@ using System.Collections;
 
 public class GameManager : MonoBehaviour
 {
-    [Header("UI")]
-    public TextMeshProUGUI phaseText;
-    public TextMeshProUGUI playerHealthText;
-    public TextMeshProUGUI enemyHealthText;
-    public TextMeshProUGUI timerText;
-    public Button turnButton;
-
-    [Header("Turn Indicator")]
-    public GameObject playerTurnIndicator;
-    public GameObject enemyTurnIndicator;
-    public Image turnBackground;
-    public Color playerTurnColor;
-    public Color enemyTurnColor;
-
-    [Header("Cards")]
-    public GameObject cardObject;
-    public GameObject enemyCardObject;
-
-    [Header("Cost System")]
-    public TextMeshProUGUI playerCostText;
-    public TextMeshProUGUI enemyCostText;
-
-    private int playerCurrentCost = 0;
-    private int playerMaxCost = 0;
-    private int enemyCurrentCost = 0;
-    private int enemyMaxCost = 0;
-    private const int MAX_COST_LIMIT = 10;
-
-    private enum RPSChoice { Rock, Paper, Scissors }
-    private RPSChoice playerChoice;
-    private RPSChoice enemyChoice;
-
-    private bool isBattleActive = false;
-    private GamePhase currentPhase;
-    private bool isPlayerTurn = true;
-
-    private MonsterCardData playerCard;
-    private MonsterCardData enemyCard;
-
-    private int playerHealth = 40;
-    private int enemyHealth = 40;
-
-    private float turnTimer = 300f;
-    private bool isTimerRunning = false;
-
-    public TextMeshProUGUI turnCounterText; 
-    private int turnCount = 1; // 턴 시작은 1부터
-
-    public GameObject overlayPanel;
+    // ===== 싱글턴 =====
     public static GameManager Instance;
 
     private void Awake()
@@ -64,93 +16,124 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
     }
 
+    // ===== Enum & 상태 변수 =====
     public GamePhase CurrentPhase => currentPhase;
-
     public bool IsPlayerTurn() => isPlayerTurn;
+    public bool IsEnemyTurn() => !isPlayerTurn;
 
+    private GamePhase currentPhase = GamePhase.None;
+    private bool isPlayerTurn = true;
+    private int turnCount = 1;
+
+    private int playerHealth = 40;
+    private int enemyHealth = 40;
+
+    private int playerCurrentCost = 0;
+    private int playerMaxCost = 0;
+    private int enemyCurrentCost = 0;
+    private int enemyMaxCost = 0;
+    private const int MAX_COST_LIMIT = 10;
+
+    private float turnTimer = 300f;
+    private bool isTimerRunning = false;
+
+    // ===== UI 요소 =====
+    [Header("UI - Text")]
+    public TextMeshProUGUI phaseText;
+    public TextMeshProUGUI playerHealthText;
+    public TextMeshProUGUI enemyHealthText;
+    public TextMeshProUGUI timerText;
+    public TextMeshProUGUI playerCostText;
+    public TextMeshProUGUI enemyCostText;
+    public TextMeshProUGUI turnText;          // "내 턴"/"적 턴"
+    public TextMeshProUGUI turnNumberText;    // "턴 1" 등
+
+    [Header("UI - Button")]
+    public Button turnButton;
+
+    [Header("UI - Turn Background")]
+    public Image turnBackground;
+    public Color playerTurnColor = Color.green;
+    public Color enemyTurnColor = Color.red;
+
+    [Header("Cards")]
+    public GameObject cardObject;
+    public GameObject enemyCardObject;
+
+    // ===== 초기화 =====
     void Start()
     {
         currentPhase = GamePhase.FirstPhase;
-        UpdatePhaseText();
-        UpdateHealthUI();
-        UpdateCostUI();
-        UpdateTimerUI();
-        UpdateTurnIndicators();
-        UpdateTurnColor();
+        UpdateAllUI();
         turnButton.onClick.AddListener(OnTurnButtonClicked);
     }
 
+    // ===== 매 프레임 업데이트 =====
     void Update()
     {
         if (isTimerRunning)
         {
             turnTimer -= Time.deltaTime;
+            if (turnTimer < 0) turnTimer = 0;
             UpdateTimerUI();
         }
     }
 
+    // ===== 공개 메서드 =====
     public void DealDamageToPlayer(bool isPlayer, int dmg)
     {
         if (isPlayer)
-        {
-            playerHealth -= dmg;
-            if (playerHealth < 0) playerHealth = 0;
-        }
+            playerHealth = Mathf.Max(0, playerHealth - dmg);
         else
-        {
-            enemyHealth -= dmg;
-            if (enemyHealth < 0) enemyHealth = 0;
-        }
+            enemyHealth = Mathf.Max(0, enemyHealth - dmg);
 
         UpdateHealthUI();
 
         if (playerHealth <= 0)
         {
             Debug.Log("플레이어가 패배했습니다.");
-            // 게임 오버 처리
+            // TODO: 게임 오버 처리
         }
-
         if (enemyHealth <= 0)
         {
             Debug.Log("적이 패배했습니다.");
-            // 승리 처리
+            // TODO: 승리 처리
         }
     }
 
-    void StartPlayerTurn()
+    // ===== 턴 시작/종료 & 페이즈 진행 =====
+    void StartPlayerTurn(GamePhase startPhase = GamePhase.MainPhase)
     {
         isPlayerTurn = true;
-        currentPhase = GamePhase.MainPhase;
-        phaseText.text = "Player's Turn";
-        UpdatePhaseText();
+        currentPhase = startPhase;
 
         ResetPlayerCardAttacks();
 
         isTimerRunning = true;
         turnButton.interactable = true;
-        turnTimer += 30f;
-        if (turnTimer > 400f) turnTimer = 400f;
+
+        turnTimer = Mathf.Min(turnTimer + 30f, 400f);
 
         if (playerMaxCost < MAX_COST_LIMIT)
             playerMaxCost++;
         playerCurrentCost = playerMaxCost;
-        UpdateCostUI();
 
-        UpdateTurnIndicators();
-        UpdateTurnColor();
-        //PlayTurnSound();
+        UpdateAllUI();
     }
 
     void StartEnemyTurn()
     {
         isPlayerTurn = false;
         currentPhase = GamePhase.MainPhase;
-        phaseText.text = "Opponent's Turn";
-        UpdatePhaseText();
 
-        UpdateTurnIndicators();
-        UpdateTurnColor();
-        //PlayTurnSound();
+        isTimerRunning = true;
+        turnButton.interactable = false;
+
+        if (enemyMaxCost < MAX_COST_LIMIT)
+            enemyMaxCost++;
+        enemyCurrentCost = enemyMaxCost;
+
+        UpdateAllUI();
     }
 
     void EndPlayerTurn()
@@ -158,93 +141,100 @@ public class GameManager : MonoBehaviour
         isTimerRunning = false;
         turnButton.interactable = false;
 
+        turnCount++;
+
         if (isPlayerTurn)
         {
-            StartCoroutine(EnemyTurn());
+            StartCoroutine(EnemyTurnCoroutine());
         }
         else
         {
-            isPlayerTurn = true;
             currentPhase = GamePhase.FirstPhase;
-            UpdatePhaseText();
-            turnTimer += 30f;
-            if (turnTimer > 400f) turnTimer = 400f;
-            isTimerRunning = true;
-            turnButton.interactable = true;
-
-            if (playerMaxCost < MAX_COST_LIMIT)
-                playerMaxCost++;
-            playerCurrentCost = playerMaxCost;
-            UpdateCostUI();
-
-            UpdateTurnIndicators();
-            UpdateTurnColor();
+            UpdateAllUI();
+            StartPlayerTurn(currentPhase);
         }
     }
 
-    IEnumerator EnemyTurn()
+    IEnumerator EnemyTurnCoroutine()
     {
         StartEnemyTurn();
 
-        if (enemyMaxCost < MAX_COST_LIMIT)
-            enemyMaxCost++;
-        enemyCurrentCost = enemyMaxCost;
-        UpdateCostUI();
+        // TODO: 적 AI 처리
 
         yield return new WaitForSeconds(2f);
+
         EndPlayerTurn();
     }
-    private void UpdateTurnUI()
-    {
-        string currentPlayer = isPlayerTurn ? "내 턴" : "적 턴";
-        turnCounterText.text = $"턴 {turnCount} ({currentPlayer})";
-        phaseText.text = currentPhase.ToString();
-        UpdateTimerUI();
-    }
+
     void OnTurnButtonClicked()
     {
-        if (!isPlayerTurn) return;
+        if (!isPlayerTurn)
+            return;
 
         switch (currentPhase)
         {
-            case GamePhase.FirstPhase:
-                StartPlayerTurn();
+            case GamePhase.None:
                 break;
+
+            case GamePhase.FirstPhase:
+                currentPhase = GamePhase.MainPhase; // 페이즈 전환
+                UpdateAllUI();
+                StartPlayerTurn(currentPhase);
+                break;
+
             case GamePhase.MainPhase:
                 StartBattlePhase();
                 break;
+
             case GamePhase.BattlePhase:
                 StartEndPhase();
                 break;
+
             case GamePhase.EndPhase:
                 EndPlayerTurn();
                 break;
         }
     }
 
+
     void StartBattlePhase()
     {
         currentPhase = GamePhase.BattlePhase;
-        UpdatePhaseText();
+        UpdateAllUI();
     }
 
     void StartEndPhase()
     {
         currentPhase = GamePhase.EndPhase;
-        UpdatePhaseText();
-        StartCoroutine(EndPhaseAndAutoTurn());
+        UpdateAllUI();
+
+        StartCoroutine(EndPhaseAndAutoTurnCoroutine());
     }
 
-    IEnumerator EndPhaseAndAutoTurn()
+    IEnumerator EndPhaseAndAutoTurnCoroutine()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(2f);
         EndPlayerTurn();
+    }
+
+    // ===== UI 갱신 함수들 =====
+    void UpdateAllUI()
+    {
+        UpdatePhaseText();
+        UpdateHealthUI();
+        UpdateTimerUI();
+        UpdateCostUI();
+        UpdateTurnColor();
+        UpdateTurnUI();
     }
 
     void UpdatePhaseText()
     {
         switch (currentPhase)
         {
+            case GamePhase.None:
+                phaseText.text = "";
+                break;
             case GamePhase.FirstPhase:
                 phaseText.text = "First Phase";
                 break;
@@ -258,8 +248,6 @@ public class GameManager : MonoBehaviour
                 phaseText.text = "End Phase";
                 break;
         }
-
-        Debug.Log("Current Phase: " + phaseText.text);
     }
 
     void UpdateHealthUI()
@@ -279,27 +267,29 @@ public class GameManager : MonoBehaviour
         enemyCostText.text = $"Enemy Cost: {enemyCurrentCost}/{enemyMaxCost}";
     }
 
-    void UpdateTurnIndicators()
-    {
-        if (playerTurnIndicator != null)
-            playerTurnIndicator.SetActive(isPlayerTurn);
-        if (enemyTurnIndicator != null)
-            enemyTurnIndicator.SetActive(!isPlayerTurn);
-    }
-
     void UpdateTurnColor()
     {
         if (turnBackground != null)
             turnBackground.color = isPlayerTurn ? playerTurnColor : enemyTurnColor;
     }
 
+    void UpdateTurnUI()
+    {
+        turnNumberText.text = $"Turn {turnCount}";
+
+        if (isPlayerTurn)
+            turnText.text = "Player Turn";
+        else
+            turnText.text = "Enemy Turn";
+    }
+
+    // ===== 기타 =====
     void ResetPlayerCardAttacks()
     {
         var cards = FindObjectsByType<CardUI>(FindObjectsSortMode.None);
         foreach (var cardUI in cards)
         {
-            if (cardUI.isOnField && cardUI.cardData != null &&
-                GameManager.Instance.isPlayerTurn)
+            if (cardUI.isOnField && cardUI.cardData != null && isPlayerTurn)
             {
                 cardUI.ResetAttackFlag();
             }

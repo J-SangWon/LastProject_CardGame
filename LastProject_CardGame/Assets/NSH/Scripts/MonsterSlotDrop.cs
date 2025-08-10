@@ -13,21 +13,17 @@ public class MonsterSlotDrop : MonoBehaviour, IDropHandler
     }
     public void OnDrop(PointerEventData eventData)
     {
-        
-
         if (isOccupied) return;
 
         GameObject droppedCard = eventData.pointerDrag;
         if (droppedCard == null)
         {
-          
             return;
         }
 
         var dragHandler = droppedCard.GetComponent<CardDragHandler>();
         if (dragHandler == null)
         {
-          
             return;
         }
 
@@ -36,6 +32,30 @@ public class MonsterSlotDrop : MonoBehaviour, IDropHandler
             return;
         }
 
+        // 소유자와 슬롯 태그(PlayerZone/EnemyZone) 매칭 검사
+        var ui = droppedCard.GetComponent<CardUI>();
+        if (ui == null)
+        {
+            Debug.LogWarning("[MonsterSlotDrop] CardUI가 없는 오브젝트입니다.");
+            return;
+        }
+
+        bool isPlayerSlot = CompareTag("PlayerZone");
+        bool isEnemySlot = CompareTag("EnemyZone");
+
+        if (isPlayerSlot && ui.ownerType != OwnerType.Player)
+        {
+            Debug.Log("플레이어 슬롯에는 플레이어 카드만 배치할 수 있습니다.");
+            return;
+        }
+
+        if (isEnemySlot && ui.ownerType != OwnerType.Opponent)
+        {
+            Debug.Log("적 슬롯에는 적 카드만 배치할 수 있습니다.");
+            return;
+        }
+
+        // 배치
         droppedCard.transform.SetParent(transform, false);
         droppedCard.transform.localPosition = Vector3.zero;
         isOccupied = true;
@@ -44,11 +64,7 @@ public class MonsterSlotDrop : MonoBehaviour, IDropHandler
         dragHandler.isSummoned = true;
 
         // 필드 상태 플래그 업데이트
-        var ui = droppedCard.GetComponent<CardUI>();
-        if (ui != null)
-        {
-            ui.isOnField = true;
-        }
+        ui.isOnField = true;
 
         // 소환 시점 효과 트리거
         var fm = droppedCard.GetComponent<FildMonster>();
