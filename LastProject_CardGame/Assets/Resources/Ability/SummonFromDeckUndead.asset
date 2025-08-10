@@ -13,8 +13,27 @@ MonoBehaviour:
   m_Name: SummonFromDeckUndead
   m_EditorClassIdentifier: 
   condition: {fileID: 0}
-  searchType: 0
+  searchType: 2
   cardType: 0
-  race: 0
+  race: 1
   cost: 0
+  costOp: 0
   cardID: 
+  tag: 
+  useCompositeConditions: 1
+  compositeOperator: 0
+  conditions:
+  - searchType: 1
+    cardType: 0
+    race: 0
+    cost: 4
+    costOp: 2
+    cardID: 
+    tag: 
+  - searchType: 2
+    cardType: 0
+    race: 1
+    cost: 0
+    costOp: 2
+    cardID: 
+    tag: 
