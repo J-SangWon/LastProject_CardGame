@@ -13,8 +13,13 @@ MonoBehaviour:
   m_Name: SearchCost
   m_EditorClassIdentifier: 
   condition: {fileID: 0}
-  searchType: 0
+  searchType: 1
   cardType: 0
   race: 0
-  cost: 0
+  cost: 2
+  costOp: 0
   cardID: 
+  tag: 
+  useCompositeConditions: 0
+  compositeOperator: 0
+  conditions: []

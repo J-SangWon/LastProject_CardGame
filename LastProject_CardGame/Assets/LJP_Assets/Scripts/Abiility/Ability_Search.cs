@@ -1,14 +1,15 @@
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
 public enum SearchType
 {
-	CardType, 
+    CardType, 
 	Cost,
 	Race,
-	CardID
+    CardID,
+    Tag
 }
 
 [CreateAssetMenu(menuName = "CardAbilities/Search")]
@@ -19,7 +20,14 @@ public class Ability_Search : CardAbility
 	public CardType cardType;
 	public Race race;
 	public int cost;
+    public NumericCompareOp costOp = NumericCompareOp.Equal;
 	public string cardID;
+    public string tag; // BaseCardData.tags에 포함 여부로 매칭
+
+    [Header("다중 효과 조건")]
+    public bool useCompositeConditions = false;
+    public LogicalOperator compositeOperator = LogicalOperator.And;
+    public List<SearchCondition> conditions = new List<SearchCondition>();
 
 	private Dictionary<SearchType, Func<GameObject, bool>> searchConditions;
 
@@ -36,7 +44,7 @@ public class Ability_Search : CardAbility
             { SearchType.Cost, card =>
                 {
                     var ui = card.GetComponent<CardUI>();
-                    return ui != null && ui.cardData != null && ui.cardData.cost == cost;
+                    return ui != null && ui.cardData != null && AbilityConditionUtils.CompareInt(ui.cardData.cost, cost, costOp);
                 }
             },
             { SearchType.Race, card =>
@@ -51,6 +59,12 @@ public class Ability_Search : CardAbility
                     var ui = card.GetComponent<CardUI>();
                     return ui != null && ui.cardData != null && ui.cardData.cardId == cardID;
                 }
+            },
+            { SearchType.Tag, card =>
+                {
+                    var ui = card.GetComponent<CardUI>();
+                    return ui != null && ui.cardData != null && ui.cardData.tags != null && ui.cardData.tags.Contains(tag);
+                }
             }
         };
 	}
@@ -59,13 +73,23 @@ public class Ability_Search : CardAbility
 	{
 		if (searchConditions == null) InitConditions(card);
 
-        if (searchConditions.TryGetValue(searchType, out var condition))
+        int count = Mathf.Max(1, param.value);
+        if (useCompositeConditions)
         {
-            PlayerCardManager.Instance.SearchCard(condition, Mathf.Max(1, param.value));
+            PlayerCardManager.Instance.SearchCard(
+                go => AbilityConditionUtils.MatchesAll(conditions, compositeOperator, go.GetComponent<CardUI>()),
+                count);
         }
         else
         {
-            Debug.LogWarning($"[Ability_Search] SearchType {searchType} 이(가) 유효하지 않습니다.");
+            if (searchConditions.TryGetValue(searchType, out var condition))
+            {
+                PlayerCardManager.Instance.SearchCard(condition, count);
+            }
+            else
+            {
+                Debug.LogWarning($"[Ability_Search] SearchType {searchType} 이(가) 유효하지 않습니다.");
+            }
         }
 	}
 }
