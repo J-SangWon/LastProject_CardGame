@@ -43,7 +43,6 @@ public class BattleManager : MonoBehaviour
 
         attacker = card;
         Debug.Log($"공격자 설정됨: {cardUI.cardData.cardName}");
-        BeginAttack(attacker);
     }
 
     /// <summary>
@@ -100,9 +99,6 @@ public class BattleManager : MonoBehaviour
         }
 
         Debug.Log($"{atkUI.cardData.cardName} 이(가) {tgtUI.cardData.cardName} 을(를) 공격!");
-
-        arrow.Deactivate();
-        StartCoroutine(AttackAnimationCoroutine(attacker, target));
 
         // 데미지 값 미리 계산(파괴/Destroy 중 참조 안전하게)
         int damageToTarget = atkUI.attack;
@@ -170,6 +166,12 @@ public class BattleManager : MonoBehaviour
         CancelAttack();
         arrow.SetupAndActivate(card.transform);
         attacker = card;
+    }
+
+    public void EndAttack(GameObject target)
+    {
+        arrow.Deactivate();
+        StartCoroutine(AttackAnimationCoroutine(attacker, target));
     }
 
     public void CancelAttack()
