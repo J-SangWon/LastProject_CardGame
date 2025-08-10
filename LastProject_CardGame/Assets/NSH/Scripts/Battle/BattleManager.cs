@@ -35,7 +35,7 @@ public class BattleManager : MonoBehaviour
         }
 
         attacker = card;
-        Debug.Log($"공격자 설정됨: {cardUI.cardName}");
+        Debug.Log($"공격자 설정됨: {cardUI.cardData.cardName}");
     }
 
     /// <summary>
@@ -46,9 +46,17 @@ public class BattleManager : MonoBehaviour
         CardUI targetUI = card.GetComponent<CardUI>();
         if (targetUI == null || !targetUI.isOnField || attacker == null) return;
 
+        // 자기 자신을 타겟으로 지정 못하게
+        if (card == attacker)
+        {
+            Debug.Log("자기 자신은 공격할 수 없습니다.");
+            return;
+        }
+
         target = card;
         ExecuteBattle();
     }
+
 
     /// <summary>
     /// 전투 실행
