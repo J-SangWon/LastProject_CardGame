@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -118,22 +118,25 @@ public class PlayerCardManager : MonoBehaviour
 
 	public void DrawCard() => DrawCards(1);
 
-	public void SearchCard(System.Func<GameObject, bool> condition)
-	{
-		for (int i = 0; i < deck.Count; i++)
-		{
-			if (deck[i] != null && condition(deck[i]))
-			{
-				GameObject card = deck[i];
-				deck.RemoveAt(i);
+    public void SearchCard(System.Func<GameObject, bool> condition, int count = 1)
+    {
+        int movedCount = 0;
+        for (int i = 0; i < deck.Count && movedCount < count; i++)
+        {
+            if (deck[i] != null && condition(deck[i]))
+            {
+                GameObject card = deck[i];
+                deck.RemoveAt(i);
+                i--; // 리스트에서 제거했으니 인덱스 보정
 
-				card.transform.SetParent(handZone, false);
-				card.transform.localScale = Vector3.one;
-                Debug.Log(card?.GetComponent<CardUI>().cardName + "찾기 성공!");
-			}
-		}
+                card.transform.SetParent(handZone, false);
+                card.transform.localScale = Vector3.one;
+
+                movedCount++;
+            }
+        }
         UpdateHandLayout();
-	}
+    }
 
 	public void UpdateHandLayout()
     {
@@ -227,10 +230,151 @@ public class PlayerCardManager : MonoBehaviour
             cardUI.isOnField = true;
         }
 
+        // 소환 시점 효과 트리거
+        var fm = card.GetComponent<FildMonster>();
+        if (fm != null)
+        {
+            fm.OnPlacedOnField();
+        }
+
         // 위치 정렬 예시 (필요시 커스터마이즈 가능)
         UpdateFieldLayout();
     }
 
+    /// <summary>
+    /// 카드 데이터로부터 새 오브젝트를 생성하여 즉시 필드에 소환
+    /// </summary>
+    public GameObject SummonFromData(BaseCardData data)
+    {
+        if (data == null) return null;
+        GameObject card = CreateCard(data, cardPrefab, fieldZone, Quaternion.identity);
+        PlayCardToField(card);
+        return card;
+    }
+
+    // Monster Slot Summon Utilities
+    private Transform FindFirstFreeMonsterSlot(OwnerType ownerType)
+    {
+        string tag = ownerType == OwnerType.Player ? "PlayerZone" : "EnemyZone";
+        var slots = GameObject.FindGameObjectsWithTag(tag);
+        foreach (var go in slots)
+        {
+            var slot = go.GetComponent<MonsterSlotDrop>();
+            if (slot != null && !slot.isOccupied)
+            {
+                return slot.transform;
+            }
+        }
+        return null;
+    }
+
+    public bool PlaceExistingCardToMonsterSlot(GameObject card, OwnerType ownerType)
+    {
+        if (card == null) return false;
+        Transform slotTr = FindFirstFreeMonsterSlot(ownerType);
+        if (slotTr == null)
+        {
+            Debug.LogWarning("[PlayerCardManager] No free monster slot for " + ownerType);
+            return false;
+        }
+
+        card.transform.SetParent(slotTr, false);
+        card.transform.localPosition = Vector3.zero;
+
+        var cardUI = card.GetComponent<CardUI>();
+        if (cardUI != null)
+        {
+            cardUI.isOnField = true;
+            cardUI.ownerType = ownerType;
+        }
+
+        var drag = card.GetComponent<CardDragHandler>();
+        if (drag != null)
+        {
+            drag.isSummoned = true;
+            drag.droppedOnSlot = true;
+        }
+
+        var slot = slotTr.GetComponent<MonsterSlotDrop>();
+        if (slot != null)
+        {
+            slot.isOccupied = true;
+        }
+
+        var fm = card.GetComponent<FildMonster>();
+        if (fm != null)
+        {
+            fm.OnPlacedOnField();
+        }
+
+        return true;
+    }
+
+    public GameObject SummonFromDataToMonsterZone(BaseCardData data, OwnerType ownerType)
+    {
+        if (data == null) return null;
+        Transform slotTr = FindFirstFreeMonsterSlot(ownerType);
+        if (slotTr == null)
+        {
+            Debug.LogWarning("[PlayerCardManager] No free monster slot for " + ownerType);
+            return null;
+        }
+
+        GameObject card = Instantiate(cardPrefab, slotTr);
+        card.transform.localScale = Vector3.one;
+        card.transform.localPosition = Vector3.zero;
+        if (ownerType == OwnerType.Opponent)
+        {
+            card.transform.localRotation = Quaternion.Euler(0, 180f, 0);
+        }
+
+        var cardUI = card.GetComponent<CardUI>();
+        if (cardUI != null)
+        {
+            cardUI.SetCard(data);
+            cardUI.SetFace(ownerType == OwnerType.Player);
+            cardUI.isOnField = true;
+            cardUI.ownerType = ownerType;
+            cardUI.EnableCardFlip = ownerType == OwnerType.Player;
+        }
+
+        var dragHandler = card.GetComponent<CardDragHandler>();
+        if (dragHandler != null)
+        {
+            dragHandler.enabled = ownerType == OwnerType.Player;
+            dragHandler.isSummoned = true;
+            dragHandler.droppedOnSlot = true;
+        }
+
+        var slot = slotTr.GetComponent<MonsterSlotDrop>();
+        if (slot != null)
+        {
+            slot.isOccupied = true;
+        }
+
+        if (card.GetComponent<Collider2D>() == null)
+        {
+            var collider = card.AddComponent<BoxCollider2D>();
+            var rect = card.GetComponent<RectTransform>();
+            if (rect != null)
+            {
+                collider.offset = rect.rect.center;
+                collider.size = rect.rect.size;
+            }
+        }
+
+        var fm = card.GetComponent<FildMonster>();
+        if (fm == null && data is MonsterCardData)
+        {
+            fm = card.AddComponent<FildMonster>();
+        }
+        if (fm != null)
+        {
+            fm.OnPlacedOnField();
+        }
+
+        return card;
+    }
 
     private void UpdateFieldLayout()
     {

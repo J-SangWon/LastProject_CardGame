@@ -17,4 +17,9 @@ MonoBehaviour:
   cardType: 1
   race: 0
   cost: 0
+  costOp: 0
   cardID: f0fc53aa-54c3-4fa6-b16c-9f89d0e875cd
+  tag: 
+  useCompositeConditions: 0
+  compositeOperator: 0
+  conditions: []

@@ -13,30 +13,54 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
 
 	[HideInInspector] public bool isAppeared = false;
 	private bool isEntrance = false;
+    private bool hasReverberated = false;
 
-	void Awake()
+    void Awake()
     { 
 		cardUI = GetComponent<CardUI>();
 		if(cardUI.cardData is MonsterCardData)
 		{
 			monsterCardData = (MonsterCardData)cardUI.cardData;
         }
+        // 파괴(사망) 이벤트 구독: TargetableCard 경로에서 먼저 호출됨
+        var targetable = GetComponent<TargetableCard>();
+        if (targetable != null)
+        {
+            targetable.OnDestroyed += HandleDestroyed;
+        }
     }
 
-	private void OnEnable()
-	{
-		if (monsterCardData.monsterAbilityType == MonsterCardAbilityType.Entrance && isAppeared == false) Entrance(monsterCardData.cardAbility, monsterCardData.abilityValue);
-	}
+    private void OnEnable()
+    {
+        // 필드에 올라간 상태에서만 진입 효과 1회 발동
+        if (monsterCardData.monsterAbilityType == MonsterCardAbilityType.Entrance 
+            && isAppeared == false 
+            && cardUI != null && cardUI.isOnField)
+        {
+            Entrance(monsterCardData.cardAbility, monsterCardData.abilityValue);
+            isAppeared = true;
+        }
+    }
 
 	void Update()
     {
         if(monsterCardData.monsterAbilityType == MonsterCardAbilityType.Continuous) Continuous();
     }
 
-	private void OnDestroy()
-	{
-		if(monsterCardData.monsterAbilityType == MonsterCardAbilityType.Reverberation) Reverberation(monsterCardData.cardAbility, monsterCardData.abilityValue);
-	}
+    private void OnDestroy()
+    {
+        // 직접 Destroy(target)로 파괴된 경우에도 여운 1회만 발동
+        if(!hasReverberated && monsterCardData.monsterAbilityType == MonsterCardAbilityType.Reverberation)
+        {
+            Reverberation(monsterCardData.cardAbility, monsterCardData.abilityValue);
+            hasReverberated = true;
+        }
+        var targetable = GetComponent<TargetableCard>();
+        if (targetable != null)
+        {
+            targetable.OnDestroyed -= HandleDestroyed;
+        }
+    }
 
 	public void OnPointerClick(PointerEventData eventData)
 	{
@@ -68,10 +92,10 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
 		//}
 	}
 
-	private void Entrance(CardAbility cardAbility, int abilityValue) //진입
+    private void Entrance(CardAbility cardAbility, int abilityValue) //진입
     {
-		AbilityParameter parameter = new AbilityParameter() { value = abilityValue };
-		cardAbility.Activate(cardUI, parameter);
+        AbilityParameter parameter = new AbilityParameter() { value = abilityValue };
+        cardAbility?.Activate(cardUI, parameter);
     }
 
     private void Continuous() // 지속효과
@@ -80,10 +104,28 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
     }
 
 
-	private void Reverberation(CardAbility cardAbility, int abilityValue) //여운
-	{
-		CardUI _target = new CardUI();
-		AbilityParameter parameter = new AbilityParameter() { value = abilityValue, target = _target };
-		cardAbility.Activate(cardUI, parameter);
-	}
+    private void Reverberation(CardAbility cardAbility, int abilityValue) //여운
+    {
+        AbilityParameter parameter = new AbilityParameter() { value = abilityValue };
+        cardAbility?.Activate(cardUI, parameter);
+    }
+
+    private void HandleDestroyed()
+    {
+        if (hasReverberated) return;
+        if (monsterCardData.monsterAbilityType == MonsterCardAbilityType.Reverberation)
+        {
+            Reverberation(monsterCardData.cardAbility, monsterCardData.abilityValue);
+            hasReverberated = true;
+        }
+    }
+
+    public void OnPlacedOnField()
+    {
+        if (monsterCardData.monsterAbilityType == MonsterCardAbilityType.Entrance && !isAppeared)
+        {
+            Entrance(monsterCardData.cardAbility, monsterCardData.abilityValue);
+            isAppeared = true;
+        }
+    }
 }

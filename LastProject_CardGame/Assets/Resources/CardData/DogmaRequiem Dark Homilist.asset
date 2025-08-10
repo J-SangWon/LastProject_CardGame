@@ -37,4 +37,4 @@ MonoBehaviour:
   attack: 2
   health: 5
   race: 4
-  monsterAbilityType: 1
+  monsterAbilityType: 2
