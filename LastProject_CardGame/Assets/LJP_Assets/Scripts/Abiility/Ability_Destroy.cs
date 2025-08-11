@@ -1,6 +1,7 @@
 using UnityEngine;
 
 public enum DestroyType
+{
 	Target,
 	Random
 }
