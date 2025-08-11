@@ -1873,7 +1873,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 38.7, y: 97.426544}
-  m_SizeDelta: {x: 221.3269, y: 311.2642}
+  m_SizeDelta: {x: 160, y: 220}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6451283996007634016
 CanvasRenderer:
@@ -1927,6 +1927,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enableCardFlip: 1
   cardData: {fileID: 0}
+  monsterCardData: {fileID: 0}
   Back: {fileID: 399276537597171360}
   imageBack: {fileID: 8116571974810745133}
   Front: {fileID: 71839299888722706}
@@ -1952,9 +1953,13 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 1906798b2a0d44b4887a5fbf5e2cc42a, type: 3}
   - {fileID: 21300000, guid: 9fe1280375f047e41b9f24c55a91a308, type: 3}
   attack: 0
-  health: 0
+  FixedAttack: 0
+  maxHealth: 0
+  currentHealth: 0
+  FixedHealth: 0
   isOnField: 0
   hasAttackedThisTurn: 0
+  ownerType: 0
 --- !u!114 &7856441797010218355
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1994,3 +1999,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 192f9b10403c75641b99301e715b0a18, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cardManager: {fileID: 0}
