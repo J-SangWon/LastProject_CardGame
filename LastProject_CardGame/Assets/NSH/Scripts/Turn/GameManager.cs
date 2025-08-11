@@ -45,6 +45,8 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI timerText;
     public TextMeshProUGUI playerCostText;
     public TextMeshProUGUI enemyCostText;
+    public TextMeshProUGUI playerMaxCostText;
+    public TextMeshProUGUI enemyMaxCostText;
     public TextMeshProUGUI turnText;          // "내 턴"/"적 턴"
     public TextMeshProUGUI turnNumberText;    // "턴 1" 등
 
@@ -252,19 +254,21 @@ public class GameManager : MonoBehaviour
 
     void UpdateHealthUI()
     {
-        playerHealthText.text = $"Player HP: {playerHealth}";
-        enemyHealthText.text = $"Enemy HP: {enemyHealth}";
+        playerHealthText.text = playerHealth.ToString();
+        enemyHealthText.text = enemyHealth.ToString();
     }
 
     void UpdateTimerUI()
     {
-        timerText.text = $"Time: {Mathf.FloorToInt(turnTimer)}s";
+        timerText.text = $"{Mathf.FloorToInt(turnTimer)}s";
     }
 
     void UpdateCostUI()
     {
-        playerCostText.text = $"Player Cost: {playerCurrentCost}/{playerMaxCost}";
-        enemyCostText.text = $"Enemy Cost: {enemyCurrentCost}/{enemyMaxCost}";
+        playerCostText.text = playerCurrentCost.ToString();
+        playerMaxCostText.text = playerMaxCost.ToString();
+        enemyCostText.text = enemyCurrentCost.ToString();
+        enemyMaxCostText.text = enemyMaxCost.ToString();
     }
 
     void UpdateTurnColor()
