@@ -52,6 +52,7 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
     // 공격 제한 플래그
     public bool hasAttackedThisTurn = false;
     public OwnerType ownerType = OwnerType.Player;
+    private bool isStun = false;
 
     // 내부 플래그: 중복 파괴/무덤 이동 방지
     private bool deathResolved = false;
@@ -145,6 +146,14 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
 
         currentHealth += value;
         if (currentHealth > maxHealth) currentHealth = maxHealth;
+        UpdateHealth();
+    }
+
+    public void AddHealth(int value)
+    {
+        maxHealth += value;
+        currentHealth += value;
+
         UpdateHealth();
     }
 
@@ -380,6 +389,11 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
     {
         Debug.Log($"{cardData.cardName} 카드가 사망했습니다.");
         Destroy(gameObject);
+    }
+
+    public void SetStun(bool _isStun)
+    {
+        isStun = _isStun;
     }
 
     public MonsterCardData MonsterData => cardData as MonsterCardData;
