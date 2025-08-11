@@ -40,7 +40,7 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             return;
 
         if (cardOwner == Owner.Player && cardUI != null &&
-            !CostManager.Instance.CanSpendPlayerCost(cardUI.cardData.cost))
+            !(GameManager.Instance?.CanSpendPlayerCost(cardUI.cardData.cost) ?? false))
             return;
 
         originalParent = transform.parent;
@@ -98,7 +98,7 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
                 if (cardOwner == Owner.Player && cardUI != null)
                 {
                     int cost = cardUI.cardData.cost;
-                    if (!CostManager.Instance.TrySpendPlayerCost(cost))
+                    if (!(GameManager.Instance?.SpendPlayerCost(cost) ?? false))
                     {
                         Debug.Log("소환 실패: 코스트 부족");
                         ReturnToOriginalPosition();
@@ -106,16 +106,7 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
                     }
                 }
 
-                transform.SetParent(dropZone, false);
-                transform.localPosition = Vector3.zero;
-                isSummoned = true;
-                droppedOnSlot = true;
-
-                if (cardUI != null)
-                    cardUI.isOnField = true;
-
-                Debug.Log($"{gameObject.name} 필드에 소환됨.");
-                validDrop = true;
+                // 소환 성공 처리 ...
             }
         }
 
