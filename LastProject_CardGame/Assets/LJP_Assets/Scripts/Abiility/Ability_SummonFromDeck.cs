@@ -42,6 +42,8 @@ public class Ability_SummonFromDeck : CardAbility
         }
 
         int count = Mathf.Max(1, param != null ? param.value : 1);
+        
+        Debug.Log($"[Ability_SummonFromDeck] 소환 시도: count={count}, param.value={(param != null ? param.value.ToString() : "null")}");
 
         Func<GameObject, bool> condition = go =>
         {

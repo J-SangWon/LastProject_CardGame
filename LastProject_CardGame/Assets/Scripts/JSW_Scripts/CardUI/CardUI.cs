@@ -297,14 +297,10 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
         if (BattleManager.Instance.HasAttacker())
         {
             BattleManager.Instance.SetTarget(this.gameObject);
-
-            //.Instance.EndAttack(this.gameObject);
         }
         else
         {
             BattleManager.Instance.SetAttacker(this.gameObject);
-
-            //.Instance.BeginAttack(this.gameObject);
         }
     }
 

@@ -79,6 +79,8 @@ public class Ability_Search : CardAbility
         // param이 null이거나 value가 0 이하인 경우 기본값 1 사용
         int count = (param != null && param.value > 0) ? param.value : 1;
         
+        Debug.Log($"[Ability_Search] 서치 시도: {count}장, 플레이어: {isPlayer}, 검색타입: {searchType}");
+        
         if (useCompositeConditions)
         {
             if (isPlayer)
@@ -88,6 +90,7 @@ public class Ability_Search : CardAbility
                     PlayerCardManager.Instance.SearchCard(
                         go => AbilityConditionUtils.MatchesAll(conditions, compositeOperator, go.GetComponent<CardUI>()),
                         count);
+                    Debug.Log($"[Ability_Search] 플레이어 복합조건 서치 완료: {count}장");
                 }
                 else
                 {

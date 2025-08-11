@@ -24,9 +24,15 @@ MonoBehaviour:
   cardId: 6488b3e0-bd53-45d3-9158-3ad9210781aa
   haveLive2D: 0
   live2DPath: 
-  tags: []
+  cardAbility: {fileID: 0}
+  abilityValue: 0
+  tags:
+  - DogmaRequiem
+  ownerType: 0
   craftCost: 30
   disenchantReward: 8
   canCraft: 1
   canDisenchant: 1
+  maxHP: 0
+  currentHP: 0
   spellType: 0
