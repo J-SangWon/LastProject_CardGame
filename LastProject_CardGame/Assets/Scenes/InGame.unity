@@ -1154,7 +1154,7 @@ MonoBehaviour:
   timerText: {fileID: 1493505950}
   playerCostText: {fileID: 1916148098}
   enemyCostText: {fileID: 81606057}
-  playerMaxCostText: {fileID: 1916148098}
+  playerMaxCostText: {fileID: 856075852}
   enemyMaxCostText: {fileID: 264756428}
   turnText: {fileID: 1718990783}
   turnNumberText: {fileID: 238176324}
