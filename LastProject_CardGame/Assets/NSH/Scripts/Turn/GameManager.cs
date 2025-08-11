@@ -13,7 +13,47 @@ public class GameManager : MonoBehaviour
         if (Instance == null)
             Instance = this;
         else
+        {
             Destroy(gameObject);
+            return;
+        }
+
+        // UI 참조 누락 방지 (에디터에서 안 넣어도 경고)
+        if (turnButton != null)
+            turnButton.interactable = false; // 시작 시 버튼 비활성화
+    }
+
+    void Start()
+    {
+        InitGame();
+    }
+
+    private void InitGame()
+    {
+        // 초기 상태
+        currentPhase = GamePhase.FirstPhase;
+        isPlayerTurn = true;
+        turnCount = 1;
+
+        playerHealth = 40;
+        enemyHealth = 40;
+
+        playerCurrentCost = 0;
+        playerMaxCost = 0;
+        enemyCurrentCost = 0;
+        enemyMaxCost = 0;
+
+        turnTimer = 300f;
+        isTimerRunning = false;
+
+        UpdateAllUI();
+
+        // 버튼 리스너 등록
+        if (turnButton != null)
+            turnButton.onClick.AddListener(OnTurnButtonClicked);
+
+        // 플레이어 첫 턴 시작
+        StartPlayerTurn(currentPhase);
     }
 
     // ===== Enum & 상태 변수 =====
@@ -25,17 +65,17 @@ public class GameManager : MonoBehaviour
     private bool isPlayerTurn = true;
     private int turnCount = 1;
 
-    private int playerHealth = 40;
-    private int enemyHealth = 40;
+    private int playerHealth;
+    private int enemyHealth;
 
-    private int playerCurrentCost = 0;
-    private int playerMaxCost = 0;
-    private int enemyCurrentCost = 0;
-    private int enemyMaxCost = 0;
+    private int playerCurrentCost;
+    private int playerMaxCost;
+    private int enemyCurrentCost;
+    private int enemyMaxCost;
     private const int MAX_COST_LIMIT = 10;
 
-    private float turnTimer = 300f;
-    private bool isTimerRunning = false;
+    private float turnTimer;
+    private bool isTimerRunning;
 
     // ===== UI 요소 =====
     [Header("UI - Text")]
@@ -47,8 +87,8 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI enemyCostText;
     public TextMeshProUGUI playerMaxCostText;
     public TextMeshProUGUI enemyMaxCostText;
-    public TextMeshProUGUI turnText;          // "내 턴"/"적 턴"
-    public TextMeshProUGUI turnNumberText;    // "턴 1" 등
+    public TextMeshProUGUI turnText;
+    public TextMeshProUGUI turnNumberText;
 
     [Header("UI - Button")]
     public Button turnButton;
@@ -62,14 +102,6 @@ public class GameManager : MonoBehaviour
     public GameObject cardObject;
     public GameObject enemyCardObject;
 
-    // ===== 초기화 =====
-    void Start()
-    {
-        currentPhase = GamePhase.FirstPhase;
-        UpdateAllUI();
-        turnButton.onClick.AddListener(OnTurnButtonClicked);
-    }
-
     // ===== 매 프레임 업데이트 =====
     void Update()
     {
@@ -81,29 +113,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // ===== 공개 메서드 =====
-    public void DealDamageToPlayer(bool isPlayer, int dmg)
-    {
-        if (isPlayer)
-            playerHealth = Mathf.Max(0, playerHealth - dmg);
-        else
-            enemyHealth = Mathf.Max(0, enemyHealth - dmg);
-
-        UpdateHealthUI();
-
-        if (playerHealth <= 0)
-        {
-            Debug.Log("플레이어가 패배했습니다.");
-            // TODO: 게임 오버 처리
-        }
-        if (enemyHealth <= 0)
-        {
-            Debug.Log("적이 패배했습니다.");
-            // TODO: 승리 처리
-        }
-    }
-
-    // ===== 턴 시작/종료 & 페이즈 진행 =====
+    // ===== 턴 로직 =====
     void StartPlayerTurn(GamePhase startPhase = GamePhase.MainPhase)
     {
         isPlayerTurn = true;
@@ -112,14 +122,34 @@ public class GameManager : MonoBehaviour
         ResetPlayerCardAttacks();
 
         isTimerRunning = true;
-        turnButton.interactable = true;
-
         turnTimer = Mathf.Min(turnTimer + 30f, 400f);
 
+        // 코스트 갱신
         if (playerMaxCost < MAX_COST_LIMIT)
             playerMaxCost++;
         playerCurrentCost = playerMaxCost;
 
+        UpdateAllUI();
+
+        if (currentPhase == GamePhase.FirstPhase)
+        {
+            turnButton.interactable = false;
+            StartCoroutine(FirstPhaseDrawAndGoMainPhase());
+        }
+        else
+        {
+            turnButton.interactable = true;
+        }
+    }
+
+    IEnumerator FirstPhaseDrawAndGoMainPhase()
+    {
+        yield return new WaitForSeconds(0.5f);
+
+        PlayerCardManager.Instance?.DrawCards(1);
+
+        currentPhase = GamePhase.MainPhase;
+        turnButton.interactable = true;
         UpdateAllUI();
     }
 
@@ -162,12 +192,12 @@ public class GameManager : MonoBehaviour
         StartEnemyTurn();
 
         // TODO: 적 AI 처리
-
         yield return new WaitForSeconds(2f);
 
         EndPlayerTurn();
     }
 
+    // ===== 버튼 처리 =====
     void OnTurnButtonClicked()
     {
         if (!isPlayerTurn)
@@ -175,13 +205,9 @@ public class GameManager : MonoBehaviour
 
         switch (currentPhase)
         {
-            case GamePhase.None:
-                break;
-
             case GamePhase.FirstPhase:
-                currentPhase = GamePhase.MainPhase; // 페이즈 전환
+                currentPhase = GamePhase.MainPhase;
                 UpdateAllUI();
-                StartPlayerTurn(currentPhase);
                 break;
 
             case GamePhase.MainPhase:
@@ -198,7 +224,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-
+    // ===== 페이즈 전환 =====
     void StartBattlePhase()
     {
         currentPhase = GamePhase.BattlePhase;
@@ -208,8 +234,8 @@ public class GameManager : MonoBehaviour
     void StartEndPhase()
     {
         currentPhase = GamePhase.EndPhase;
+        turnButton.interactable = false;
         UpdateAllUI();
-
         StartCoroutine(EndPhaseAndAutoTurnCoroutine());
     }
 
@@ -219,7 +245,7 @@ public class GameManager : MonoBehaviour
         EndPlayerTurn();
     }
 
-    // ===== UI 갱신 함수들 =====
+    // ===== UI 갱신 =====
     void UpdateAllUI()
     {
         UpdatePhaseText();
@@ -232,24 +258,14 @@ public class GameManager : MonoBehaviour
 
     void UpdatePhaseText()
     {
-        switch (currentPhase)
+        phaseText.text = currentPhase switch
         {
-            case GamePhase.None:
-                phaseText.text = "";
-                break;
-            case GamePhase.FirstPhase:
-                phaseText.text = "First Phase";
-                break;
-            case GamePhase.MainPhase:
-                phaseText.text = "Main Phase";
-                break;
-            case GamePhase.BattlePhase:
-                phaseText.text = "Battle Phase";
-                break;
-            case GamePhase.EndPhase:
-                phaseText.text = "End Phase";
-                break;
-        }
+            GamePhase.FirstPhase => "First Phase",
+            GamePhase.MainPhase => "Main Phase",
+            GamePhase.BattlePhase => "Battle Phase",
+            GamePhase.EndPhase => "End Phase",
+            _ => ""
+        };
     }
 
     void UpdateHealthUI()
@@ -280,14 +296,10 @@ public class GameManager : MonoBehaviour
     void UpdateTurnUI()
     {
         turnNumberText.text = $"Turn {turnCount}";
-
-        if (isPlayerTurn)
-            turnText.text = "Player Turn";
-        else
-            turnText.text = "Enemy Turn";
+        turnText.text = isPlayerTurn ? "Player Turn" : "Enemy Turn";
     }
 
-    // ===== 기타 =====
+    // ===== 카드 공격 초기화 =====
     void ResetPlayerCardAttacks()
     {
         var cards = FindObjectsByType<CardUI>(FindObjectsSortMode.None);
@@ -298,5 +310,20 @@ public class GameManager : MonoBehaviour
                 cardUI.ResetAttackFlag();
             }
         }
+    }
+    public bool CanSpendPlayerCost(int amount)
+    {
+        return playerCurrentCost >= amount;
+    }
+
+    public bool SpendPlayerCost(int amount)
+    {
+        if (playerCurrentCost >= amount)
+        {
+            playerCurrentCost -= amount;
+            UpdateCostUI();
+            return true;
+        }
+        return false;
     }
 }

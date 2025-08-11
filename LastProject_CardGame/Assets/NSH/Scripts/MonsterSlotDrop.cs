@@ -146,13 +146,11 @@ public class MonsterSlotDrop : MonoBehaviour, IDropHandler
 
     void Update()
     {
-        // ������ ��� ������ ���� �ʱ�ȭ
         if (isOccupied && transform.childCount == 0)
         {
             isOccupied = false;
         }
 
-        // ���Կ� �ڽ��� ������ ��Ȱ��ȭ�� ��쵵 ó��
         if (isOccupied && transform.childCount > 0)
         {
             bool allInactive = true;
