@@ -1,0 +1,6 @@
+using UnityEngine;
+
+public class Slot : MonoBehaviour
+{
+    [HideInInspector] public bool isOccupied = false;
+}
