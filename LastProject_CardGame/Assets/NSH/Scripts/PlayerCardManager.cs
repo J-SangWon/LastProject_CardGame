@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -72,10 +72,7 @@ public class PlayerCardManager : MonoBehaviour
             GameObject card = CreateCard(cardData, cardPrefab, deckZone, Quaternion.identity);
             card.transform.localPosition = new Vector3(0, 0, -zIndex * 0.01f);
             card.GetComponent<CardUI>().EnableCardFlip = false;
-            if(cardData is MonsterCardData)
-            {
-                card.AddComponent<FildMonster>();
-            }
+            card.AddComponent<FildMonster>();
             zIndex++;
 
             deck.Add(card);
@@ -116,10 +113,11 @@ public class PlayerCardManager : MonoBehaviour
         UpdateHandLayout();
     }
 
-	public void DrawCard() => DrawCards(1);
+    public void DrawCard() => DrawCards(1);
 
     public void SearchCard(System.Func<GameObject, bool> condition, int count = 1)
     {
+        Debug.Log($"[PlayerCardManager] SearchCard 호출: count={count}, deck.Count={deck.Count}");
         int movedCount = 0;
         for (int i = 0; i < deck.Count && movedCount < count; i++)
         {

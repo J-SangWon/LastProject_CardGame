@@ -23,7 +23,6 @@ public class FieldSpellZone : MonoBehaviour, IPointerClickHandler
     {
         RemoveFieldSpell();
         cardPrefab = PlayerCardManager.Instance.cardPrefab;
-
     }
 
     /// <summary>
@@ -44,14 +43,22 @@ public class FieldSpellZone : MonoBehaviour, IPointerClickHandler
             return false;
         }
 
-        // 기존 필드마법 제거
-        RemoveFieldSpell();
+        // 기존 필드마법이 있다면 제거
+        if (currentFieldSpell != null)
+        {
+            Debug.Log($"기존 필드마법 '{currentFieldSpell.cardName}'을(를) 제거하고 새 필드마법 '{fieldSpell.cardName}'을(를) 발동합니다.");
+            RemoveFieldSpell();
+        }
 
         // 새 필드마법 설정
         currentFieldSpell = fieldSpell;
         CreateFieldSpellVisual();
 
         Debug.Log($"필드마법 발동: {fieldSpell.cardName}");
+        
+        // 필드마법 효과 발동
+        ActivateFieldSpellEffect();
+        
         if(currentFieldSpellCardObj != null)
         {
             // 필드마법 카드 오브젝트가 생성되었을 때
@@ -79,20 +86,80 @@ public class FieldSpellZone : MonoBehaviour, IPointerClickHandler
 
         if (currentFieldSpell != null)
         {
-            
+            // 필드마법 정보 표시 또는 상호작용
+            Debug.Log($"현재 발동된 필드마법: {currentFieldSpell.cardName}");
         }
         else
         {
             Debug.Log("현재 발동된 필드마법이 없습니다.");
         }
     }
+    
+    /// <summary>
+    /// 필드마법 효과 발동
+    /// </summary>
+    private void ActivateFieldSpellEffect()
+    {
+        if (currentFieldSpell == null || currentFieldSpell.cardAbility == null)
+        {
+            Debug.LogWarning("필드마법 또는 카드 능력이 null입니다!");
+            return;
+        }
+
+        Debug.Log($"필드마법 효과 발동 시도: {currentFieldSpell.cardName}");
+        
+        try
+        {
+            // 조건 확인
+            if (currentFieldSpell.cardAbility.condition != null)
+            {
+                bool conditionMet = EffectConditionEvaluator.IsConditionMet(
+                    currentFieldSpell.cardAbility.condition, 
+                    GameManager.Instance.CurrentPhase,
+                    ConditionType.OnCardPlayed,
+                    currentFieldSpell.cardId,
+                    0
+                );
+                
+                Debug.Log($"필드마법 조건 확인 결과: {conditionMet}");
+                
+                if (!conditionMet)
+                {
+                    Debug.Log("필드마법 효과 조건이 충족되지 않았습니다.");
+                    return;
+                }
+            }
+            
+            // 효과 발동
+            AbilityParameter param = new AbilityParameter();
+            param.value = currentFieldSpell.abilityValue;
+            
+            Debug.Log($"필드마법 효과 발동: {currentFieldSpell.cardName}, abilityValue: {currentFieldSpell.abilityValue}");
+            
+            currentFieldSpell.cardAbility.Activate(null, param);
+            Debug.Log($"필드마법 효과 발동 성공: {currentFieldSpell.cardName}");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"필드마법 효과 발동 실패: {currentFieldSpell.cardName}, 오류: {e.Message}");
+        }
+    }
+    
     /// <summary>
     /// 필드마법 표현 생성
     /// </summary>
     void CreateFieldSpellVisual()
     {
+        // 기존 필드마법 카드 오브젝트가 있다면 제거
+        if (currentFieldSpellCardObj != null)
+        {
+            Destroy(currentFieldSpellCardObj);
+            currentFieldSpellCardObj = null;
+        }
+        
         if (currentFieldSpell != null && cardPrefab != null)
         {
+            // 새 필드마법 카드 오브젝트 생성
             currentFieldSpellCardObj = Instantiate(cardPrefab, transform);
             currentFieldSpellCardObj.transform.localScale = Vector3.one;
             currentFieldSpellCardObj.transform.localPosition = Vector3.zero;
@@ -102,6 +169,16 @@ public class FieldSpellZone : MonoBehaviour, IPointerClickHandler
             if (cardUI != null)
             {
                 cardUI.SetCard(currentFieldSpell);
+                cardUI.isOnField = true; // 필드에 있다고 표시
+                cardUI.ownerType = OwnerType.Player; // 플레이어 소유로 설정
+            }
+
+            // FildMonster 컴포넌트 제거
+            var existingFieldMonster = currentFieldSpellCardObj.GetComponent<FildMonster>();
+            if (existingFieldMonster != null)
+            {
+                DestroyImmediate(existingFieldMonster);
+                Debug.Log("필드마법 카드에서 FildMonster 컴포넌트를 제거했습니다.");
             }
 
             // 카드 플립 기능 비활성화 (필드마법은 플립 불필요)
@@ -120,18 +197,43 @@ public class FieldSpellZone : MonoBehaviour, IPointerClickHandler
     /// </summary>
     public void RemoveFieldSpell()
     {
-        if (currentFieldSpellCardObj != null)
+        if (currentFieldSpell != null && currentFieldSpellCardObj != null)
         {
+            // 필드마법 제거 시 효과 (필요시 구현)
+            if (currentFieldSpell.cardAbility != null)
+            {
+                Debug.Log($"필드마법 제거: {currentFieldSpell.cardName}");
+                // 제거 시 효과가 있다면 여기서 처리
+            }
             
-            DuelZoneManager.Instance.SendToGraveyard(currentFieldSpell, 
-                currentFieldSpellCardObj.GetComponent<CardUI>().ownerType);
+            // 카드 소유자 확인
+            var cardUI = currentFieldSpellCardObj.GetComponent<CardUI>();
+            OwnerType ownerType = cardUI != null ? cardUI.ownerType : OwnerType.Player;
+            
+            // 묘지로 보내기
+            if (DuelZoneManager.Instance != null)
+            {
+                DuelZoneManager.Instance.SendToGraveyard(currentFieldSpell, ownerType);
+                Debug.Log($"필드마법 '{currentFieldSpell.cardName}'을(를) {ownerType}의 묘지로 보냈습니다.");
+            }
+            else
+            {
+                Debug.LogWarning("DuelZoneManager.Instance가 null입니다. 묘지로 보내지 못했습니다.");
+            }
+            
+            // 오브젝트 제거
             Destroy(currentFieldSpellCardObj);
             currentFieldSpellCardObj = null;
         }
+        
+        // 데이터 정리
         currentFieldSpell = null;
 
+        // UI 텍스트 업데이트
         if (fieldSpellNameText != null)
             fieldSpellNameText.text = "필드마법 없음";
+            
+        Debug.Log("기존 필드마법이 제거되었습니다.");
     }
 
     /// <summary>
@@ -155,15 +257,62 @@ public class FieldSpellZone : MonoBehaviour, IPointerClickHandler
         var cardUI = cardObject.GetComponent<CardUI>();
         if (cardUI != null && cardUI.cardData != null)
         {
-            bool success = ActivateFieldSpell(cardUI.cardData);
-            if (success)
+            // 필드마법 타입인지 먼저 확인
+            if (cardUI.cardData.cardType == CardType.Spell)
             {
-                // 드롭 성공 시 처리
-                currentFieldSpellCardObj = cardObject;
-                // 기존 카드 오브젝트 제거
-                Destroy(cardObject);
+                var spellCard = cardUI.cardData as SpellCardData;
+                if (spellCard != null && spellCard.spellType == SpellType.Field)
+                {
+                    // 필드마법인 경우에만 처리
+                    bool success = ActivateFieldSpell(cardUI.cardData);
+                    if (success)
+                    {
+                        // 드롭 성공 시 원본 카드 제거 (손패에서)
+                        Debug.Log($"필드마법 드롭 성공: {cardUI.cardData.cardName}");
+                        
+                        // 원본 카드가 손패에 있다면 제거
+                        if (cardUI.ownerType == OwnerType.Player)
+                        {
+                            // PlayerCardManager에서 손패에서 제거 (간단하게 Destroy로 처리)
+                            Debug.Log($"플레이어 손패에서 필드마법 카드 제거: {cardUI.cardData.cardName}");
+                        }
+                        else
+                        {
+                            // OpponentCardManager에서 손패에서 제거 (간단하게 Destroy로 처리)
+                            Debug.Log($"상대방 손패에서 필드마법 카드 제거: {cardUI.cardData.cardName}");
+                        }
+                        
+                        // 원본 카드 오브젝트 제거
+                        Destroy(cardObject);
+                    }
+                }
+                else
+                {
+                    // 일반 마법카드인 경우 - 필드에 소환하지 않음
+                    Debug.Log($"일반 마법카드 '{cardUI.cardData.cardName}'은(는) 필드마법 존에 드롭할 수 없습니다.");
+                    
+                    // 카드를 원래 위치로 되돌리기 (손패로)
+                    if (cardUI.ownerType == OwnerType.Player)
+                    {
+                        cardObject.transform.SetParent(PlayerCardManager.Instance.handZone, false);
+                        cardObject.transform.localScale = Vector3.one;
+                        cardObject.transform.localPosition = Vector3.zero;
+                        Debug.Log($"일반 마법카드 '{cardUI.cardData.cardName}'을(를) 손패로 되돌렸습니다.");
+                    }
+                    else
+                    {
+                        cardObject.transform.SetParent(OpponentCardManager.Instance.handZone, false);
+                        cardObject.transform.localScale = Vector3.one;
+                        cardObject.transform.localPosition = Vector3.zero;
+                        Debug.Log($"일반 마법카드 '{cardUI.cardData.cardName}'을(를) 손패로 되돌렸습니다.");
+                    }
+                }
+            }
+            else
+            {
+                // 마법카드가 아닌 경우
+                Debug.Log($"마법카드가 아닌 '{cardUI.cardData.cardName}'은(는) 필드마법 존에 드롭할 수 없습니다.");
             }
         }
     }
-
 }
