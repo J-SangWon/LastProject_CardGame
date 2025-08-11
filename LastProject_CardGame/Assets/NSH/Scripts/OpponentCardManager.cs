@@ -61,6 +61,10 @@ public class OpponentCardManager : MonoBehaviour
                 card.transform.localPosition = new Vector3(0, 0, -zIndex * 0.01f);
                 card.GetComponent<CardUI>().EnableCardFlip = false;
                 card.GetComponent<CardUI>().ownerType = OwnerType.Opponent; // 적 카드로 설정
+                if (card.GetComponent<CardUI>().cardData is MonsterCardData)
+                {
+                    card.AddComponent<FildMonster>();
+                }
                 zIndex++;
 
                 deck.Add(card);
@@ -106,6 +110,36 @@ public class OpponentCardManager : MonoBehaviour
                 rt.anchoredPosition = new Vector2(i * spacing, 0);
             }
         }
+    }
+
+    #endregion
+
+    #region 서치
+
+    public void SearchCard(System.Func<GameObject, bool> condition, int count = 1)
+    {
+        int movedCount = 0;
+        for (int i = 0; i < deck.Count && movedCount < count; i++)
+        {
+            if (deck[i] != null && condition(deck[i]))
+            {
+                GameObject card = deck[i];
+                deck.RemoveAt(i);
+                i--;
+
+                card.transform.SetParent(handZone, false);
+                card.transform.localScale = Vector3.one;
+
+                var ui = card.GetComponent<CardUI>();
+                if (ui != null)
+                {
+                    ui.ownerType = OwnerType.Opponent;
+                }
+
+                movedCount++;
+            }
+        }
+        UpdateHandLayout();
     }
 
     #endregion

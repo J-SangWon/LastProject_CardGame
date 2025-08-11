@@ -49,7 +49,6 @@ public abstract class BaseCardData : ScriptableObject
     public string live2DPath;
 
     [Header("카드 효과")]
-    public CardEffect cardEffect;
     public CardAbility cardAbility;
     public int abilityValue;
 

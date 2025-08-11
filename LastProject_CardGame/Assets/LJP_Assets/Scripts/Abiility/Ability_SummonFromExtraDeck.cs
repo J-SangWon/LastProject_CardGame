@@ -19,26 +19,51 @@ public class Ability_SummonFromExtraDeck : CardAbility
 
     public override void Activate(CardUI card, AbilityParameter param)
     {
+        // 소환 주체 판단 (내 카드/적 카드)
+        bool isPlayer = card != null ? card.ownerType == OwnerType.Player : true;
+        
         var duel = DuelZoneManager.Instance;
-        if (duel == null || duel.extraDeckZone == null)
+        if (duel == null)
+        {
+            Debug.LogWarning("[Ability_SummonFromExtraDeck] DuelZoneManager.Instance is null");
+            return;
+        }
+        
+        if (isPlayer && duel.extraDeckZone == null)
         {
             Debug.LogWarning("[Ability_SummonFromExtraDeck] ExtraDeck zone not found");
             return;
         }
-
+        
+        if (!isPlayer && duel.enemyExtraDeckZone == null)
+        {
+            Debug.LogWarning("[Ability_SummonFromExtraDeck] Enemy ExtraDeck zone not found");
+            return;
+        }
+        
         int count = Mathf.Max(1, param != null ? param.value : 1);
-        var entries = duel.extraDeckZone.GetAllEntries();
+        var entries = isPlayer ? duel.extraDeckZone.GetAllEntries() : duel.enemyExtraDeckZone.GetAllEntries();
+        
         foreach (var e in entries)
         {
             if (count <= 0) break;
             if (e.card != null && (useCompositeConditions ? AbilityConditionUtils.MatchesAll(conditions, compositeOperator, e.card) : MatchByData(e.card)))
             {
-                if (duel.extraDeckZone.RemoveSpecificCard(e.card))
+                bool removed = isPlayer ? duel.extraDeckZone.RemoveSpecificCard(e.card) : duel.enemyExtraDeckZone.RemoveSpecificCard(e.card);
+                if (removed)
                 {
-                    // 플레이어 몬스터존 빈 슬롯으로 소환
-                    var summoned = PlayerCardManager.Instance.SummonFromDataToMonsterZone(e.card, OwnerType.Player);
-                    if (summoned == null)
+                    var owner = isPlayer ? OwnerType.Player : OwnerType.Opponent;
+                    if (PlayerCardManager.Instance != null)
                     {
+                        var summoned = PlayerCardManager.Instance.SummonFromDataToMonsterZone(e.card, owner);
+                        if (summoned == null)
+                        {
+                            Debug.LogWarning("[Ability_SummonFromExtraDeck] Failed to summon card to monster zone");
+                        }
+                    }
+                    else
+                    {
+                        Debug.LogWarning("[Ability_SummonFromExtraDeck] PlayerCardManager.Instance is null");
                     }
                     count--;
                 }
