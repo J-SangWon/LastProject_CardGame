@@ -13,18 +13,22 @@ MonoBehaviour:
   m_Name: Greece HecateShadow
   m_EditorClassIdentifier: 
   cardName: "\uD5E4\uCE74\uD14C\uC758 \uADF8\uB9BC\uC790"
-  description: 
+  description: "\uC0C1\uB300\uAC00 \uC8FC\uBB38\uC744 \uC0AC\uC6A9\uD558\uBA74 \uBB34\uD6A8\uD654
+    \uC2DC\uD0A4\uACE0 \uBCF5\uC0AC\uD574\uC11C \uAC00\uC838\uC635\uB2C8\uB2E4."
   artwork: {fileID: 21300000, guid: 4ac0a532a6b60634988ebb83fc5f961e, type: 3}
   cardType: 2
-  rarity: 0
-  cost: 0
+  rarity: 2
+  cost: 6
   cardId: 05218df0-1e85-4312-9139-61234f9d7da6
   haveLive2D: 0
   live2DPath: 
-  cardEffect: 0
+  cardAbility: {fileID: 0}
+  abilityValue: 0
+  monsterAbilityType: 0
   tags: []
-  craftCost: 10
-  disenchantReward: 2
+  ownerType: 0
+  craftCost: 100
+  disenchantReward: 25
   canCraft: 1
   canDisenchant: 1
   maxHP: 0
