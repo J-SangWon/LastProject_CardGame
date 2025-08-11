@@ -1,9 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using System.Collections;
-using Kalkatos.DottedArrow;
 
+[RequireComponent(typeof(RectTransform), typeof(CanvasGroup))]
 public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     public enum Owner { Player, Enemy }
@@ -11,77 +10,91 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
     public bool isSummoned = false;
     public bool droppedOnSlot = false;
+
     private Transform originalParent;
+    private int originalSiblingIndex;
     private Canvas canvas;
     private RectTransform rectTransform;
     private CanvasGroup canvasGroup;
     private CardUI cardUI;
+
     void Awake()
     {
         canvas = GetComponentInParent<Canvas>();
         rectTransform = GetComponent<RectTransform>();
         canvasGroup = GetComponent<CanvasGroup>();
+        cardUI = GetComponent<CardUI>();
     }
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        if (transform.parent == PlayerCardManager.Instance.deckZone)
+        if (PlayerCardManager.Instance != null &&
+            transform.parent == PlayerCardManager.Instance.deckZone)
             return;
 
-        if (cardOwner == Owner.Player && !GameManager.Instance.IsPlayerTurn())
+        if (cardOwner == Owner.Player &&
+            !(GameManager.Instance?.IsPlayerTurn() ?? false))
             return;
 
         if (isSummoned)
             return;
 
-        var cardUI = GetComponent<CardUI>();
         if (cardOwner == Owner.Player && cardUI != null &&
             !CostManager.Instance.CanSpendPlayerCost(cardUI.cardData.cost))
             return;
 
-
         originalParent = transform.parent;
-        transform.SetParent(canvas.transform);
+        originalSiblingIndex = transform.GetSiblingIndex();
+
+        if (canvas != null)
+            transform.SetParent(canvas.transform, false);
+        else
+            transform.SetParent(originalParent, true);
+
         canvasGroup.blocksRaycasts = false;
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        if (transform.parent == PlayerCardManager.Instance.deckZone)
+        if (PlayerCardManager.Instance != null &&
+            transform.parent == PlayerCardManager.Instance.deckZone)
             return;
 
         if (cardOwner == Owner.Player &&
-            (!GameManager.Instance.IsPlayerTurn() || GameManager.Instance.CurrentPhase != GamePhase.MainPhase))
+            (!GameManager.Instance?.IsPlayerTurn() ?? true ||
+             GameManager.Instance.CurrentPhase != GamePhase.MainPhase))
             return;
 
         if (isSummoned)
             return;
 
-        rectTransform.anchoredPosition += eventData.delta / canvas.scaleFactor;
+        rectTransform.anchoredPosition += eventData.delta / (canvas != null ? canvas.scaleFactor : 1f);
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        if (transform.parent == PlayerCardManager.Instance.deckZone)
+        if (PlayerCardManager.Instance != null &&
+            transform.parent == PlayerCardManager.Instance.deckZone)
             return;
 
         canvasGroup.blocksRaycasts = true;
 
-        if (cardOwner == Owner.Player && GameManager.Instance.CurrentPhase != GamePhase.MainPhase)
+        if (cardOwner == Owner.Player &&
+            GameManager.Instance != null &&
+            GameManager.Instance.CurrentPhase != GamePhase.MainPhase)
         {
             ReturnToOriginalPosition();
             return;
         }
 
-
         bool validDrop = false;
 
         if (eventData.pointerEnter != null)
         {
-            Transform dropZone = eventData.pointerEnter.transform;
+            Transform dropZone = FindDropZoneTransform(eventData.pointerEnter.transform);
+
             if (IsValidDropZone(dropZone))
             {
-                // 소환 시 코스트 차감 시도
                 if (cardOwner == Owner.Player && cardUI != null)
                 {
                     int cost = cardUI.cardData.cost;
@@ -93,42 +106,55 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
                     }
                 }
 
-                validDrop = true;
-                transform.SetParent(dropZone);
-                transform.SetAsLastSibling();
+                transform.SetParent(dropZone, false);
+                transform.localPosition = Vector3.zero;
                 isSummoned = true;
                 droppedOnSlot = true;
 
                 if (cardUI != null)
                     cardUI.isOnField = true;
 
-                var fieldMonster = GetComponent<FildMonster>();
-                if (fieldMonster != null)
-                    fieldMonster.OnPlacedOnField();
-
                 Debug.Log($"{gameObject.name} 필드에 소환됨.");
+                validDrop = true;
             }
         }
 
         if (!validDrop)
+        {
             ReturnToOriginalPosition();
-
-        droppedOnSlot = false;
+            droppedOnSlot = false;
+        }
     }
 
     private void ReturnToOriginalPosition()
     {
         if (originalParent == null)
-        {
             return;
+
+        transform.SetParent(originalParent, false);
+        transform.SetSiblingIndex(originalSiblingIndex);
+        isSummoned = false;
+
+        var parentRect = originalParent.GetComponent<RectTransform>();
+        if (parentRect != null)
+            LayoutRebuilder.ForceRebuildLayoutImmediate(parentRect);
+    }
+
+    private Transform FindDropZoneTransform(Transform current)
+    {
+        while (current != null)
+        {
+            if (current.CompareTag("PlayerZone") || current.CompareTag("EnemyZone"))
+                return current;
+            current = current.parent;
         }
-        transform.SetParent(originalParent);
-        transform.SetAsLastSibling();
-        LayoutRebuilder.ForceRebuildLayoutImmediate(originalParent.GetComponent<RectTransform>());
+        return null;
     }
 
     private bool IsValidDropZone(Transform dropZone)
     {
+        if (dropZone == null) return false;
+
         string zoneTag = dropZone.tag;
 
         if (cardOwner == Owner.Player && zoneTag == "PlayerZone")
@@ -143,8 +169,8 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     public void Unsummon()
     {
         isSummoned = false;
+        droppedOnSlot = false;
 
-        CardUI cardUI = GetComponent<CardUI>();
         if (cardUI != null)
             cardUI.isOnField = false;
     }
