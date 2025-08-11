@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System.Collections;
 
 /// <summary>
 /// 모든 듀얼 존들을 통합 관리하는 매니저
@@ -11,6 +12,7 @@ public class DuelZoneManager : MonoBehaviour
     [Header("존 참조")]
     public FieldSpellZone fieldSpellZone;
     public ExtraDeckZone extraDeckZone;
+    public EnemyExtraDeckZone enemyExtraDeckZone;
     public PlayerGraveyardZone graveyardZone;
     public EnemyGraveyardZone enemyGraveyardZone;
 
@@ -25,6 +27,24 @@ public class DuelZoneManager : MonoBehaviour
     void Start()
     {
         LoadExtraDeckFromTransfer();
+        // 적 엑스트라 덱 초기화를 위한 지연 실행
+        StartCoroutine(InitializeEnemyExtraDeckDelayed());
+    }
+
+    private IEnumerator InitializeEnemyExtraDeckDelayed()
+    {
+        // OpponentCardManager가 준비될 때까지 대기
+        yield return new WaitForSeconds(0.1f);
+        
+        if (OpponentCardManager.Instance != null && enemyExtraDeckZone != null)
+        {
+            var deckData = DeckTransferManager.Instance?.GetDeck();
+            if (deckData != null && deckData.extraDeck != null)
+            {
+                enemyExtraDeckZone.InitializeExtraDeck(deckData.extraDeck);
+                Debug.Log($"[DuelZoneManager] 적 엑스트라 덱 초기화 완료: {deckData.extraDeck.Count}개 엔트리");
+            }
+        }
     }
 
     /// <summary>
@@ -33,10 +53,22 @@ public class DuelZoneManager : MonoBehaviour
     void LoadExtraDeckFromTransfer()
     {
         var deckData = DeckTransferManager.Instance?.GetDeck();
-        if (deckData != null && extraDeckZone != null)
+        if (deckData != null)
         {
-            // DeckCardEntry 리스트를 그대로 전달
-            extraDeckZone.InitializeExtraDeck(deckData.extraDeck);
+            // 플레이어 엑스트라 덱 초기화
+            if (extraDeckZone != null)
+                extraDeckZone.InitializeExtraDeck(deckData.extraDeck);
+
+            // 적 엑스트라 덱 초기화 - OpponentCardManager에서 처리하도록 변경
+            // 적 엑스트라 덱은 OpponentCardManager.Start()에서 자동으로 초기화됨
+            if (enemyExtraDeckZone != null)
+            {
+                Debug.Log("[DuelZoneManager] 적 엑스트라 덱 존 준비 완료 - OpponentCardManager에서 데이터 로드 예정");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("[DuelZoneManager] DeckTransferManager에서 덱 데이터를 가져올 수 없습니다.");
         }
     }
 
@@ -75,6 +107,15 @@ public class DuelZoneManager : MonoBehaviour
         return null;
     }
 
+    public BaseCardData EnemyRemoveFromExtraDeck()
+    {
+        if (enemyExtraDeckZone != null)
+        {
+            return enemyExtraDeckZone.RemoveFromExtraDeck();
+        }
+        return null;
+    }
+
     /// <summary>
     /// 엑스트라 덱에 카드 추가
     /// </summary>
@@ -86,6 +127,14 @@ public class DuelZoneManager : MonoBehaviour
         }
     }
 
+    public void EnemyAddToExtraDeck(BaseCardData card)
+    {
+        if (enemyExtraDeckZone != null)
+        {
+            enemyExtraDeckZone.AddToExtraDeck(card);
+        }
+    }
+
     /// <summary>
     /// 엑스트라 덱에서 특정 카드 제거
     /// </summary>
@@ -94,6 +143,15 @@ public class DuelZoneManager : MonoBehaviour
         if (extraDeckZone != null)
         {
             return extraDeckZone.RemoveSpecificCard(card);
+        }
+        return false;
+    }
+
+    public bool EnemyRemoveSpecificCardFromExtraDeck(BaseCardData card)
+    {
+        if (enemyExtraDeckZone != null)
+        {
+            return enemyExtraDeckZone.RemoveSpecificCard(card);
         }
         return false;
     }
@@ -148,6 +206,15 @@ public class DuelZoneManager : MonoBehaviour
         if (extraDeckZone != null)
         {
             return extraDeckZone.GetCount();
+        }
+        return 0;
+    }
+
+    public int GetEnemyExtraDeckCount()
+    {
+        if (enemyExtraDeckZone != null)
+        {
+            return enemyExtraDeckZone.GetCount();
         }
         return 0;
     }

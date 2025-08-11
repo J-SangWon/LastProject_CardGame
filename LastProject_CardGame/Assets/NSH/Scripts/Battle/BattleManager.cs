@@ -72,23 +72,26 @@ public class BattleManager : MonoBehaviour
     /// </summary>
     private void ExecuteBattle()
     {
-        if (attacker == null || target == null) return;
+        if (isResolvingBattle) return;
+        StartCoroutine(ExecuteBattleCoroutine());
+    }
 
-        CardUI atkUI = attacker.GetComponent<CardUI>();
-        CardUI tgtUI = target.GetComponent<CardUI>();
+    private bool isResolvingBattle; // 재진입 방지
 
-        if (atkUI == null || tgtUI == null)
-        {
-            ResetBattleState();
-            return;
-        }
+    private IEnumerator ExecuteBattleCoroutine()
+    {
+        if (attacker == null || target == null) yield break;
+
+        var atkUI = attacker.GetComponent<CardUI>();
+        var tgtUI = target.GetComponent<CardUI>();
+        if (atkUI == null || tgtUI == null) { ResetBattleState(); yield break; }
 
         // 자기 자신 공격 방지
         if (attacker == target)
         {
             Debug.Log("자기 자신은 공격할 수 없습니다.");
             ResetBattleState();
-            return;
+            yield break;
         }
 
         // 이미 공격했는지 확인
@@ -96,32 +99,22 @@ public class BattleManager : MonoBehaviour
         {
             Debug.Log($"{atkUI.cardData.cardName} 은(는) 이미 이번 턴 공격했습니다.");
             ResetBattleState();
-            return;
+            yield break;
         }
 
+        isResolvingBattle = true;
         Debug.Log($"{atkUI.cardData.cardName} 이(가) {tgtUI.cardData.cardName} 을(를) 공격!");
-
         arrow.Deactivate();
-        StartCoroutine(AttackAnimationCoroutine(attacker, target));
 
-        // 데미지 값 미리 계산(파괴/Destroy 중 참조 안전하게)
-        int damageToTarget = atkUI.attack;
-        int damageToAttacker = tgtUI.attack;
+        // === 전투 연출 + 데미지 처리까지 코루틴 내부에서 수행 ===
+        yield return StartCoroutine(AttackAnimationCoroutine(attacker, target));
 
-        // 1) 양쪽 데미지 적용 (파괴는 나중에)
-        tgtUI.ReduceHealth(damageToTarget);
-        atkUI.ReduceHealth(damageToAttacker);
-
-        // 2) 공격 표시
-        atkUI.MarkAsAttacked();
-
-        // 3) 전투 후 사망 처리(Resolve)
-        if (atkUI.IsDead) atkUI.ResolveDeath();
-        if (tgtUI.IsDead) tgtUI.ResolveDeath();
-
-        // 4) 상태 초기화
+        // === (연출 끝) 상태 정리 ===
+        // 중간에 카드가 파괴되어도 여기까지 오면 AttackAnimationCoroutine 안에서 처리됨
         attacker = null;
         target = null;
+
+        isResolvingBattle = false;
     }
 
 
@@ -137,17 +130,48 @@ public class BattleManager : MonoBehaviour
     #region Attack Effect
     private IEnumerator AttackAnimationCoroutine(GameObject _attacker, GameObject _receiver)
     {
+        if (_attacker == null || _receiver == null) yield break;
+
+        var atkUI = _attacker.GetComponent<CardUI>();
+        var tgtUI = _receiver.GetComponent<CardUI>();
+        if (atkUI == null || tgtUI == null) yield break;
+
+        // 파괴 대비: 공격력은 선계산(고정)
+        int damageToTarget = atkUI.attack;
+        int damageToAttacker = tgtUI.attack;
+
+        // 1) 공격자/대상 위치 확인
+        Transform atkTrParent = _attacker.transform.parent;
         Vector3 originalUp = _attacker.transform.up;
         Vector3 startPos = _attacker.transform.position;
         yield return MoveTo(_attacker.transform, startPos + Vector3.back, 0.2f);
         yield return new WaitForSeconds(0.1f);
+
+        // 2) 공격자 위치 조정(대상 방향으로 회전)
         Vector3 distance = _receiver.transform.position - startPos;
         distance = Vector3.MoveTowards(distance, distance * 0.001f, 1f);
         _attacker.transform.up = distance;
         yield return MoveTo(_attacker.transform, startPos + distance, 0.3f, attackAnimCurve);
 
-        yield return MoveTo(_attacker.transform, startPos, 0.3f);
+        // 3) 히트 연출(히트스톱 등)
+        yield return new WaitForSeconds(0.05f);
+
+        // 4) 데미지 적용(존재/참조 재확인)
+        tgtUI.ReduceHealth(damageToTarget);
+        atkUI.ReduceHealth(damageToAttacker);
+
+        // 5) 한 턴 1회 공격 플래그
+        atkUI.MarkAsAttacked();
+
+        // 6) 사망 처리()
+        if (atkUI.IsDead) atkUI.ResolveDeath();
+        if (tgtUI.IsDead) tgtUI.ResolveDeath();
+
+        // 7) 공격자 원위치
+        if(!atkUI.IsDead)
+            yield return MoveTo(_attacker.transform, startPos, 0.3f);
         _attacker.transform.up = originalUp;
+        _attacker.transform.parent = atkTrParent;
     }
 
     private IEnumerator MoveTo(Transform transform, Vector3 endPos, float time, AnimationCurve curve = null)
@@ -169,7 +193,7 @@ public class BattleManager : MonoBehaviour
     {
         CancelAttack();
         arrow.SetupAndActivate(card.transform);
-        attacker = card;
+        attacker = card;    
     }
 
     public void CancelAttack()

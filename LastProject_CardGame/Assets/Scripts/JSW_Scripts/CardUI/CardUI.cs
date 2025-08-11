@@ -187,7 +187,39 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
         textDescription.text = data.description;
         SetRarity(data.rarity);
 
-        // ... (종족/타입 처리 동일)
+        if (data is MonsterCardData m)
+        {
+            switch (m.race)
+            {
+                case Race.wizard: textRace.text = "마법사"; break;
+                case Race.Warrior: textRace.text = "전사"; break;
+                case Race.Undead: textRace.text = "언데드"; break;
+                case Race.Dragon: textRace.text = "드래곤"; break;
+                case Race.Fiend: textRace.text = "악마"; break;
+                case Race.Fairy: textRace.text = "정령"; break;
+                case Race.Fish: textRace.text = "어류"; break;
+                case Race.Insect: textRace.text = "곤충"; break;
+                case Race.Beast: textRace.text = "야수"; break;
+                case Race.Plant: textRace.text = "식물"; break;
+                case Race.Machine: textRace.text = "기계"; break;
+                case Race.Angel: textRace.text = "천사"; break;
+                default: textRace.text = ""; break;
+            }
+        }
+        else if (data is SpellCardData spellData)
+        {
+            switch (spellData.spellType)
+            {
+                case SpellType.Normal: textRace.text = "마법"; break;
+                case SpellType.Continuous: textRace.text = "지속 마법"; break;
+                case SpellType.Field: textRace.text = "필드 마법"; break;
+                case SpellType.Ritual: textRace.text = "의식 마법"; break;
+            }
+        }
+        else if (data is TrapCardData trapData)
+        {
+            textRace.text = "비밀";
+        }
 
         if (data is MonsterCardData monsterData)
         {
@@ -265,10 +297,14 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
         if (BattleManager.Instance.HasAttacker())
         {
             BattleManager.Instance.SetTarget(this.gameObject);
+
+            BattleManager.Instance.EndAttack(this.gameObject);
         }
         else
         {
             BattleManager.Instance.SetAttacker(this.gameObject);
+
+            BattleManager.Instance.BeginAttack(this.gameObject);
         }
     }
 
