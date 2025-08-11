@@ -66,6 +66,21 @@ public class CostManager : MonoBehaviour
         }
         return false;
     }
+    public bool CanSpendPlayerCost(int amount)
+    {
+        return playerCurrentCost >= amount;
+    }
+
+    public bool TrySpendPlayerCost(int amount)
+    {
+        if (playerCurrentCost >= amount)
+        {
+            playerCurrentCost -= amount;
+            UpdateCostUI();
+            return true;
+        }
+        return false;
+    }
     public void UpdateCostUI()
     {
         if (playerCostText != null)

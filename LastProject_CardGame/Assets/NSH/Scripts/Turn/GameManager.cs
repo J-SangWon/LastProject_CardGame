@@ -93,7 +93,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // ===== 턴 시작/종료 & 페이즈 진행 =====
     void StartPlayerTurn(GamePhase startPhase = GamePhase.MainPhase)
     {
         isPlayerTurn = true;
@@ -102,7 +101,6 @@ public class GameManager : MonoBehaviour
         ResetPlayerCardAttacks();
 
         isTimerRunning = true;
-        turnButton.interactable = true;
 
         turnTimer = Mathf.Min(turnTimer + 30f, 400f);
 
@@ -110,7 +108,37 @@ public class GameManager : MonoBehaviour
         CostManager.Instance.StartPlayerTurn();
 
         UpdateAllUI();
+
+        if (currentPhase == GamePhase.FirstPhase)
+        {
+            // 버튼 비활성화
+            turnButton.interactable = false;
+
+            StartCoroutine(FirstPhaseDrawAndGoMainPhase());
+        }
+        else
+        {
+            // 메인페이즈 이상부터는 버튼 활성화
+            turnButton.interactable = true;
+        }
     }
+
+    IEnumerator FirstPhaseDrawAndGoMainPhase()
+    {
+        yield return new WaitForSeconds(2f);
+
+        // 플레이어 카드 매니저에서 카드 드로우
+        PlayerCardManager.Instance.DrawCards(1);
+
+        // 메인페이즈로 전환
+        currentPhase = GamePhase.MainPhase;
+
+        // 버튼 활성화
+        turnButton.interactable = true;
+
+        UpdateAllUI();
+    }
+
 
     void StartEnemyTurn()
     {
@@ -194,8 +222,11 @@ public class GameManager : MonoBehaviour
     void StartEndPhase()
     {
         currentPhase = GamePhase.EndPhase;
-        UpdateAllUI();
 
+        // 버튼 비활성화
+        turnButton.interactable = false;
+
+        UpdateAllUI();
         StartCoroutine(EndPhaseAndAutoTurnCoroutine());
     }
 
