@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: MetalMachine HookToy
   m_EditorClassIdentifier: 
   cardName: "\uAC08\uACE0\uB9AC\uC7A5\uB09C\uAC10"
-  description: 
+  description: "\uC9C4\uC785 : \uB0B4 \uBB18\uC9C0\uC5D0\uC11C \uAE30\uACC4 \uC720\uB2DB\uC744
+    \uC18C\uD658\uD558\uACE0 +3/+3\uC744 \uBD80\uC5EC\uD569\uB2C8\uB2E4."
   artwork: {fileID: 21300000, guid: 3a9d6f9a76ebf0f4c94b0bc0a35d0946, type: 3}
   cardType: 0
   rarity: 0
@@ -21,8 +22,11 @@ MonoBehaviour:
   cardId: fdd593bb-bbdb-4bad-aadf-a441820127a6
   haveLive2D: 0
   live2DPath: 
-  cardEffect: 0
+  cardAbility: {fileID: 0}
+  abilityValue: 0
+  monsterAbilityType: 0
   tags: []
+  ownerType: 0
   craftCost: 10
   disenchantReward: 2
   canCraft: 1
@@ -33,6 +37,3 @@ MonoBehaviour:
   attack: 0
   health: 0
   race: 11
-  monsterAbilityType: 0
-  abilityType: 0
-  abiltyValue: 0
