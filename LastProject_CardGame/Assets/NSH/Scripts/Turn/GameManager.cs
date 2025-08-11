@@ -28,12 +28,6 @@ public class GameManager : MonoBehaviour
     private int playerHealth = 40;
     private int enemyHealth = 40;
 
-    private int playerCurrentCost = 0;
-    private int playerMaxCost = 0;
-    private int enemyCurrentCost = 0;
-    private int enemyMaxCost = 0;
-    private const int MAX_COST_LIMIT = 10;
-
     private float turnTimer = 300f;
     private bool isTimerRunning = false;
 
@@ -43,8 +37,6 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI playerHealthText;
     public TextMeshProUGUI enemyHealthText;
     public TextMeshProUGUI timerText;
-    public TextMeshProUGUI playerCostText;
-    public TextMeshProUGUI enemyCostText;
     public TextMeshProUGUI turnText;          // "내 턴"/"적 턴"
     public TextMeshProUGUI turnNumberText;    // "턴 1" 등
 
@@ -114,9 +106,8 @@ public class GameManager : MonoBehaviour
 
         turnTimer = Mathf.Min(turnTimer + 30f, 400f);
 
-        if (playerMaxCost < MAX_COST_LIMIT)
-            playerMaxCost++;
-        playerCurrentCost = playerMaxCost;
+        // 코스트 매니저 호출
+        CostManager.Instance.StartPlayerTurn();
 
         UpdateAllUI();
     }
@@ -129,9 +120,8 @@ public class GameManager : MonoBehaviour
         isTimerRunning = true;
         turnButton.interactable = false;
 
-        if (enemyMaxCost < MAX_COST_LIMIT)
-            enemyMaxCost++;
-        enemyCurrentCost = enemyMaxCost;
+        //  코스트 매니저 호출
+        CostManager.Instance.StartEnemyTurn();
 
         UpdateAllUI();
     }
@@ -179,7 +169,6 @@ public class GameManager : MonoBehaviour
             case GamePhase.FirstPhase:
                 currentPhase = GamePhase.MainPhase; // 페이즈 전환
                 UpdateAllUI();
-                StartPlayerTurn(currentPhase);
                 break;
 
             case GamePhase.MainPhase:
@@ -195,7 +184,6 @@ public class GameManager : MonoBehaviour
                 break;
         }
     }
-
 
     void StartBattlePhase()
     {
@@ -223,9 +211,11 @@ public class GameManager : MonoBehaviour
         UpdatePhaseText();
         UpdateHealthUI();
         UpdateTimerUI();
-        UpdateCostUI();
         UpdateTurnColor();
         UpdateTurnUI();
+
+        //  코스트 UI 갱신은 CostManager에서 처리
+        CostManager.Instance.UpdateCostUI();
     }
 
     void UpdatePhaseText()
@@ -259,12 +249,6 @@ public class GameManager : MonoBehaviour
     void UpdateTimerUI()
     {
         timerText.text = $"Time: {Mathf.FloorToInt(turnTimer)}s";
-    }
-
-    void UpdateCostUI()
-    {
-        playerCostText.text = $"Player Cost: {playerCurrentCost}/{playerMaxCost}";
-        enemyCostText.text = $"Enemy Cost: {enemyCurrentCost}/{enemyMaxCost}";
     }
 
     void UpdateTurnColor()

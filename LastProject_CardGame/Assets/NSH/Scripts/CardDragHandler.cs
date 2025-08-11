@@ -22,9 +22,17 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         canvasGroup = GetComponent<CanvasGroup>();
     }
 
+
     public void OnBeginDrag(PointerEventData eventData)
     {
-        //  턴 확인: 내 턴이 아니라면 드래그 금지
+        // 덱존 카드면 드래그 시작 차단
+        if (transform.parent == PlayerCardManager.Instance.deckZone)
+        {
+            Debug.Log("덱존에 있는 카드는 드래그할 수 없습니다.");
+            return;
+        }
+
+        // 턴 체크 및 소환 여부 체크
         if (cardOwner == Owner.Player && !GameManager.Instance.IsPlayerTurn())
         {
             Debug.Log("당신의 턴이 아닙니다. 드래그 불가.");
@@ -44,7 +52,9 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
     public void OnDrag(PointerEventData eventData)
     {
-        //  메인페이즈 + 내 턴이 아닌 경우 금지
+        if (transform.parent == PlayerCardManager.Instance.deckZone)
+            return; // 덱존 카드 드래그 무시
+
         if (cardOwner == Owner.Player &&
             (!GameManager.Instance.IsPlayerTurn() || GameManager.Instance.CurrentPhase != GamePhase.MainPhase))
         {
@@ -52,14 +62,17 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         }
 
         if (isSummoned) return;
+
         rectTransform.anchoredPosition += eventData.delta / canvas.scaleFactor;
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        if (transform.parent == PlayerCardManager.Instance.deckZone)
+            return; // 덱존 카드 드래그 무시
+
         canvasGroup.blocksRaycasts = true;
 
-        //  메인페이즈가 아닐 경우 소환 금지
         if (cardOwner == Owner.Player && GameManager.Instance.CurrentPhase != GamePhase.MainPhase)
         {
             Debug.Log("메인 페이즈가 아니므로 소환할 수 없습니다.");
@@ -86,7 +99,6 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
                     cardUI.isOnField = true;
                 }
 
-                // 소환 시점 효과 트리거
                 var fildMonster = GetComponent<FildMonster>();
                 if (fildMonster != null)
                 {
