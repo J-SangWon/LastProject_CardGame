@@ -73,18 +73,67 @@ public class Ability_Search : CardAbility
 	{
 		if (searchConditions == null) InitConditions(card);
 
-        int count = Mathf.Max(1, param.value);
+        // 검색 주체 판단 (내 카드/적 카드)
+        bool isPlayer = card != null ? card.ownerType == OwnerType.Player : true;
+
+        // param이 null이거나 value가 0 이하인 경우 기본값 1 사용
+        int count = (param != null && param.value > 0) ? param.value : 1;
+        
         if (useCompositeConditions)
         {
-            PlayerCardManager.Instance.SearchCard(
-                go => AbilityConditionUtils.MatchesAll(conditions, compositeOperator, go.GetComponent<CardUI>()),
-                count);
+            if (isPlayer)
+            {
+                if (PlayerCardManager.Instance != null)
+                {
+                    PlayerCardManager.Instance.SearchCard(
+                        go => AbilityConditionUtils.MatchesAll(conditions, compositeOperator, go.GetComponent<CardUI>()),
+                        count);
+                }
+                else
+                {
+                    Debug.LogWarning("[Ability_Search] PlayerCardManager.Instance is null");
+                }
+            }
+            else
+            {
+                if (OpponentCardManager.Instance != null)
+                {
+                    OpponentCardManager.Instance.SearchCard(
+                        go => AbilityConditionUtils.MatchesAll(conditions, compositeOperator, go.GetComponent<CardUI>()),
+                        count);
+                }
+                else
+                {
+                    Debug.LogWarning("[Ability_Search] OpponentCardManager.Instance is null");
+                }
+            }
         }
         else
         {
             if (searchConditions.TryGetValue(searchType, out var condition))
             {
-                PlayerCardManager.Instance.SearchCard(condition, count);
+                if (isPlayer)
+                {
+                    if (PlayerCardManager.Instance != null)
+                    {
+                        PlayerCardManager.Instance.SearchCard(condition, count);
+                    }
+                    else
+                    {
+                        Debug.LogWarning("[Ability_Search] PlayerCardManager.Instance is null");
+                    }
+                }
+                else
+                {
+                    if (OpponentCardManager.Instance != null)
+                    {
+                        OpponentCardManager.Instance.SearchCard(condition, count);
+                    }
+                    else
+                    {
+                        Debug.LogWarning("[Ability_Search] OpponentCardManager.Instance is null");
+                    }
+                }
             }
             else
             {
