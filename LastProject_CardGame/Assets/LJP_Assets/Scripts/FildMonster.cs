@@ -186,7 +186,7 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
     // 마법/함정 카드 클릭 시 효과
     private void HandleSpellTrapClick()
     {
-        if (cardUI.cardData is SpellCardData spellCard)
+        if (cardUI.cardData is SpellCardData spellCard && spellCard.spellType != SpellType.Field)
         {
             Debug.Log($"마법 카드 클릭: {spellCard.cardName}");
             ActivateSpellEffect(spellCard);
