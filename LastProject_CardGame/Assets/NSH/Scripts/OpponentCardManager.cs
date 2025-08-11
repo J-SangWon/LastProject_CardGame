@@ -61,10 +61,7 @@ public class OpponentCardManager : MonoBehaviour
                 card.transform.localPosition = new Vector3(0, 0, -zIndex * 0.01f);
                 card.GetComponent<CardUI>().EnableCardFlip = false;
                 card.GetComponent<CardUI>().ownerType = OwnerType.Opponent; // 적 카드로 설정
-                if (card.GetComponent<CardUI>().cardData is MonsterCardData)
-                {
-                    card.AddComponent<FildMonster>();
-                }
+                card.AddComponent<FildMonster>();
                 zIndex++;
 
                 deck.Add(card);

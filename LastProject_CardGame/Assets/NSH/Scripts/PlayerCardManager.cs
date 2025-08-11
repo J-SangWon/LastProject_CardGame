@@ -1,6 +1,5 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 /// <summary>
 /// 플레이어 카드 매니저: 덱 로딩, 드로우, 카드 배치 및 일부 카드 효과 처리.
@@ -16,7 +15,7 @@ public class PlayerCardManager : MonoBehaviour
 
     private List<GameObject> deck = new List<GameObject>();
     public DeckData currentDeckData;
-    public HorizontalLayoutGroup handLayoutGroup;
+
     void Awake()
     {
         if (Instance == null) Instance = this;
@@ -73,10 +72,7 @@ public class PlayerCardManager : MonoBehaviour
             GameObject card = CreateCard(cardData, cardPrefab, deckZone, Quaternion.identity);
             card.transform.localPosition = new Vector3(0, 0, -zIndex * 0.01f);
             card.GetComponent<CardUI>().EnableCardFlip = false;
-            if (cardData is MonsterCardData)
-            {
-                card.AddComponent<FildMonster>();
-            }
+            card.AddComponent<FildMonster>();
             zIndex++;
 
             deck.Add(card);
@@ -112,21 +108,6 @@ public class PlayerCardManager : MonoBehaviour
 
             card.transform.SetParent(handZone, false);
             card.transform.localScale = Vector3.one;
-
-            // 드래그 활성화
-            var dragHandler = card.GetComponent<CardDragHandler>();
-            if (dragHandler != null)
-            {
-                dragHandler.enabled = true;
-            }
-
-            // CanvasGroup 인터랙션 활성화
-            var cg = card.GetComponent<CanvasGroup>();
-            if (cg != null)
-            {
-                cg.blocksRaycasts = true;
-                cg.interactable = true;
-            }
         }
 
         UpdateHandLayout();
@@ -136,6 +117,7 @@ public class PlayerCardManager : MonoBehaviour
 
     public void SearchCard(System.Func<GameObject, bool> condition, int count = 1)
     {
+        Debug.Log($"[PlayerCardManager] SearchCard 호출: count={count}, deck.Count={deck.Count}");
         int movedCount = 0;
         for (int i = 0; i < deck.Count && movedCount < count; i++)
         {
@@ -153,37 +135,45 @@ public class PlayerCardManager : MonoBehaviour
         }
         UpdateHandLayout();
     }
+
     public void UpdateHandLayout()
     {
         int cardCount = handZone.childCount;
         if (cardCount == 0) return;
 
-        float initialSpacing = 50f;  // 기본 간격
-        float minSpacing = -90f;     // 최대 겹침 간격 (음수)
+        RectTransform handRect = handZone.GetComponent<RectTransform>();
+        float maxWidth = handRect.rect.width;
 
-        float spacing;
+        float cardWidth = 150f;    // 카드 너비 (실제 카드 크기로 맞춰야 함)
+        float minSpacing = 30f;    // 최소 간격
 
-        if (cardCount == 1)
+        // 카드 간격 기본값
+        float spacing = cardWidth;
+
+        // 전체 카드 너비 = 카드 한 장 너비 + 간격 * (개수 - 1)
+        float totalWidth = cardWidth + spacing * (cardCount - 1);
+
+        if (totalWidth > maxWidth)
         {
-            spacing = 0f;
-        }
-        else
-        {
-            float t = Mathf.Clamp01((cardCount - 1) / 20f);
-            t = Mathf.Pow(t, 2);  // 제곱해서 변화 속도 가속
-            spacing = Mathf.Lerp(initialSpacing, minSpacing, t);
+            spacing = (maxWidth - cardWidth) / (cardCount - 1);
+            spacing = Mathf.Max(spacing, minSpacing);
+            totalWidth = cardWidth + spacing * (cardCount - 1);
         }
 
-        handLayoutGroup.spacing = spacing;
+        // 시작 위치: 핸드존 왼쪽 끝 기준 (pivot이 (0,0.5)라면 anchoredPosition.x=0이 왼쪽 끝)
+        float startX = -(totalWidth / 2) + (cardWidth / 2); // 왼쪽 끝부터 시작하도록 조정
+
+        for (int i = 0; i < cardCount; i++)
+        {
+            RectTransform rt = handZone.GetChild(i).GetComponent<RectTransform>();
+            if (rt != null)
+            {
+                // 카드 Pivot도 (0,0.5)여서 anchoredPosition은 카드 왼쪽 위치 기준임
+                rt.anchoredPosition = new Vector2(startX + spacing * i, 0);
+            }
+        }
     }
-    public void RemoveCardFromHand(GameObject card)
-    {
-        if (card.transform.parent == handZone)
-        {
-            card.transform.SetParent(null); // 또는 다른 부모로 변경
-            UpdateHandLayout();
-        }
-    }
+
 
     #endregion
 
@@ -198,30 +188,47 @@ public class PlayerCardManager : MonoBehaviour
         card.transform.localScale = Vector3.one;
         card.transform.localRotation = rotation;
 
+        // UI 세팅
         var cardUI = card.GetComponent<CardUI>();
         if (cardUI != null)
         {
             cardUI.SetCard(data);
             cardUI.SetFace(true);
-            cardUI.EnableCardFlip = rotation == Quaternion.identity;
+            cardUI.EnableCardFlip = rotation == Quaternion.identity; // 플레이어 카드만 클릭 가능
         }
 
+        // 드래그
         var dragHandler = card.GetComponent<CardDragHandler>();
-
-        // 덱존 카드면 드래그 비활성, 핸드/필드면 활성
-        bool isInDeckZone = parent == deckZone;
         if (dragHandler != null)
         {
-            dragHandler.enabled = !isInDeckZone && rotation == Quaternion.identity;
+            dragHandler.enabled = rotation == Quaternion.identity;
         }
 
-        // CanvasGroup 컴포넌트로 UI 이벤트 차단 조절
-        CanvasGroup cg = card.GetComponent<CanvasGroup>();
-        if (cg == null) cg = card.AddComponent<CanvasGroup>();
-        cg.blocksRaycasts = !isInDeckZone;
-        cg.interactable = !isInDeckZone;
+        // 대상 지정 및 소환 효과는 플레이어 카드만
+        if (rotation == Quaternion.identity)
+        {
+            if (card.GetComponent<TargetableCard>() == null)
+                card.AddComponent<TargetableCard>();
 
-        // 이하 기존 콜백, 콜라이더 추가 등 유지
+            var effect = card.GetComponent<MonsterEffectOnSummon>();
+            if (effect == null) effect = card.AddComponent<MonsterEffectOnSummon>();
+
+            effect.cardData = data;
+            effect.cardManager = this;
+        }
+        // Collider 자동 추가 (UI 카드에 Raycast 되도록 BoxCollider2D 사용 권장)
+        if (card.GetComponent<Collider2D>() == null)
+        {
+            var collider = card.AddComponent<BoxCollider2D>();
+
+            // 크기 자동 설정 (필요에 따라 조절 가능)
+            var rect = card.GetComponent<RectTransform>();
+            if (rect != null)
+            {
+                collider.offset = rect.rect.center;
+                collider.size = rect.rect.size;
+            }
+        }
 
         return card;
     }
