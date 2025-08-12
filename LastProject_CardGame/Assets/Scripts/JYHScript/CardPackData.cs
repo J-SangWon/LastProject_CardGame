@@ -7,6 +7,7 @@ public enum CardPackType
     Dragon, // 드래곤 카드 팩
     GreeceRoman, // 그리스 로마 카드 팩
     Undead, // 언데드 카드 팩
+    Ailen   // 외계인 카드 팩
 }
 
 [CreateAssetMenu(menuName = "CardPack")]

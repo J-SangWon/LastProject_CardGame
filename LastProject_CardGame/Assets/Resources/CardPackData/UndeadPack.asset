@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d34ae0626496a4b4fad628d823157d24, type: 3}
+  m_Name: UndeadPack
+  m_EditorClassIdentifier: 
+  packType: 3
+  packArtwork: {fileID: 21300000, guid: 6eea7a8dffd054946b20f89a9383c68e, type: 3}
+  packUpImg: {fileID: 21300000, guid: abfb9e16df233fc488630dfa5d6120f1, type: 3}
+  packDownImg: {fileID: 21300000, guid: 210056209e20b3144ab1d37d85015409, type: 3}
+  cards: []
