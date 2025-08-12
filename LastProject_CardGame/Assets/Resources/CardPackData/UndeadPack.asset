@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: UndeadPack
   m_EditorClassIdentifier: 
   packType: 3
-  packArtwork: {fileID: 21300000, guid: 6eea7a8dffd054946b20f89a9383c68e, type: 3}
-  packUpImg: {fileID: 21300000, guid: abfb9e16df233fc488630dfa5d6120f1, type: 3}
-  packDownImg: {fileID: 21300000, guid: 210056209e20b3144ab1d37d85015409, type: 3}
+  packArtwork: {fileID: 21300000, guid: 44a51586429a82d45830489df563c192, type: 3}
+  packUpImg: {fileID: 21300000, guid: c2a50f493ba69a74d80839bfb5d29f6b, type: 3}
+  packDownImg: {fileID: 21300000, guid: 0c884f3e4a8c89b47ade81af94b50bf6, type: 3}
   cards:
   - {fileID: 11400000, guid: b82e3e99f74dc8840ada1b6513a98c7d, type: 2}
   - {fileID: 11400000, guid: 71a2d71de34b56b40b3dc9a14e847f07, type: 2}
