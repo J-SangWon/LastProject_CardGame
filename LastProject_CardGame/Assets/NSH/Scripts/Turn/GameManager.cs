@@ -7,7 +7,7 @@ public class GameManager : MonoBehaviour
 {
     // ===== 싱글턴 =====
     public static GameManager Instance;
-
+    public CardDragHandler selectedCard;
     private void Awake()
     {
         if (Instance == null)
