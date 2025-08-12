@@ -11,7 +11,7 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
 	public CardUI cardUI; 
 //{ get; private set; }
 
-	[HideInInspector] public bool isAppeared = false;
+	private bool isAppeared = false;
 	private bool isEntrance = false;
     private bool hasReverberated = false;
 
@@ -74,6 +74,11 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
         {
             targetable.OnDestroyed -= HandleDestroyed;
         }
+    }
+
+    public void SetIsAppeared(bool isVisble)
+    {
+        isAppeared = isVisble; 
     }
 
 	public void OnPointerClick(PointerEventData eventData)
