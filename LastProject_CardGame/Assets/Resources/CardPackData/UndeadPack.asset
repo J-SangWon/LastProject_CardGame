@@ -16,4 +16,22 @@ MonoBehaviour:
   packArtwork: {fileID: 21300000, guid: 6eea7a8dffd054946b20f89a9383c68e, type: 3}
   packUpImg: {fileID: 21300000, guid: abfb9e16df233fc488630dfa5d6120f1, type: 3}
   packDownImg: {fileID: 21300000, guid: 210056209e20b3144ab1d37d85015409, type: 3}
-  cards: []
+  cards:
+  - {fileID: 11400000, guid: b82e3e99f74dc8840ada1b6513a98c7d, type: 2}
+  - {fileID: 11400000, guid: 71a2d71de34b56b40b3dc9a14e847f07, type: 2}
+  - {fileID: 11400000, guid: a68009b032e67de47bbdca9769e82e70, type: 2}
+  - {fileID: 11400000, guid: c519d5de5a6de584c859ea22f6cf85e2, type: 2}
+  - {fileID: 11400000, guid: fb9e6b20566116445a689d51ac008c12, type: 2}
+  - {fileID: 11400000, guid: 621bd8645b0107646858d419e9873789, type: 2}
+  - {fileID: 11400000, guid: f7cbfe41d10c43f42bd09ffef8842405, type: 2}
+  - {fileID: 11400000, guid: 9a05268339fd0024c89cfa38a2494062, type: 2}
+  - {fileID: 11400000, guid: f296c73fc6eefc74196c923c191b1637, type: 2}
+  - {fileID: 11400000, guid: 36ae729755f10f74495a6d4fb4256de6, type: 2}
+  - {fileID: 11400000, guid: fb45eac3cbadefc45843f62f2f52265a, type: 2}
+  - {fileID: 11400000, guid: 1f2f5cf27c1ab54408abee2a9f924f9b, type: 2}
+  - {fileID: 11400000, guid: 911001029961a6f498e4ff9d527cbce6, type: 2}
+  - {fileID: 11400000, guid: a2b1a7ea16f95a54ab8af6b60c644583, type: 2}
+  - {fileID: 11400000, guid: 526b5a7663b3ec34a84876bee1d3f433, type: 2}
+  - {fileID: 11400000, guid: 3953d9e663dec944fa79b627cd5d4b4c, type: 2}
+  - {fileID: 11400000, guid: 41bff814203a6014286e29fdac14cdf3, type: 2}
+  - {fileID: 11400000, guid: 0a85edb9114569f498fbe3b52c291e5c, type: 2}
