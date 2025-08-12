@@ -13,16 +13,20 @@ MonoBehaviour:
   m_Name: ZNeutral Apprentice Wizard
   m_EditorClassIdentifier: 
   cardName: "\uACAC\uC2B5 \uB9C8\uBC95\uC0AC"
-  description: 
+  description: "\uC9C4\uC785 : \uB0B4 \uB371\uC5D0\uC11C \uC2A4\uD3A0\uCE74\uB4DC\uB97C
+    \uBF51\uC2B5\uB2C8\uB2E4."
   artwork: {fileID: 21300000, guid: 07db037419254494aa12171ca6a4bc89, type: 3}
   cardType: 0
   rarity: 0
-  cost: 1
+  cost: 2
   cardId: 72bfc386-fcda-40f9-9d51-80f050b16b56
   haveLive2D: 0
   live2DPath: 
-  cardEffect: 0
+  cardAbility: {fileID: 0}
+  abilityValue: 0
+  monsterAbilityType: 0
   tags: []
+  ownerType: 0
   craftCost: 10
   disenchantReward: 2
   canCraft: 1
@@ -33,6 +37,3 @@ MonoBehaviour:
   attack: 1
   health: 3
   race: 4
-  monsterAbilityType: 0
-  abilityType: 0
-  abiltyValue: 0

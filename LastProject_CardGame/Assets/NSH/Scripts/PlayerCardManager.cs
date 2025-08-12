@@ -29,6 +29,11 @@ public class PlayerCardManager : MonoBehaviour
 
     #region 플레이어 덱 로딩 및 드로우
 
+    public List<GameObject> GetDeck()
+    {
+        return deck;
+    }
+
     void LoadDeckFromTransfer()
     {
         currentDeckData = DeckTransferManager.Instance?.GetDeck();
@@ -182,7 +187,7 @@ public class PlayerCardManager : MonoBehaviour
     /// <summary>
     /// 카드 생성 및 UI, 효과 초기화
     /// </summary>
-    private GameObject CreateCard(BaseCardData data, GameObject prefab, Transform parent, Quaternion rotation)
+    public GameObject CreateCard(BaseCardData data, GameObject prefab, Transform parent, Quaternion rotation)
     {
         GameObject card = Instantiate(prefab, parent);
         card.transform.localScale = Vector3.one;
