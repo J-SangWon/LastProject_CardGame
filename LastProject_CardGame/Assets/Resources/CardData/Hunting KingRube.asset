@@ -21,18 +21,18 @@ MonoBehaviour:
   cardId: 9a0e5356-9c81-47d0-a6a2-83ddf002aae9
   haveLive2D: 0
   live2DPath: 
-  cardEffect: 0
+  cardAbility: {fileID: 0}
+  abilityValue: 0
+  monsterAbilityType: 0
   tags: []
+  ownerType: 1
   craftCost: 10
   disenchantReward: 2
   canCraft: 1
   canDisenchant: 1
   maxHP: 10
-  currentHP: 0
+  currentHP: 10
   monsterType: 0
   attack: 5
   health: 10
   race: 9
-  monsterAbilityType: 0
-  abilityType: 0
-  abiltyValue: 0

@@ -13,16 +13,20 @@ MonoBehaviour:
   m_Name: MetalMachine finite Replication
   m_EditorClassIdentifier: 
   cardName: "\uC720\uD55C \uBCF5\uC81C"
-  description: 
+  description: "\uC9C4\uC785 : \uB0B4 \uB371\uC5D0\uC11C \uAE30\uACC4 \uD558\uC218\uC778\uC744
+    \uB458 \uBF51\uC2B5\uB2C8\uB2E4. "
   artwork: {fileID: 21300000, guid: 63012b09689a5d843b1f504a9cdde0a8, type: 3}
   cardType: 1
   rarity: 0
-  cost: 2
+  cost: 3
   cardId: 0575ea88-ad98-4ce4-9168-24574b11b0cb
   haveLive2D: 0
   live2DPath: 
-  cardEffect: 0
+  cardAbility: {fileID: 0}
+  abilityValue: 0
+  monsterAbilityType: 0
   tags: []
+  ownerType: 0
   craftCost: 10
   disenchantReward: 2
   canCraft: 1

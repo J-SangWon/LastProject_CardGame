@@ -16,15 +16,18 @@ MonoBehaviour:
   description: "\uC801 \uC720\uB2DB\uC744 \uC801 \uB371\uC5D0 \uC11E\uC5B4 \uB123\uC2B5\uB2C8\uB2E4."
   artwork: {fileID: 21300000, guid: e701881c2792ed74ead334a1fb7e0b64, type: 3}
   cardType: 1
-  rarity: 0
+  rarity: 1
   cost: 4
   cardId: 6a453064-4193-4d55-bd24-fef09b48dcb1
   haveLive2D: 0
   live2DPath: 
-  cardEffect: 0
+  cardAbility: {fileID: 0}
+  abilityValue: 0
+  monsterAbilityType: 0
   tags: []
-  craftCost: 10
-  disenchantReward: 2
+  ownerType: 0
+  craftCost: 30
+  disenchantReward: 8
   canCraft: 1
   canDisenchant: 1
   maxHP: 0
