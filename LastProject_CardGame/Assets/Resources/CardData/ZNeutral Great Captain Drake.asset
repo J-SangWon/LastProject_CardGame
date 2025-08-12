@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: ZNeutral Great Captain Drake
   m_EditorClassIdentifier: 
   cardName: "\uC704\uD55C \uCEA1\uD2F4 \uB4DC\uB808\uC774\uD06C"
-  description: 
+  description: "\uC9C4\uC785 : \uBAA8\uB4E0 \uC801 \uC720\uB2DB\uC5D0\uAC8C 7 \uD53C\uD574\uB97C
+    \uC90D\uB2C8\uB2E4."
   artwork: {fileID: 21300000, guid: 5976774ed9865cb40b15cd6abfc97a83, type: 3}
   cardType: 0
   rarity: 3
@@ -21,8 +22,11 @@ MonoBehaviour:
   cardId: 72eee9d4-93ac-4fc5-b49b-d8d9462323ad
   haveLive2D: 0
   live2DPath: 
-  cardEffect: 0
+  cardAbility: {fileID: 0}
+  abilityValue: 0
+  monsterAbilityType: 0
   tags: []
+  ownerType: 0
   craftCost: 400
   disenchantReward: 100
   canCraft: 1
@@ -33,6 +37,3 @@ MonoBehaviour:
   attack: 7
   health: 7
   race: 0
-  monsterAbilityType: 0
-  abilityType: 0
-  abiltyValue: 0

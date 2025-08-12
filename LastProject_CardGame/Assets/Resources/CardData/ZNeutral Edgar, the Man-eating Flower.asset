@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: ZNeutral Edgar, the Man-eating Flower
   m_EditorClassIdentifier: 
   cardName: "\uC2DD\uC778\uAF43 \uC5D0\uB4DC\uAC00"
-  description: 
+  description: "\uC9C4\uC785 : \uC801 \uC720\uB2DB\uC744 \uD558\uB098 \uCC98\uCE58\uD569\uB2C8\uB2E4."
   artwork: {fileID: 21300000, guid: 2fa8f3f6d68e0464e8de58124f7cd0b2, type: 3}
   cardType: 0
   rarity: 0
@@ -21,18 +21,18 @@ MonoBehaviour:
   cardId: ba083b1e-8133-4c4d-9574-e14808e74ad3
   haveLive2D: 0
   live2DPath: 
-  cardEffect: 0
+  cardAbility: {fileID: 0}
+  abilityValue: 0
+  monsterAbilityType: 0
   tags: []
+  ownerType: 0
   craftCost: 10
   disenchantReward: 2
   canCraft: 1
   canDisenchant: 1
   maxHP: 4
-  currentHP: 0
+  currentHP: 4
   monsterType: 0
   attack: 4
   health: 4
   race: 10
-  monsterAbilityType: 0
-  abilityType: 0
-  abiltyValue: 0

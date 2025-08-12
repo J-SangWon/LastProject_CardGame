@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: ZNeutral Central Core
   m_EditorClassIdentifier: 
   cardName: "\uD575\uC2EC \uCF54\uC5B4"
-  description: "\uB0B4 \uC591\uC606 \uD558\uC218\uC778\uC5D0\uAC8C \uACF5\uACA9\uB825\uC744
-    +3 \uBD80\uC5EC\uD569\uB2C8\uB2E4."
+  description: "\uC9C4\uC785 : \uB0B4 \uB2E4\uC74C \uC720\uB2DB\uC758 \uBE44\uC6A9\uC774
+    2 \uAC10\uC18C\uD569\uB2C8\uB2E4."
   artwork: {fileID: 21300000, guid: 8a2ee63521a7d8d4db326e4eae1c6563, type: 3}
   cardType: 0
   rarity: 1
