@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using DG.Tweening;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -75,8 +76,9 @@ public class PlayerCardManager : MonoBehaviour
         foreach (var cardData in flatDeck)
         {
             GameObject card = CreateCard(cardData, cardPrefab, deckZone, Quaternion.identity);
-            card.transform.localPosition = new Vector3(0, 0, -zIndex * 0.01f);
+            card.transform.localPosition = new Vector3(-zIndex * 0.5f, zIndex * 0.5f, 0);
             card.GetComponent<CardUI>().EnableCardFlip = false;
+            card.GetComponent<CardUI>().FlipCard(false); // 초기에는 뒷면으로 설정
             card.AddComponent<FildMonster>();
             zIndex++;
 
@@ -111,6 +113,7 @@ public class PlayerCardManager : MonoBehaviour
             GameObject card = deck[0];
             deck.RemoveAt(0);
 
+            card.GetComponent<CardUI>().FlipCard(true);
             card.transform.SetParent(handZone, false);
             card.transform.localScale = Vector3.one;
         }

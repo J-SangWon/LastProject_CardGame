@@ -58,9 +58,10 @@ public class OpponentCardManager : MonoBehaviour
             for (int i = 0; i < entry.count; i++)
             {
                 GameObject card = CreateCard(entry.card, cardPrefab, deckZone, Quaternion.identity);
-                card.transform.localPosition = new Vector3(0, 0, -zIndex * 0.01f);
+                card.transform.localPosition = new Vector3(-zIndex * 0.5f, zIndex * 0.5f,0);
                 card.GetComponent<CardUI>().EnableCardFlip = false;
                 card.GetComponent<CardUI>().ownerType = OwnerType.Opponent; // 적 카드로 설정
+                card.GetComponent<CardUI>().FlipCard(false); // 카드 뒷면으로 설정
                 card.AddComponent<FildMonster>();
                 zIndex++;
 
@@ -87,6 +88,7 @@ public class OpponentCardManager : MonoBehaviour
             GameObject card = deck[0];
             deck.RemoveAt(0);
 
+            card.GetComponent<CardUI>().FlipCard(true); // 카드 앞면으로 설정
             card.transform.SetParent(handZone, false);
             card.transform.localScale = Vector3.one;
         }
