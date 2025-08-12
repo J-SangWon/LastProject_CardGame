@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: CrateCardToHand
   m_EditorClassIdentifier: 
   condition: {fileID: 0}
-  cardData: {fileID: 0}
-  creatLocation: 0
+  cardData: {fileID: 11400000, guid: 3a0383f486484df4593d26c4eb2b3c5a, type: 2}
+  creatLocation: 3

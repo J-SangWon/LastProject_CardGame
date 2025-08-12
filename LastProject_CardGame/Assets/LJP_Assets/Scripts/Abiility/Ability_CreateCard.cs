@@ -32,6 +32,7 @@ public class Ability_CreateCardToHnad : CardAbility
 	{
 		GameObject cardGo = PlayerCardManager.Instance.CreateCard(cardData, PlayerCardManager.Instance.cardPrefab, PlayerCardManager.Instance.deckZone, Quaternion.identity);
 		int randIndex = Random.Range(0, PlayerCardManager.Instance.GetDeck().Count);
+		Debug.Log("인덱스 : " + randIndex);
 
 		for (int i = randIndex; i < PlayerCardManager.Instance.GetDeck().Count; i++) //램덤생성된 카드 위에 인덱스 카드 뒤로 밀기
 		{
