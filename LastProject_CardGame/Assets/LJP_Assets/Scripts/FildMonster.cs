@@ -1,4 +1,4 @@
-﻿using System.Data;
+using System.Data;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -59,11 +59,14 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
 
     private void OnDestroy()
     {
-        // 직접 Destroy(target)로 파괴된 경우에도 여운 1회만 발동
-        if(monsterCardData != null && !hasReverberated && monsterCardData.monsterAbilityType == MonsterCardAbilityType.Reverberation)
+        // 주의: 파괴 시점(OnDestroy)에는 트랜스폼 이동/생성 등 무거운 로직을 호출하지 않습니다.
+        // 여운(리버브)은 TargetableCard.OnDestroyed 이벤트에서 선행 처리되며,
+        // OnDestroy에서는 중복 실행을 피하고 안전하게 정리만 수행합니다.
+        
+        // 이 카드가 소스로 등록한 모든 지속 오라 해제
+        if (cardUI != null)
         {
-            Reverberation(monsterCardData.cardAbility, monsterCardData.abilityValue);
-            hasReverberated = true;
+            AuraManager.UnregisterAllFromSource(cardUI);
         }
         
         // 마법/함정 카드 제거 시 효과
@@ -152,6 +155,12 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
         
         // 마법/함정 카드 필드 배치 효과
         HandleFieldPlacement();
+
+        // 이 카드가 필드에 진입했으므로, 현재 활성 오라를 적용
+        if (cardUI != null && cardUI.isOnField)
+        {
+            AuraManager.NotifyCardEnteredField(cardUI);
+        }
     }
     
     // 마법/함정 카드 필드 배치 시 효과
@@ -186,7 +195,7 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
     // 마법/함정 카드 클릭 시 효과
     private void HandleSpellTrapClick()
     {
-        if (cardUI.cardData is SpellCardData spellCard)
+        if (cardUI.cardData is SpellCardData spellCard && spellCard.spellType != SpellType.Field)
         {
             Debug.Log($"마법 카드 클릭: {spellCard.cardName}");
             ActivateSpellEffect(spellCard);
