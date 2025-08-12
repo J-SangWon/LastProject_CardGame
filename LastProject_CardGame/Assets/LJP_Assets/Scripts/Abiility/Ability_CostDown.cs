@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Ability_CostDown : CardAbility
 {
+	[SerializeField] private bool isReset = true;
+
 	private int beforeCost;
 	private bool isUsed = false;
 	private CardUI targetCard;
@@ -27,5 +29,10 @@ public class Ability_CostDown : CardAbility
 			isUsed = false;
 			targetCard = null;
 		}
+	}
+
+	public bool GetIsReset()
+	{
+		return isReset;
 	}
 }

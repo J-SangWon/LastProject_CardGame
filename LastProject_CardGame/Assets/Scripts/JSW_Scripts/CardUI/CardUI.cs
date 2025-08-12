@@ -319,7 +319,20 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
         set { enableCardFlip = value; }
     }
 
-    public void ShowDetailPanel(BaseCardData cardData)
+    public bool IsDeadFlag
+    {
+        get { return isDeadFlag; }
+        set { isDeadFlag = value; }
+    }
+
+    public bool DeathResolved
+    {
+        get { return deathResolved; }
+        set { deathResolved = value; }
+    }
+
+
+	public void ShowDetailPanel(BaseCardData cardData)
     {
         if (InGameCardDetailPanel.Instance != null)
         {

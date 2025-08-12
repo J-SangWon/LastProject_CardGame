@@ -357,9 +357,9 @@ public class PlayerCardManager : MonoBehaviour
         {
             cardUI.SetCard(data);
             cardUI.SetFace(ownerType == OwnerType.Player);
+            cardUI.EnableCardFlip = false;
             cardUI.isOnField = true;
             cardUI.ownerType = ownerType;
-            cardUI.EnableCardFlip = ownerType == OwnerType.Player;
         }
 
         var dragHandler = card.GetComponent<CardDragHandler>();
