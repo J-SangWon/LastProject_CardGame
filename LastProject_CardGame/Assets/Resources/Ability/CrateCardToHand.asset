@@ -9,8 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c88c4e19f90958a45b778427ee9fe7d4, type: 3}
-  m_Name: CatToken
+  m_Script: {fileID: 11500000, guid: 127161b8f29e5c0409b4284c227685ad, type: 3}
+  m_Name: CrateCardToHand
   m_EditorClassIdentifier: 
   condition: {fileID: 0}
-  Token: {fileID: 11400000, guid: 01c2de4bfb007834d9b9be6cb88cb4f4, type: 2}
+  cardData: {fileID: 0}
+  creatLocation: 0
