@@ -18,15 +18,18 @@ MonoBehaviour:
     \uC90D\uB2C8\uB2E4."
   artwork: {fileID: 21300000, guid: 8e8117131d4ceac4cb036ea79ec37e58, type: 3}
   cardType: 1
-  rarity: 0
+  rarity: 1
   cost: 5
   cardId: ba137f0b-58a1-4072-9c77-c37878f5007c
   haveLive2D: 0
   live2DPath: 
-  cardEffect: 0
+  cardAbility: {fileID: 0}
+  abilityValue: 0
+  monsterAbilityType: 0
   tags: []
-  craftCost: 10
-  disenchantReward: 2
+  ownerType: 0
+  craftCost: 30
+  disenchantReward: 8
   canCraft: 1
   canDisenchant: 1
   maxHP: 0
