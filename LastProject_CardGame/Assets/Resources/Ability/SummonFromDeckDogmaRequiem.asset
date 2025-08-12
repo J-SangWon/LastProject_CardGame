@@ -32,8 +32,8 @@ MonoBehaviour:
     tag: DogmaRequiem
   - searchType: 2
     cardType: 0
-    race: 3
+    race: 4
     cost: 0
     costOp: 0
     cardID: 
-    tag: DogmaRequiem
+    tag: 

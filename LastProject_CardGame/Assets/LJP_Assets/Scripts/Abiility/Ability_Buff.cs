@@ -27,7 +27,9 @@ public enum TargetingType
 public class Ability_Buff : CardAbility
 {
 	[SerializeField] private BuffType buffType;
-	public TargetingType buffTarget;
+	[SerializeField] private TargetingType buffTarget;
+
+	[SerializeField] private bool isReset = true;
 
 	private readonly List<int> beforeAttackList = new();
 	private readonly List<int> beforeHealthList = new();
@@ -71,6 +73,11 @@ public class Ability_Buff : CardAbility
 		targetList.Clear();
 		beforeAttackList.Clear();
 		beforeHealthList.Clear();
+	}
+
+	public bool GetIsReset()
+	{
+		return isReset;
 	}
 }
 

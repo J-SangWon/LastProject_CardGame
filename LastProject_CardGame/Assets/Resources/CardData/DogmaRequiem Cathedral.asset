@@ -24,6 +24,7 @@ MonoBehaviour:
   live2DPath: 
   cardAbility: {fileID: 11400000, guid: b066260fb7db54c4ca1fd98b375d1fe8, type: 2}
   abilityValue: 1
+  monsterAbilityType: 1
   tags:
   - DogmaRequiem
   ownerType: 0

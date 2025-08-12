@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -14,13 +14,16 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     private Transform originalParent;
     private int originalSiblingIndex;
     private Canvas canvas;
+    private Canvas rootCanvas;
     private RectTransform rectTransform;
     private CanvasGroup canvasGroup;
     private CardUI cardUI;
+    private Vector2 pointerOffsetInRoot; // 루트 캔버스 좌표계에서의 포인터 오프셋
 
     void Awake()
     {
         canvas = GetComponentInParent<Canvas>();
+        rootCanvas = canvas != null ? canvas.rootCanvas : null;
         rectTransform = GetComponent<RectTransform>();
         canvasGroup = GetComponent<CanvasGroup>();
         cardUI = GetComponent<CardUI>();
@@ -46,10 +49,29 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         originalParent = transform.parent;
         originalSiblingIndex = transform.GetSiblingIndex();
 
-        if (canvas != null)
-            transform.SetParent(canvas.transform, true); // true: 월드 위치 유지 (이게 중요!)
+        // 드래그 시작 시 루트 캔버스로 옮기되, 월드 좌표 유지하여 점프 방지
+        if (rootCanvas != null)
+            transform.SetParent(rootCanvas.transform, true);
+        else if (canvas != null)
+            transform.SetParent(canvas.transform, true);
         else
             transform.SetParent(originalParent, true);
+
+        // 포인터와 카드 중심의 오프셋을 루트 캔버스 좌표로 계산
+        if (rootCanvas != null)
+        {
+            RectTransform rootRect = rootCanvas.transform as RectTransform;
+            Camera cam = rootCanvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : rootCanvas.worldCamera;
+
+            // 포인터의 루트 캔버스 로컬 좌표
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(rootRect, eventData.position, cam, out var pointerLocal);
+
+            // 카드의 루트 캔버스 로컬 좌표
+            Vector2 cardScreenPos = RectTransformUtility.WorldToScreenPoint(cam, rectTransform.position);
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(rootRect, cardScreenPos, cam, out var cardLocal);
+
+            pointerOffsetInRoot = cardLocal - pointerLocal;
+        }
 
         canvasGroup.blocksRaycasts = false;
     }
@@ -68,24 +90,24 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         if (isSummoned)
             return;
 
-        Vector2 localPoint;
-        RectTransform canvasRect = canvas.transform as RectTransform;
-
-        // 캔버스 RenderMode에 따라 worldCamera 전달 처리
-        Camera cam = null;
-        if (canvas.renderMode != RenderMode.ScreenSpaceOverlay)
-            cam = canvas.worldCamera;
-
-        if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                canvasRect,
-                eventData.position,
-                cam,
-                out localPoint))
+        if (rootCanvas != null)
         {
-            rectTransform.localPosition = localPoint;
+            RectTransform rootRect = rootCanvas.transform as RectTransform;
+            Camera cam = rootCanvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : rootCanvas.worldCamera;
+            // 현재 포인터를 루트 캔버스 로컬 좌표로 변환
+            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(rootRect, eventData.position, cam, out var pointerLocal))
+            {
+                // 오프셋을 적용한 위치로 이동
+                var targetLocal = pointerLocal + pointerOffsetInRoot;
+                rectTransform.anchoredPosition = targetLocal;
+            }
+        }
+        else
+        {
+            // 폴백: 기존 방식 유지
+            rectTransform.anchoredPosition += eventData.delta / (canvas != null ? canvas.scaleFactor : 1f);
         }
     }
-
 
     public void OnEndDrag(PointerEventData eventData)
     {
@@ -122,11 +144,7 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
                     }
                 }
 
-               
-                transform.SetParent(dropZone, false);
-                isSummoned = true;
-                droppedOnSlot = true;
-                validDrop = true;
+                // 소환 성공 처리 ...
             }
         }
 
