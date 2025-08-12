@@ -47,7 +47,7 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         originalSiblingIndex = transform.GetSiblingIndex();
 
         if (canvas != null)
-            transform.SetParent(canvas.transform, false);
+            transform.SetParent(canvas.transform, true); // true: 월드 위치 유지 (이게 중요!)
         else
             transform.SetParent(originalParent, true);
 
@@ -68,8 +68,24 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         if (isSummoned)
             return;
 
-        rectTransform.anchoredPosition += eventData.delta / (canvas != null ? canvas.scaleFactor : 1f);
+        Vector2 localPoint;
+        RectTransform canvasRect = canvas.transform as RectTransform;
+
+        // 캔버스 RenderMode에 따라 worldCamera 전달 처리
+        Camera cam = null;
+        if (canvas.renderMode != RenderMode.ScreenSpaceOverlay)
+            cam = canvas.worldCamera;
+
+        if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                canvasRect,
+                eventData.position,
+                cam,
+                out localPoint))
+        {
+            rectTransform.localPosition = localPoint;
+        }
     }
+
 
     public void OnEndDrag(PointerEventData eventData)
     {
@@ -106,7 +122,11 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
                     }
                 }
 
-                // 소환 성공 처리 ...
+               
+                transform.SetParent(dropZone, false);
+                isSummoned = true;
+                droppedOnSlot = true;
+                validDrop = true;
             }
         }
 
