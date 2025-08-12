@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: ZNeutral General Lin
   m_EditorClassIdentifier: 
   cardName: "\uB300\uC7A5\uAD70 \uB9B0"
-  description: 
+  description: "\uC9C4\uC785 : \uB0B4 \uB371\uC5D0\uC788\uB294 \uC804\uC0AC \uC720\uB2DB\uC744
+    \uBAA8\uB450 \uC18C\uD658\uD569\uB2C8\uB2E4."
   artwork: {fileID: 21300000, guid: 1d6758e9a53f11c48bd2e4775267c92b, type: 3}
   cardType: 0
   rarity: 0
@@ -21,18 +22,18 @@ MonoBehaviour:
   cardId: e2a6872b-e3c3-42fd-8bdd-06edcb4ce6dd
   haveLive2D: 0
   live2DPath: 
-  cardEffect: 0
+  cardAbility: {fileID: 0}
+  abilityValue: 0
+  monsterAbilityType: 0
   tags: []
+  ownerType: 0
   craftCost: 10
   disenchantReward: 2
   canCraft: 1
   canDisenchant: 1
   maxHP: 10
-  currentHP: 0
+  currentHP: 10
   monsterType: 0
   attack: 7
   health: 10
   race: 3
-  monsterAbilityType: 0
-  abilityType: 0
-  abiltyValue: 0
