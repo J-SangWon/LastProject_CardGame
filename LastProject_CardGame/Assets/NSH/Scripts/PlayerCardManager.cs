@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -286,15 +286,45 @@ public class PlayerCardManager : MonoBehaviour
     {
         string tag = ownerType == OwnerType.Player ? "PlayerZone" : "EnemyZone";
         var slots = GameObject.FindGameObjectsWithTag(tag);
+        Transform best = null;
+        int bestSibling = int.MaxValue;
+
         foreach (var go in slots)
         {
-            var slot = go.GetComponent<MonsterSlotDrop>();
-            if (slot != null && !slot.isOccupied)
+            if (go == null) continue;
+            var tr = go.transform;
+            if (!IsSlotFree(tr)) continue;
+
+            int si = tr.GetSiblingIndex();
+            if (si < bestSibling)
             {
-                return slot.transform;
+                bestSibling = si;
+                best = tr;
             }
         }
-        return null;
+
+        return best;
+    }
+
+    // 슬롯이 사용 가능한지(점유 플래그 + 활성 자식 존재 여부) 확인
+    private bool IsSlotFree(Transform slotTr)
+    {
+        if (slotTr == null) return false;
+        var slot = slotTr.GetComponent<MonsterZoneSlot>();
+        if (slot == null) return false;
+        if (slot.isOccupied) return false;
+
+        // 자식 중 활성 오브젝트가 하나라도 있으면 점유된 것으로 간주
+        if (slotTr.childCount > 0)
+        {
+            for (int i = 0; i < slotTr.childCount; i++)
+            {
+                var child = slotTr.GetChild(i);
+                if (child != null && child.gameObject.activeSelf)
+                    return false;
+            }
+        }
+        return true;
     }
 
     public bool PlaceExistingCardToMonsterSlot(GameObject card, OwnerType ownerType)
@@ -324,7 +354,7 @@ public class PlayerCardManager : MonoBehaviour
             drag.droppedOnSlot = true;
         }
 
-        var slot = slotTr.GetComponent<MonsterSlotDrop>();
+        var slot = slotTr.GetComponent<MonsterZoneSlot>();
         if (slot != null)
         {
             slot.isOccupied = true;

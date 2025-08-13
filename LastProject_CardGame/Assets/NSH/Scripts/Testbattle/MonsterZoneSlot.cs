@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.EventSystems;
 using DG.Tweening;
 
@@ -8,7 +8,7 @@ public class MonsterZoneSlot : MonoBehaviour, IPointerClickHandler
 
     private void Update()
     {
-        // ½½·ÔÀÌ Á¡À¯µÇ¾ú´Âµ¥ ÀÚ½Ä ¿ÀºêÁ§Æ®°¡ ¾ø°Å³ª ¸ğµÎ ºñÈ°¼º »óÅÂ¸é ºñ¾îÀÖ´Ù°í ÆÇ´Ü
+        //ìŠ¬ë¡¯ì´ ì ìœ ë˜ì—ˆëŠ”ë° ìì‹ ì˜¤ë¸Œì íŠ¸ê°€ ì—†ê±°ë‚˜ ëª¨ë‘ ë¹„í™œì„± ìƒíƒœë©´ ë¹„ì–´ìˆë‹¤ê³  íŒë‹¨
         if (isOccupied)
         {
             if (transform.childCount == 0)
@@ -45,10 +45,10 @@ public class MonsterZoneSlot : MonoBehaviour, IPointerClickHandler
                 return;
             }
 
-            // ¸ó½ºÅÍ Ä«µåÀÎÁö Ã¼Å© (Ãß°¡)
+            // ëª¬ìŠ¤í„° ì¹´ë“œì¸ì§€ ì²´í¬ (ì¶”ê°€)
             if (cardUI.cardData == null || cardUI.cardData.cardType != CardType.Monster)
             {
-                Debug.Log("¸ó½ºÅÍ Ä«µå¸¸ ¸ó½ºÅÍ Á¸¿¡ ¼ÒÈ¯ÇÒ ¼ö ÀÖ½À´Ï´Ù.");
+                Debug.Log("ëª¬ìŠ¤í„° ì¹´ë“œë§Œ ëª¬ìŠ¤í„° ì¡´ì— ì†Œí™˜í•  ìˆ˜ ìˆìŠµë‹ˆë‹¤.");
                 return;
             }
 

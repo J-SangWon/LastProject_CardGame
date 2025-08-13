@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
@@ -18,6 +18,8 @@ public class FieldSpellZone : MonoBehaviour, IPointerClickHandler
 
     private BaseCardData currentFieldSpell = null;
     private GameObject currentFieldSpellCardObj = null;
+    [Header("상태")]
+    public bool isOccupied = false;
 
     void Start()
     {
@@ -55,11 +57,11 @@ public class FieldSpellZone : MonoBehaviour, IPointerClickHandler
         CreateFieldSpellVisual();
 
         Debug.Log($"필드마법 발동: {fieldSpell.cardName}");
-        
+
         // 필드마법 효과 발동
         ActivateFieldSpellEffect();
-        
-        if(currentFieldSpellCardObj != null)
+
+        if (currentFieldSpellCardObj != null)
         {
             // 필드마법 카드 오브젝트가 생성되었을 때
             var objDragHandler = currentFieldSpellCardObj.GetComponent<CardDragHandler>();
@@ -82,11 +84,17 @@ public class FieldSpellZone : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        Debug.Log("FieldSpellZone 클릭됨!");
+        // 클릭 기반: 선택된 카드가 필드마법이면 이 존에 발동
+        var selected = CardSummonManager.Instance != null ? CardSummonManager.Instance.GetSelectedCard() : null;
+        if (selected != null)
+        {
+            if (TryActivateFieldSpellFromSelectedCard(selected))
+                return; // 성공 시 여기서 종료
+        }
 
+        // 정보 로그
         if (currentFieldSpell != null)
         {
-            // 필드마법 정보 표시 또는 상호작용
             Debug.Log($"현재 발동된 필드마법: {currentFieldSpell.cardName}");
         }
         else
@@ -94,7 +102,7 @@ public class FieldSpellZone : MonoBehaviour, IPointerClickHandler
             Debug.Log("현재 발동된 필드마법이 없습니다.");
         }
     }
-    
+
     /// <summary>
     /// 필드마법 효과 발동
     /// </summary>
@@ -107,35 +115,35 @@ public class FieldSpellZone : MonoBehaviour, IPointerClickHandler
         }
 
         Debug.Log($"필드마법 효과 발동 시도: {currentFieldSpell.cardName}");
-        
+
         try
         {
             // 조건 확인
             if (currentFieldSpell.cardAbility.condition != null)
             {
                 bool conditionMet = EffectConditionEvaluator.IsConditionMet(
-                    currentFieldSpell.cardAbility.condition, 
+                    currentFieldSpell.cardAbility.condition,
                     GameManager.Instance.CurrentPhase,
                     ConditionType.OnCardPlayed,
                     currentFieldSpell.cardId,
                     0
                 );
-                
+
                 Debug.Log($"필드마법 조건 확인 결과: {conditionMet}");
-                
+
                 if (!conditionMet)
                 {
                     Debug.Log("필드마법 효과 조건이 충족되지 않았습니다.");
                     return;
                 }
             }
-            
+
             // 효과 발동
             AbilityParameter param = new AbilityParameter();
             param.value = currentFieldSpell.abilityValue;
-            
+
             Debug.Log($"필드마법 효과 발동: {currentFieldSpell.cardName}, abilityValue: {currentFieldSpell.abilityValue}");
-            
+
             currentFieldSpell.cardAbility.Activate(null, param);
             Debug.Log($"필드마법 효과 발동 성공: {currentFieldSpell.cardName}");
         }
@@ -144,7 +152,7 @@ public class FieldSpellZone : MonoBehaviour, IPointerClickHandler
             Debug.LogError($"필드마법 효과 발동 실패: {currentFieldSpell.cardName}, 오류: {e.Message}");
         }
     }
-    
+
     /// <summary>
     /// 필드마법 표현 생성
     /// </summary>
@@ -156,7 +164,7 @@ public class FieldSpellZone : MonoBehaviour, IPointerClickHandler
             Destroy(currentFieldSpellCardObj);
             currentFieldSpellCardObj = null;
         }
-        
+
         if (currentFieldSpell != null && cardPrefab != null)
         {
             // 새 필드마법 카드 오브젝트 생성
@@ -189,6 +197,8 @@ public class FieldSpellZone : MonoBehaviour, IPointerClickHandler
             // UI 텍스트 업데이트
             if (fieldSpellNameText != null)
                 fieldSpellNameText.text = currentFieldSpell.cardName;
+
+            isOccupied = true;
         }
     }
 
@@ -205,11 +215,11 @@ public class FieldSpellZone : MonoBehaviour, IPointerClickHandler
                 Debug.Log($"필드마법 제거: {currentFieldSpell.cardName}");
                 // 제거 시 효과가 있다면 여기서 처리
             }
-            
+
             // 카드 소유자 확인
             var cardUI = currentFieldSpellCardObj.GetComponent<CardUI>();
             OwnerType ownerType = cardUI != null ? cardUI.ownerType : OwnerType.Player;
-            
+
             // 묘지로 보내기
             if (DuelZoneManager.Instance != null)
             {
@@ -220,20 +230,22 @@ public class FieldSpellZone : MonoBehaviour, IPointerClickHandler
             {
                 Debug.LogWarning("DuelZoneManager.Instance가 null입니다. 묘지로 보내지 못했습니다.");
             }
-            
+
             // 오브젝트 제거
             Destroy(currentFieldSpellCardObj);
             currentFieldSpellCardObj = null;
         }
-        
+
         // 데이터 정리
         currentFieldSpell = null;
 
         // UI 텍스트 업데이트
         if (fieldSpellNameText != null)
             fieldSpellNameText.text = "필드마법 없음";
-            
+
         Debug.Log("기존 필드마법이 제거되었습니다.");
+
+        isOccupied = false;
     }
 
     /// <summary>
@@ -269,7 +281,7 @@ public class FieldSpellZone : MonoBehaviour, IPointerClickHandler
                     {
                         // 드롭 성공 시 원본 카드 제거 (손패에서)
                         Debug.Log($"필드마법 드롭 성공: {cardUI.cardData.cardName}");
-                        
+
                         // 원본 카드가 손패에 있다면 제거
                         if (cardUI.ownerType == OwnerType.Player)
                         {
@@ -281,7 +293,7 @@ public class FieldSpellZone : MonoBehaviour, IPointerClickHandler
                             // OpponentCardManager에서 손패에서 제거 (간단하게 Destroy로 처리)
                             Debug.Log($"상대방 손패에서 필드마법 카드 제거: {cardUI.cardData.cardName}");
                         }
-                        
+
                         // 원본 카드 오브젝트 제거
                         Destroy(cardObject);
                     }
@@ -290,7 +302,7 @@ public class FieldSpellZone : MonoBehaviour, IPointerClickHandler
                 {
                     // 일반 마법카드인 경우 - 필드에 소환하지 않음
                     Debug.Log($"일반 마법카드 '{cardUI.cardData.cardName}'은(는) 필드마법 존에 드롭할 수 없습니다.");
-                    
+
                     // 카드를 원래 위치로 되돌리기 (손패로)
                     if (cardUI.ownerType == OwnerType.Player)
                     {
@@ -314,5 +326,43 @@ public class FieldSpellZone : MonoBehaviour, IPointerClickHandler
                 Debug.Log($"마법카드가 아닌 '{cardUI.cardData.cardName}'은(는) 필드마법 존에 드롭할 수 없습니다.");
             }
         }
+    }
+
+    // 선택된 카드에서 필드마법 발동 시도 (클릭 흐름용)
+    private bool TryActivateFieldSpellFromSelectedCard(GameObject selected)
+    {
+        if (selected == null) return false;
+
+        // 턴/페이즈/코스트 및 소유자 검증
+        if (!(GameManager.Instance?.IsPlayerTurn() ?? false)) return false;
+        if (GameManager.Instance.CurrentPhase != GamePhase.MainPhase) return false;
+
+        var cardUI = selected.GetComponent<CardUI>();
+        if (cardUI == null || cardUI.cardData == null) return false;
+        if (cardUI.isOnField) return false;
+        if (cardUI.ownerType != OwnerType.Player) return false;
+
+        if (cardUI.cardData.cardType != CardType.Spell) return false;
+        var spellCard = cardUI.cardData as SpellCardData;
+        if (spellCard == null || spellCard.spellType != SpellType.Field) return false;
+
+        int cost = cardUI.cardData.cost;
+        if (!(GameManager.Instance?.CanSpendPlayerCost(cost) ?? false)) return false;
+
+        // 기존 필드마법이 있고 교체가 허용되지 않으면 막고 싶다면 여기서 return 처리 가능
+
+        bool success = ActivateFieldSpell(cardUI.cardData);
+        if (!success) return false;
+
+        // 비용 소모
+        if (!(GameManager.Instance?.SpendPlayerCost(cost) ?? false))
+            return false;
+
+        // 선택 해제 및 손패 정렬/원본 제거
+        CardSummonManager.Instance?.DeselectCard();
+        Destroy(selected);
+        PlayerCardManager.Instance?.UpdateHandLayout();
+        isOccupied = true;
+        return true;
     }
 }
