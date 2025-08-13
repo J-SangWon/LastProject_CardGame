@@ -9,6 +9,9 @@ public class BattleManager : MonoBehaviour
     private GameObject attacker;
     private GameObject target;
 
+    private GameObject abilityCaster;
+    private GameObject abilityTarget;
+
     public Arrow Arrow { get => arrow; set => arrow = value; }
     [Header("Arrow Effects")]
     [SerializeField] private Arrow arrow;
@@ -26,6 +29,27 @@ public class BattleManager : MonoBehaviour
     /// 공격자가 현재 지정되었는지 여부
     /// </summary>
     public bool HasAttacker() => attacker != null;
+    private bool isAbilityTargeting = false;
+
+    public bool IsAbilityTargeting
+    {
+        get { return isAbilityTargeting; }
+        set { isAbilityTargeting = value; }
+    }
+
+    public GameObject AbilityCaster
+	{
+        get { return abilityCaster; }
+        set { abilityCaster = value; }
+    }
+
+    public GameObject AbilityTarget
+	{
+        get { return abilityTarget; }
+        set { abilityTarget = value; }
+    }
+
+
 
     /// <summary>
     /// 공격할 몬스터 지정
@@ -65,12 +89,35 @@ public class BattleManager : MonoBehaviour
         ExecuteBattle();
     }
 
+    public void SetAbilityCaster(GameObject card)
+    {
+		CardUI cardUI = card.GetComponent<CardUI>();
+		if (cardUI == null || !cardUI.isOnField) return;
+
+		abilityCaster = card;
+		Debug.Log($"능력 시전자 설정됨: {cardUI.cardData.cardName}");
+		BeginAttack(abilityCaster);
+	}
+
+    public void SetAbilityTarget(GameObject card)
+    {
+		CardUI targetUI = card.GetComponent<CardUI>();
+		if (targetUI == null || !targetUI.isOnField || abilityCaster == null) return;
+
+		if (card == abilityCaster)
+		{
+			Debug.Log("자기 자신에게 능력을 시전할 수 없습니다.");
+			return;
+		}
+
+		abilityTarget = card;
+	}
 
 
-    /// <summary>
-    /// 전투 실행
-    /// </summary>
-    private void ExecuteBattle()
+	/// <summary>
+	/// 전투 실행
+	/// </summary>
+	private void ExecuteBattle()
     {
         if (isResolvingBattle) return;
         StartCoroutine(ExecuteBattleCoroutine());

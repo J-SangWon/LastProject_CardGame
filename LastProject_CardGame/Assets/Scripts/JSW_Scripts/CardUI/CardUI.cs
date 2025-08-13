@@ -273,7 +273,7 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
             .OnComplete(() =>
             {
                 SetFace(showFront);
-                transform.DORotate(Vector3.zero, 0.15f);
+                transform.DOLocalRotate(Vector3.zero, 0.15f);
             });
     }
 
@@ -289,7 +289,7 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
         if (!isFront || cardData == null)
             return;
 
-        if (SceneManager.GetActiveScene().name == "InGame")
+        if (SceneManager.GetActiveScene().name == "InGame" && isFront)
         {
             ShowDetailPanel(cardData);
         }

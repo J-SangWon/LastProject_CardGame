@@ -1,5 +1,7 @@
+﻿using DG.Tweening;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// 플레이어 카드 매니저: 덱 로딩, 드로우, 카드 배치 및 일부 카드 효과 처리.
@@ -10,8 +12,12 @@ public class PlayerCardManager : MonoBehaviour
 
     [Header("플레이어 카드")]
     public GameObject cardPrefab;
-    public Transform deckZone;
-    public Transform handZone;
+    public Transform playerDeckZone;
+    public Transform enemyDeckZone;
+    public Transform playerHandZone;
+    public Transform enemyHandZone;
+    public Transform playerMonsterZone;
+    public Transform enemyMonsterZone;
 
     private List<GameObject> deck = new List<GameObject>();
     public DeckData currentDeckData;
@@ -74,9 +80,10 @@ public class PlayerCardManager : MonoBehaviour
         int zIndex = 0;
         foreach (var cardData in flatDeck)
         {
-            GameObject card = CreateCard(cardData, cardPrefab, deckZone, Quaternion.identity);
-            card.transform.localPosition = new Vector3(0, 0, -zIndex * 0.01f);
+            GameObject card = CreateCard(cardData, cardPrefab, playerDeckZone, Quaternion.identity);
+            card.transform.localPosition = new Vector3(-zIndex * 0.5f, zIndex * 0.5f, 0);
             card.GetComponent<CardUI>().EnableCardFlip = false;
+            card.GetComponent<CardUI>().FlipCard(false); // 초기에는 뒷면으로 설정
             card.AddComponent<FildMonster>();
             zIndex++;
 
@@ -111,7 +118,8 @@ public class PlayerCardManager : MonoBehaviour
             GameObject card = deck[0];
             deck.RemoveAt(0);
 
-            card.transform.SetParent(handZone, false);
+            card.GetComponent<CardUI>().FlipCard(true);
+            card.transform.SetParent(playerHandZone, false);
             card.transform.localScale = Vector3.one;
         }
 
@@ -132,7 +140,7 @@ public class PlayerCardManager : MonoBehaviour
                 deck.RemoveAt(i);
                 i--; // 리스트에서 제거했으니 인덱스 보정
 
-                card.transform.SetParent(handZone, false);
+                card.transform.SetParent(playerHandZone, false);
                 card.transform.localScale = Vector3.one;
 
                 movedCount++;
@@ -143,42 +151,58 @@ public class PlayerCardManager : MonoBehaviour
 
     public void UpdateHandLayout()
     {
-        int cardCount = handZone.childCount;
+        int cardCount = playerHandZone.childCount;
         if (cardCount == 0) return;
 
-        RectTransform handRect = handZone.GetComponent<RectTransform>();
+        RectTransform handRect = playerHandZone.GetComponent<RectTransform>();
+        var layout = playerHandZone.GetComponent<HorizontalLayoutGroup>();
+        if (!layout) return;
         float maxWidth = handRect.rect.width;
 
         float cardWidth = 150f;    // 카드 너비 (실제 카드 크기로 맞춰야 함)
-        float minSpacing = 30f;    // 최소 간격
+        float minSpacing = -40f;    // 최소 간격
+        float maxSpacing = 60f;    // 최대 간격
 
         // 카드 간격 기본값
-        float spacing = cardWidth;
+        float spacing = Mathf.Clamp(maxSpacing - 20 * (cardCount -2),minSpacing, maxSpacing);
 
-        // 전체 카드 너비 = 카드 한 장 너비 + 간격 * (개수 - 1)
-        float totalWidth = cardWidth + spacing * (cardCount - 1);
+        layout.spacing = spacing; // 레이아웃 그룹에 간격 설정
 
-        if (totalWidth > maxWidth)
-        {
-            spacing = (maxWidth - cardWidth) / (cardCount - 1);
-            spacing = Mathf.Max(spacing, minSpacing);
-            totalWidth = cardWidth + spacing * (cardCount - 1);
-        }
-
-        // 시작 위치: 핸드존 왼쪽 끝 기준 (pivot이 (0,0.5)라면 anchoredPosition.x=0이 왼쪽 끝)
-        float startX = -(totalWidth / 2) + (cardWidth / 2); // 왼쪽 끝부터 시작하도록 조정
-
-        for (int i = 0; i < cardCount; i++)
-        {
-            RectTransform rt = handZone.GetChild(i).GetComponent<RectTransform>();
-            if (rt != null)
-            {
-                // 카드 Pivot도 (0,0.5)여서 anchoredPosition은 카드 왼쪽 위치 기준임
-                rt.anchoredPosition = new Vector2(startX + spacing * i, 0);
-            }
-        }
+        // 필요시 즉시 반영 (대부분 없어도 되지만 안전하게)
+        LayoutRebuilder.ForceRebuildLayoutImmediate(handRect);
+        Canvas.ForceUpdateCanvases();
     }
 
+    //핸드존 
+    public void MouseOnHandZone()
+    {
+        var layoutGroup = playerHandZone.GetComponent<HorizontalLayoutGroup>();
+        if (layoutGroup == null) return;
+
+        // 1) pad 복사/수정
+        var pad = layoutGroup.padding;
+        pad.top = -50;
+
+        // 2) 재할당(중요!)
+        layoutGroup.padding = pad;
+
+        // 3) 강제 리빌드
+        LayoutRebuilder.ForceRebuildLayoutImmediate(playerHandZone as RectTransform);
+        Canvas.ForceUpdateCanvases();
+    }
+
+    public void MouseExitHandZone()
+    {
+        var layoutGroup = playerHandZone.GetComponent<HorizontalLayoutGroup>();
+        if (layoutGroup == null) return;
+
+        var pad = layoutGroup.padding;
+        pad.top = 300;                         // 네가 원하는 값
+        layoutGroup.padding = pad;             // 재할당(중요!)
+
+        LayoutRebuilder.ForceRebuildLayoutImmediate(playerHandZone as RectTransform);
+        Canvas.ForceUpdateCanvases();
+    }
 
     #endregion
 
@@ -286,45 +310,15 @@ public class PlayerCardManager : MonoBehaviour
     {
         string tag = ownerType == OwnerType.Player ? "PlayerZone" : "EnemyZone";
         var slots = GameObject.FindGameObjectsWithTag(tag);
-        Transform best = null;
-        int bestSibling = int.MaxValue;
-
         foreach (var go in slots)
         {
-            if (go == null) continue;
-            var tr = go.transform;
-            if (!IsSlotFree(tr)) continue;
-
-            int si = tr.GetSiblingIndex();
-            if (si < bestSibling)
+            var slot = go.GetComponent<MonsterSlotDrop>();
+            if (slot != null && !slot.isOccupied)
             {
-                bestSibling = si;
-                best = tr;
+                return slot.transform;
             }
         }
-
-        return best;
-    }
-
-    // 슬롯이 사용 가능한지(점유 플래그 + 활성 자식 존재 여부) 확인
-    private bool IsSlotFree(Transform slotTr)
-    {
-        if (slotTr == null) return false;
-        var slot = slotTr.GetComponent<MonsterZoneSlot>();
-        if (slot == null) return false;
-        if (slot.isOccupied) return false;
-
-        // 자식 중 활성 오브젝트가 하나라도 있으면 점유된 것으로 간주
-        if (slotTr.childCount > 0)
-        {
-            for (int i = 0; i < slotTr.childCount; i++)
-            {
-                var child = slotTr.GetChild(i);
-                if (child != null && child.gameObject.activeSelf)
-                    return false;
-            }
-        }
-        return true;
+        return null;
     }
 
     public bool PlaceExistingCardToMonsterSlot(GameObject card, OwnerType ownerType)
@@ -354,7 +348,7 @@ public class PlayerCardManager : MonoBehaviour
             drag.droppedOnSlot = true;
         }
 
-        var slot = slotTr.GetComponent<MonsterZoneSlot>();
+        var slot = slotTr.GetComponent<MonsterSlotDrop>();
         if (slot != null)
         {
             slot.isOccupied = true;

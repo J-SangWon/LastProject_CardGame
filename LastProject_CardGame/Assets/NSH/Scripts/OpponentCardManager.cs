@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// 적 카드 매니저: 덱 로딩, 드로우, 카드 배치.
@@ -58,9 +59,10 @@ public class OpponentCardManager : MonoBehaviour
             for (int i = 0; i < entry.count; i++)
             {
                 GameObject card = CreateCard(entry.card, cardPrefab, deckZone, Quaternion.identity);
-                card.transform.localPosition = new Vector3(0, 0, -zIndex * 0.01f);
+                card.transform.localPosition = new Vector3(-zIndex * 0.5f, zIndex * 0.5f,0);
                 card.GetComponent<CardUI>().EnableCardFlip = false;
                 card.GetComponent<CardUI>().ownerType = OwnerType.Opponent; // 적 카드로 설정
+                card.GetComponent<CardUI>().FlipCard(false); // 카드 뒷면으로 설정
                 card.AddComponent<FildMonster>();
                 zIndex++;
 
@@ -87,6 +89,7 @@ public class OpponentCardManager : MonoBehaviour
             GameObject card = deck[0];
             deck.RemoveAt(0);
 
+            card.GetComponent<CardUI>().FlipCard(true); // 카드 앞면으로 설정
             card.transform.SetParent(handZone, false);
             card.transform.localScale = Vector3.one;
         }
@@ -98,15 +101,67 @@ public class OpponentCardManager : MonoBehaviour
 
     public void UpdateHandLayout()
     {
-        float spacing = 150f;
-        for (int i = 0; i < handZone.childCount; i++)
-        {
-            RectTransform rt = handZone.GetChild(i).GetComponent<RectTransform>();
-            if (rt != null)
-            {
-                rt.anchoredPosition = new Vector2(i * spacing, 0);
-            }
-        }
+        int cardCount = handZone.childCount;
+        if (cardCount == 0) return;
+
+        RectTransform handRect = handZone.GetComponent<RectTransform>();
+        var layout = handZone.GetComponent<HorizontalLayoutGroup>();
+        if (!layout) return;
+        float maxWidth = handRect.rect.width;
+
+        float cardWidth = 150f;    // 카드 너비 (실제 카드 크기로 맞춰야 함)
+        float minSpacing = -40f;    // 최소 간격
+        float maxSpacing = 60f;    // 최대 간격
+
+        // 카드 간격 기본값
+        float spacing = Mathf.Clamp(maxSpacing - 20 * (cardCount - 2), minSpacing, maxSpacing);
+
+        layout.spacing = spacing; // 레이아웃 그룹에 간격 설정
+
+        // 필요시 즉시 반영 (대부분 없어도 되지만 안전하게)
+        LayoutRebuilder.ForceRebuildLayoutImmediate(handRect);
+        Canvas.ForceUpdateCanvases();
+
+        //float spacing = 150f;
+        //for (int i = 0; i < handZone.childCount; i++)
+        //{
+        //    RectTransform rt = handZone.GetChild(i).GetComponent<RectTransform>();
+        //    if (rt != null)
+        //    {
+        //        rt.anchoredPosition = new Vector2(i * spacing, 0);
+        //    }
+        //}
+    }
+
+    //핸드존 
+    public void MouseOnHandZone()
+    {
+        var layoutGroup = handZone.GetComponent<HorizontalLayoutGroup>();
+        if (layoutGroup == null) return;
+
+        // 1) pad 복사/수정
+        var pad = layoutGroup.padding;
+        pad.top = -50;
+
+        // 2) 재할당(중요!)
+        layoutGroup.padding = pad;
+
+        // 3) 강제 리빌드
+        LayoutRebuilder.ForceRebuildLayoutImmediate(handZone as RectTransform);
+        Canvas.ForceUpdateCanvases();
+    }
+
+    public void MouseExitHandZone()
+    {
+        var layoutGroup = handZone.GetComponent<HorizontalLayoutGroup>();
+        if (layoutGroup == null) return;
+
+        var pad = layoutGroup.padding;
+        pad.top = 300;                         // 네가 원하는 값
+        layoutGroup.padding = pad;             // 재할당(중요!)
+
+        LayoutRebuilder.ForceRebuildLayoutImmediate(handZone as RectTransform);
+        Canvas.ForceUpdateCanvases();
     }
 
     #endregion

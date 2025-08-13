@@ -23,9 +23,9 @@ public class MonsterSlotDrop : MonoBehaviour, IDropHandler
         // 카드를 적절한 손패 존으로 되돌리기
         if (ownerType == OwnerType.Player)
         {
-            if (PlayerCardManager.Instance != null && PlayerCardManager.Instance.handZone != null)
+            if (PlayerCardManager.Instance != null && PlayerCardManager.Instance.playerHandZone != null)
             {
-                card.transform.SetParent(PlayerCardManager.Instance.handZone, false);
+                card.transform.SetParent(PlayerCardManager.Instance.playerHandZone, false);
                 card.transform.localScale = Vector3.one;
                 card.transform.localPosition = Vector3.zero;
                 Debug.Log($"카드를 플레이어 손패로 되돌렸습니다.");

@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Greece AphroditeGrace
   m_EditorClassIdentifier: 
   cardName: "\uC544\uD504\uB85C\uB514\uD14C\uC758 \uC740"
-  description: "\uC544\uAD70 \uD558\uC218\uC778 \uD558\uB098\uC758 \uCCB4\uB825\uC744
-    2\uD68C\uBCF5\uD558\uACE0 \uACF5\uACA9\uB825\uC744 1 \uC0C1\uC2B9"
+  description: "\uC544\uAD70 \uD558\uC218\uC778 \uD558\uB098\uC5D0\uAC8C 1/2 \uBC84\uD504\uB97C
+    \uC90D\uB2C8\uB2E4."
   artwork: {fileID: 21300000, guid: 1adfdae041200f347af1e016bdfea778, type: 3}
   cardType: 1
   rarity: 1
@@ -22,10 +22,15 @@ MonoBehaviour:
   cardId: 866485ce-c6ef-445c-a5d4-ad27a0a0f89f
   haveLive2D: 0
   live2DPath: 
-  cardEffects: []
+  cardAbility: {fileID: 0}
+  abilityValue: 0
+  monsterAbilityType: 0
   tags: []
+  ownerType: 0
   craftCost: 30
   disenchantReward: 8
   canCraft: 1
   canDisenchant: 1
+  maxHP: 0
+  currentHP: 0
   spellType: 0
