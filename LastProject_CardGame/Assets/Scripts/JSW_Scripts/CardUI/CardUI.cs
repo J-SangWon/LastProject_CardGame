@@ -273,7 +273,7 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
             .OnComplete(() =>
             {
                 SetFace(showFront);
-                transform.DORotate(Vector3.zero, 0.15f);
+                transform.DOLocalRotate(Vector3.zero, 0.15f);
             });
     }
 

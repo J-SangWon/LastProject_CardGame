@@ -792,6 +792,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 537158766}
     - target: {fileID: 3457817937308699894, guid: 81c1df92da6640e45b24839b4321c3fa, type: 3}
+      propertyPath: coinPlusButton
+      value: 
+      objectReference: {fileID: 1371385509}
+    - target: {fileID: 3457817937308699894, guid: 81c1df92da6640e45b24839b4321c3fa, type: 3}
       propertyPath: CardPackDownImg
       value: 
       objectReference: {fileID: 194988875}
@@ -3138,6 +3142,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1371385509 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1946534649192438846, guid: d1bf92950af282242a33d643000aab89, type: 3}
+  m_PrefabInstance: {fileID: 537158759}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1387527995
 GameObject:
   m_ObjectHideFlags: 0
