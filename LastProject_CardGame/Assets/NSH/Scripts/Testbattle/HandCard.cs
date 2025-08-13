@@ -44,4 +44,5 @@ public class HandCard : MonoBehaviour, IPointerClickHandler
         CardSummonManager.Instance.SelectCard(this.gameObject);
         Debug.Log("카드 선택됨: " + gameObject.name);
     }
+
 }

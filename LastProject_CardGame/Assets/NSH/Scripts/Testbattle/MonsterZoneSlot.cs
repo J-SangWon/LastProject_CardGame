@@ -89,4 +89,5 @@ public class MonsterZoneSlot : MonoBehaviour, IPointerClickHandler
 
         isOccupied = true;
     }
+
 }
