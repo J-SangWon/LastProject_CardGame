@@ -289,7 +289,7 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
         if (!isFront || cardData == null)
             return;
 
-        if (SceneManager.GetActiveScene().name == "InGame")
+        if (SceneManager.GetActiveScene().name == "InGame" && isFront)
         {
             ShowDetailPanel(cardData);
         }

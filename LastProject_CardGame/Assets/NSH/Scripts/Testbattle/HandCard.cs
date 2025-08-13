@@ -42,6 +42,7 @@ public class HandCard : MonoBehaviour, IPointerClickHandler
 
         // 코스트 검사 통과하면 카드 선택 처리
         CardSummonManager.Instance.SelectCard(this.gameObject);
+        cardUI.SetOutline(true);
         Debug.Log("카드 선택됨: " + gameObject.name);
     }
 }

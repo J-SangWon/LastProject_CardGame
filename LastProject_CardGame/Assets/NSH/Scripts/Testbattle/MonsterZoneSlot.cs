@@ -40,6 +40,7 @@ public class MonsterZoneSlot : MonoBehaviour, IPointerClickHandler
         if (selectedCard != null)
         {
             var cardUI = selectedCard.GetComponent<CardUI>();
+            cardUI.SetOutline(false); // 선택 해제
             if (cardUI == null)
             {
                 return;
