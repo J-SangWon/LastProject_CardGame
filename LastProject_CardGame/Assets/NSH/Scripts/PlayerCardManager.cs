@@ -12,8 +12,12 @@ public class PlayerCardManager : MonoBehaviour
 
     [Header("플레이어 카드")]
     public GameObject cardPrefab;
-    public Transform deckZone;
-    public Transform handZone;
+    public Transform playerDeckZone;
+    public Transform enemyDeckZone;
+    public Transform playerHandZone;
+    public Transform enemyHandZone;
+    public Transform playerMonsterZone;
+    public Transform enemyMonsterZone;
 
     private List<GameObject> deck = new List<GameObject>();
     public DeckData currentDeckData;
@@ -76,7 +80,7 @@ public class PlayerCardManager : MonoBehaviour
         int zIndex = 0;
         foreach (var cardData in flatDeck)
         {
-            GameObject card = CreateCard(cardData, cardPrefab, deckZone, Quaternion.identity);
+            GameObject card = CreateCard(cardData, cardPrefab, playerDeckZone, Quaternion.identity);
             card.transform.localPosition = new Vector3(-zIndex * 0.5f, zIndex * 0.5f, 0);
             card.GetComponent<CardUI>().EnableCardFlip = false;
             card.GetComponent<CardUI>().FlipCard(false); // 초기에는 뒷면으로 설정
@@ -115,7 +119,7 @@ public class PlayerCardManager : MonoBehaviour
             deck.RemoveAt(0);
 
             card.GetComponent<CardUI>().FlipCard(true);
-            card.transform.SetParent(handZone, false);
+            card.transform.SetParent(playerHandZone, false);
             card.transform.localScale = Vector3.one;
         }
 
@@ -136,7 +140,7 @@ public class PlayerCardManager : MonoBehaviour
                 deck.RemoveAt(i);
                 i--; // 리스트에서 제거했으니 인덱스 보정
 
-                card.transform.SetParent(handZone, false);
+                card.transform.SetParent(playerHandZone, false);
                 card.transform.localScale = Vector3.one;
 
                 movedCount++;
@@ -147,11 +151,11 @@ public class PlayerCardManager : MonoBehaviour
 
     public void UpdateHandLayout()
     {
-        int cardCount = handZone.childCount;
+        int cardCount = playerHandZone.childCount;
         if (cardCount == 0) return;
 
-        RectTransform handRect = handZone.GetComponent<RectTransform>();
-        var layout = handZone.GetComponent<HorizontalLayoutGroup>();
+        RectTransform handRect = playerHandZone.GetComponent<RectTransform>();
+        var layout = playerHandZone.GetComponent<HorizontalLayoutGroup>();
         if (!layout) return;
         float maxWidth = handRect.rect.width;
 
@@ -172,7 +176,7 @@ public class PlayerCardManager : MonoBehaviour
     //핸드존 
     public void MouseOnHandZone()
     {
-        var layoutGroup = handZone.GetComponent<HorizontalLayoutGroup>();
+        var layoutGroup = playerHandZone.GetComponent<HorizontalLayoutGroup>();
         if (layoutGroup == null) return;
 
         // 1) pad 복사/수정
@@ -183,20 +187,20 @@ public class PlayerCardManager : MonoBehaviour
         layoutGroup.padding = pad;
 
         // 3) 강제 리빌드
-        LayoutRebuilder.ForceRebuildLayoutImmediate(handZone as RectTransform);
+        LayoutRebuilder.ForceRebuildLayoutImmediate(playerHandZone as RectTransform);
         Canvas.ForceUpdateCanvases();
     }
 
     public void MouseExitHandZone()
     {
-        var layoutGroup = handZone.GetComponent<HorizontalLayoutGroup>();
+        var layoutGroup = playerHandZone.GetComponent<HorizontalLayoutGroup>();
         if (layoutGroup == null) return;
 
         var pad = layoutGroup.padding;
         pad.top = 300;                         // 네가 원하는 값
         layoutGroup.padding = pad;             // 재할당(중요!)
 
-        LayoutRebuilder.ForceRebuildLayoutImmediate(handZone as RectTransform);
+        LayoutRebuilder.ForceRebuildLayoutImmediate(playerHandZone as RectTransform);
         Canvas.ForceUpdateCanvases();
     }
 
