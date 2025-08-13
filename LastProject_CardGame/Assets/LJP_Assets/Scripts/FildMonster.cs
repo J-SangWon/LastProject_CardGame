@@ -12,7 +12,6 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
 //{ get; private set; }
 
 	private bool isAppeared = false;
-	private bool isEntrance = false;
     private bool hasReverberated = false;
 
     void Awake()
@@ -37,8 +36,12 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
             && isAppeared == false 
             && cardUI != null && cardUI.isOnField)
         {
-            Entrance(monsterCardData.cardAbility, monsterCardData.abilityValue);
-            isAppeared = true;
+			BattleManager.Instance.SetAbilityCaster(gameObject);
+
+            if (monsterCardData.cardAbility.targetType == TargetType.Single) BattleManager.Instance.IsAbilityTargeting = true;
+            else Entrance(monsterCardData.cardAbility, monsterCardData.abilityValue);
+
+			isAppeared = true;
         }
         
         // 마법/함정 카드의 필드 배치 효과
@@ -93,42 +96,37 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
 			return;
 		}
 		
-		// 몬스터 카드 클릭 처리 (기존 로직)
-		//Debug.Log($"{monsterCardData.cardName} clicked!");
-
-		//if (BattleManager.Instance == null)
-		//{
-		//	Debug.LogError("BattleManager_test 인스턴스 없음!");
-		//	return;
-		//}
-
-		//if (!isEntrance)
-		//{
-		//	if (!BattleManager.Instance.HasAttacker())
-		//	{
-		//		// 공격자가 아직 없으면 이 카드를 공격자로 등록
-		//		BattleManager_test.Instance.SetAttacker(gameObject);
-		//	}
-		//	else
-		//	{
-		//		// 이미 공격자가 선택된 상태면 이 카드를 공격 대상(Target)으로 등록
-		//		if (BattleManager.Instance != null)
-		//			BattleManager.Instance.SetTarget(gameObject);
-		//	}
-		//}
-		//else
-		//{
-		//	isEntrance = false;
-		//}
+        if(BattleManager.Instance.AbilityCaster != null && BattleManager.Instance.IsAbilityTargeting)
+        {
+            BattleManager.Instance.SetAbilityTarget(gameObject);
+            Entrance(monsterCardData.cardAbility, monsterCardData.abilityValue);
+        }
+		
 	}
 
     private void Entrance(CardAbility cardAbility, int abilityValue) //진입
     {
-        AbilityParameter parameter = new AbilityParameter() { value = abilityValue };
-        cardAbility?.Activate(cardUI, parameter);
-    }
+		AbilityParameter parameter = new AbilityParameter() { value = abilityValue};
 
-    private void Continuous() // 지속효과
+        switch(monsterCardData.cardAbility.targetType)
+        {
+            case TargetType.Single:
+                if (BattleManager.Instance.AbilityTarget?.GetComponent<CardUI>() != null)
+                    parameter.target = BattleManager.Instance.AbilityTarget?.GetComponent<CardUI>(); 
+				break;
+            case TargetType.Fild:
+                
+                break;
+            case TargetType.Hand:
+                break;
+            case TargetType.Deck:
+                break;
+        }
+
+		cardAbility?.Activate(cardUI, parameter);
+	}
+
+	private void Continuous() // 지속효과
     {
 
     }
@@ -136,7 +134,11 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
 
     private void Reverberation(CardAbility cardAbility, int abilityValue) //여운
     {
-        AbilityParameter parameter = new AbilityParameter() { value = abilityValue };
+        AbilityParameter parameter = new AbilityParameter();
+
+		if (BattleManager.Instance.AbilityTarget?.GetComponent<CardUI>() != null)
+			parameter = new AbilityParameter() { value = abilityValue, target = BattleManager.Instance.AbilityTarget?.GetComponent<CardUI>() };
+
         cardAbility?.Activate(cardUI, parameter);
     }
 

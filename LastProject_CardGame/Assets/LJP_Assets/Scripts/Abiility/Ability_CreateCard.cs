@@ -6,16 +6,15 @@ using UnityEngine;
 public class Ability_CreateCardToHnad : CardAbility
 {
 	[SerializeField] private BaseCardData cardData;
-	[SerializeField] private TargetingType creatLocation;
 
 	public override void Activate(CardUI card, AbilityParameter param)
 	{
-		switch (creatLocation)
+		switch (targetType)
 		{
-			case TargetingType.Deck:
+			case TargetType.Deck:
 				CrateCardToDeckLogic();
 				break;
-			case TargetingType.Hand:
+			case TargetType.Hand:
 				CrateCardToHandLogic();
 				break;
 			default:

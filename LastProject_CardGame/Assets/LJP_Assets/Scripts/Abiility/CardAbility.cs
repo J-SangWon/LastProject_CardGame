@@ -8,9 +8,20 @@ public class AbilityParameter
 	public List<CardUI> targets; // 복수 대상
 }
 
+public enum TargetType
+{
+	None,
+	Single,
+	Fild,
+	Hand,
+	Deck
+}
+
 public abstract class CardAbility : ScriptableObject
 {
 	public abstract void Activate(CardUI card, AbilityParameter param);
+
+	public TargetType targetType;
 
     [Header("발동 조건")]
     public EffectCondition condition;

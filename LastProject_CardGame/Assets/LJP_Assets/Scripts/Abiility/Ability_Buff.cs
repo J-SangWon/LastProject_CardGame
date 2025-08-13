@@ -15,19 +15,10 @@ public enum BuffType
 	AllBuff
 }
 
-public enum TargetingType
-{
-	Single,
-	Fild,
-	Hand,
-	Deck
-}
-
 [CreateAssetMenu(menuName = "CardAbilities/Buff")]
 public class Ability_Buff : CardAbility
 {
 	[SerializeField] private BuffType buffType;
-	[SerializeField] private TargetingType buffTarget;
 
 	[SerializeField] private bool isReset = true;
 
@@ -46,7 +37,7 @@ public class Ability_Buff : CardAbility
 	{
 		var handler = BuffHandlers[buffType];
 
-		if (buffTarget == TargetingType.Single)
+		if (targetType == TargetType.Single)
 		{
 			targetList.Add(param.target);
 			handler.Apply(param.target, param.value, beforeAttackList, beforeHealthList);
