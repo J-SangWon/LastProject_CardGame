@@ -32,7 +32,7 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     public void OnBeginDrag(PointerEventData eventData)
     {
         if (PlayerCardManager.Instance != null &&
-            transform.parent == PlayerCardManager.Instance.deckZone)
+            transform.parent == PlayerCardManager.Instance.playerDeckZone)
             return;
 
         if (cardOwner == Owner.Player &&
@@ -79,7 +79,7 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     public void OnDrag(PointerEventData eventData)
     {
         if (PlayerCardManager.Instance != null &&
-            transform.parent == PlayerCardManager.Instance.deckZone)
+            transform.parent == PlayerCardManager.Instance.playerDeckZone)
             return;
 
         if (cardOwner == Owner.Player &&
@@ -112,7 +112,7 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     public void OnEndDrag(PointerEventData eventData)
     {
         if (PlayerCardManager.Instance != null &&
-            transform.parent == PlayerCardManager.Instance.deckZone)
+            transform.parent == PlayerCardManager.Instance.playerDeckZone)
             return;
 
         canvasGroup.blocksRaycasts = true;

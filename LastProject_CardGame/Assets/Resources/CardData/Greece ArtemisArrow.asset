@@ -13,16 +13,20 @@ MonoBehaviour:
   m_Name: Greece ArtemisArrow
   m_EditorClassIdentifier: 
   cardName: "\uC544\uB974\uD14C\uBBF8\uC2A4\uC758 \uD654\uC0B4"
-  description: 
+  description: "\uD558\uC218\uC778 \uD558\uB098\uC5D0\uAC8C 2\uC758 \uD53C\uD574\uB97C
+    \uC90D\uB2C8\uB2E4."
   artwork: {fileID: 21300000, guid: 5b0449db8152add45abc89f0ae6dbb2a, type: 3}
   cardType: 1
   rarity: 0
-  cost: 0
+  cost: 1
   cardId: cca31a4e-9abb-408c-a91e-5e45396c8f3e
   haveLive2D: 0
   live2DPath: 
-  cardEffect: 0
+  cardAbility: {fileID: 0}
+  abilityValue: 0
+  monsterAbilityType: 0
   tags: []
+  ownerType: 0
   craftCost: 10
   disenchantReward: 2
   canCraft: 1

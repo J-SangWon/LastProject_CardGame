@@ -294,7 +294,7 @@ public class FieldSpellZone : MonoBehaviour, IPointerClickHandler
                     // 카드를 원래 위치로 되돌리기 (손패로)
                     if (cardUI.ownerType == OwnerType.Player)
                     {
-                        cardObject.transform.SetParent(PlayerCardManager.Instance.handZone, false);
+                        cardObject.transform.SetParent(PlayerCardManager.Instance.playerHandZone, false);
                         cardObject.transform.localScale = Vector3.one;
                         cardObject.transform.localPosition = Vector3.zero;
                         Debug.Log($"일반 마법카드 '{cardUI.cardData.cardName}'을(를) 손패로 되돌렸습니다.");

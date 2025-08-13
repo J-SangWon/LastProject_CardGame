@@ -6,16 +6,15 @@ using UnityEngine;
 public class Ability_CreateCardToHnad : CardAbility
 {
 	[SerializeField] private BaseCardData cardData;
-	[SerializeField] private TargetingType creatLocation;
 
 	public override void Activate(CardUI card, AbilityParameter param)
 	{
-		switch (creatLocation)
+		switch (targetType)
 		{
-			case TargetingType.Deck:
+			case TargetType.Deck:
 				CrateCardToDeckLogic();
 				break;
-			case TargetingType.Hand:
+			case TargetType.Hand:
 				CrateCardToHandLogic();
 				break;
 			default:
@@ -30,7 +29,7 @@ public class Ability_CreateCardToHnad : CardAbility
 
 	private void CrateCardToDeckLogic()
 	{
-		GameObject cardGo = PlayerCardManager.Instance.CreateCard(cardData, PlayerCardManager.Instance.cardPrefab, PlayerCardManager.Instance.deckZone, Quaternion.identity);
+		GameObject cardGo = PlayerCardManager.Instance.CreateCard(cardData, PlayerCardManager.Instance.cardPrefab, PlayerCardManager.Instance.playerDeckZone, Quaternion.identity);
 		int randIndex = Random.Range(0, PlayerCardManager.Instance.GetDeck().Count);
 		Debug.Log("¿Œµ¶Ω∫ : " + randIndex);
 
@@ -48,7 +47,7 @@ public class Ability_CreateCardToHnad : CardAbility
 
 	private void CrateCardToHandLogic()
 	{
-		GameObject cardGo = PlayerCardManager.Instance.CreateCard(cardData, PlayerCardManager.Instance.cardPrefab, PlayerCardManager.Instance.handZone, Quaternion.identity);
+		GameObject cardGo = PlayerCardManager.Instance.CreateCard(cardData, PlayerCardManager.Instance.cardPrefab, PlayerCardManager.Instance.playerHandZone, Quaternion.identity);
 
 		cardGo.GetComponent<CardUI>().EnableCardFlip = false;
 		cardGo.AddComponent<FildMonster>();

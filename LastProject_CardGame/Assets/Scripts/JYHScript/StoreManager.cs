@@ -43,6 +43,7 @@ public class StoreManager : MonoBehaviour
     [Header("상점 UI")]
     public Text coinText;
     public Button buyButton;
+    public Button coinPlusButton; // 코인 추가 버튼 (옵션, 실제 게임에서는 사용 안함)
     public int coin = 100;
 
     // ────────────────── 내부 상태 ──────────────────
@@ -65,6 +66,8 @@ public class StoreManager : MonoBehaviour
         buyButton.onClick.AddListener(BuyCard);
         cardOpenBtn.onClick.AddListener(CardAllOpen);
         cardPanelExit.onClick.AddListener(ClosePanel);
+        if(coinPlusButton != null) // 코인 추가 버튼이 있을 경우
+            coinPlusButton.onClick.AddListener(() => { coin += 100; coinText.text = coin.ToString(); }); // 코인 추가 (옵션)
 
         // 스크롤 도중 구매 방지 (옵션)
         packViewController.onDragStart += () => buyButton.interactable = false;
