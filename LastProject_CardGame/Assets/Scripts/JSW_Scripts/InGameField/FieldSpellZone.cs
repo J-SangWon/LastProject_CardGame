@@ -1,7 +1,8 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
+using DG.Tweening;
 
 /// <summary>
 /// 필드마법 존을 관리하는 스크립트
@@ -331,38 +332,62 @@ public class FieldSpellZone : MonoBehaviour, IPointerClickHandler
     // 선택된 카드에서 필드마법 발동 시도 (클릭 흐름용)
     private bool TryActivateFieldSpellFromSelectedCard(GameObject selected)
     {
-        if (selected == null) return false;
-
-        // 턴/페이즈/코스트 및 소유자 검증
-        if (!(GameManager.Instance?.IsPlayerTurn() ?? false)) return false;
-        if (GameManager.Instance.CurrentPhase != GamePhase.MainPhase) return false;
-
+        if (selected == null) { return false; }
+        if (!(GameManager.Instance?.IsPlayerTurn() ?? false)) { return false; }
+        if (GameManager.Instance.CurrentPhase != GamePhase.MainPhase) { return false; }
         var cardUI = selected.GetComponent<CardUI>();
-        if (cardUI == null || cardUI.cardData == null) return false;
-        if (cardUI.isOnField) return false;
-        if (cardUI.ownerType != OwnerType.Player) return false;
+        if (cardUI == null || cardUI.cardData == null) { return false; }
+        if (cardUI.isOnField) { return false; }
+        if (cardUI.ownerType != OwnerType.Player) { return false; }
 
-        if (cardUI.cardData.cardType != CardType.Spell) return false;
+        if (cardUI.cardData.cardType != CardType.Spell) { return false; }
         var spellCard = cardUI.cardData as SpellCardData;
-        if (spellCard == null || spellCard.spellType != SpellType.Field) return false;
+        if (spellCard == null || spellCard.spellType != SpellType.Field) { return false; }
 
-        int cost = cardUI.cardData.cost;
-        if (!(GameManager.Instance?.CanSpendPlayerCost(cost) ?? false)) return false;
 
-        // 기존 필드마법이 있고 교체가 허용되지 않으면 막고 싶다면 여기서 return 처리 가능
+        // 교체 정책: 기존 필드마법이 있으면 제거 후 교체
+        if (currentFieldSpell != null)
+        {
+            RemoveFieldSpell();
+        }
 
-        bool success = ActivateFieldSpell(cardUI.cardData);
-        if (!success) return false;
+        // 실제 선택된 카드 오브젝트를 필드마법 존으로 이동 (MonsterZoneSlot과 동일 패턴)
+        selected.transform.SetParent(transform);
+        selected.transform.localScale = Vector3.one;
+        selected.transform.DOMove(transform.position, 0.5f).SetEase(Ease.OutQuad);
 
-        // 비용 소모
-        if (!(GameManager.Instance?.SpendPlayerCost(cost) ?? false))
-            return false;
+        // 카드 UI 상태 갱신: 앞면, 필드표시, 소유자, 플립 비활성화
+        cardUI.SetFace(true);
+        cardUI.isOnField = true;
+        cardUI.ownerType = OwnerType.Player;
+        cardUI.EnableCardFlip = false;
 
-        // 선택 해제 및 손패 정렬/원본 제거
-        CardSummonManager.Instance?.DeselectCard();
-        Destroy(selected);
-        PlayerCardManager.Instance?.UpdateHandLayout();
+        // 손패 상태 해제
+        var handCard = selected.GetComponent<HandCard>();
+        if (handCard != null) handCard.isInHand = false;
+
+        // 몬스터 전용 컴포넌트 제거 (있을 경우)
+        var fm = selected.GetComponent<FildMonster>();
+        if (fm != null)
+        {
+            DestroyImmediate(fm);
+        }
+
+        // 내부 상태 반영
+        currentFieldSpell = cardUI.cardData;
+        currentFieldSpellCardObj = selected;
         isOccupied = true;
+
+        // UI 텍스트 업데이트
+        if (fieldSpellNameText != null)
+            fieldSpellNameText.text = currentFieldSpell.cardName;
+
+        // 선택 해제/손패 레이아웃 갱신 (코스트 소모는 다른 곳에서 처리)
+        CardSummonManager.Instance?.DeselectCard();
+        PlayerCardManager.Instance?.UpdateHandLayout();
+
+        // 효과 발동
+        ActivateFieldSpellEffect();
         return true;
     }
 }
