@@ -29,7 +29,7 @@ public class Ability_CreateCardToHnad : CardAbility
 
 	private void CrateCardToDeckLogic()
 	{
-		GameObject cardGo = PlayerCardManager.Instance.CreateCard(cardData, PlayerCardManager.Instance.cardPrefab, PlayerCardManager.Instance.deckZone, Quaternion.identity);
+		GameObject cardGo = PlayerCardManager.Instance.CreateCard(cardData, PlayerCardManager.Instance.cardPrefab, PlayerCardManager.Instance.playerDeckZone, Quaternion.identity);
 		int randIndex = Random.Range(0, PlayerCardManager.Instance.GetDeck().Count);
 		Debug.Log("¿Œµ¶Ω∫ : " + randIndex);
 
@@ -47,7 +47,7 @@ public class Ability_CreateCardToHnad : CardAbility
 
 	private void CrateCardToHandLogic()
 	{
-		GameObject cardGo = PlayerCardManager.Instance.CreateCard(cardData, PlayerCardManager.Instance.cardPrefab, PlayerCardManager.Instance.handZone, Quaternion.identity);
+		GameObject cardGo = PlayerCardManager.Instance.CreateCard(cardData, PlayerCardManager.Instance.cardPrefab, PlayerCardManager.Instance.playerHandZone, Quaternion.identity);
 
 		cardGo.GetComponent<CardUI>().EnableCardFlip = false;
 		cardGo.AddComponent<FildMonster>();

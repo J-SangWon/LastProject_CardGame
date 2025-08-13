@@ -11,8 +11,12 @@ public class PlayerCardManager : MonoBehaviour
 
     [Header("플레이어 카드")]
     public GameObject cardPrefab;
-    public Transform deckZone;
-    public Transform handZone;
+    public Transform playerDeckZone;
+    public Transform enemyDeckZone;
+    public Transform playerHandZone;
+    public Transform enemyHandZone;
+    public Transform playerMonsterZone;
+    public Transform enemyMonsterZone;
 
     private List<GameObject> deck = new List<GameObject>();
     public DeckData currentDeckData;
@@ -75,7 +79,7 @@ public class PlayerCardManager : MonoBehaviour
         int zIndex = 0;
         foreach (var cardData in flatDeck)
         {
-            GameObject card = CreateCard(cardData, cardPrefab, deckZone, Quaternion.identity);
+            GameObject card = CreateCard(cardData, cardPrefab, playerDeckZone, Quaternion.identity);
             card.transform.localPosition = new Vector3(-zIndex * 0.5f, zIndex * 0.5f, 0);
             card.GetComponent<CardUI>().EnableCardFlip = false;
             card.GetComponent<CardUI>().FlipCard(false); // 초기에는 뒷면으로 설정
@@ -114,7 +118,7 @@ public class PlayerCardManager : MonoBehaviour
             deck.RemoveAt(0);
 
             card.GetComponent<CardUI>().FlipCard(true);
-            card.transform.SetParent(handZone, false);
+            card.transform.SetParent(playerHandZone, false);
             card.transform.localScale = Vector3.one;
         }
 
@@ -135,7 +139,7 @@ public class PlayerCardManager : MonoBehaviour
                 deck.RemoveAt(i);
                 i--; // 리스트에서 제거했으니 인덱스 보정
 
-                card.transform.SetParent(handZone, false);
+                card.transform.SetParent(playerHandZone, false);
                 card.transform.localScale = Vector3.one;
 
                 movedCount++;
@@ -146,10 +150,10 @@ public class PlayerCardManager : MonoBehaviour
 
     public void UpdateHandLayout()
     {
-        int cardCount = handZone.childCount;
+        int cardCount = playerHandZone.childCount;
         if (cardCount == 0) return;
 
-        RectTransform handRect = handZone.GetComponent<RectTransform>();
+        RectTransform handRect = playerHandZone.GetComponent<RectTransform>();
         float maxWidth = handRect.rect.width;
 
         float cardWidth = 150f;    // 카드 너비 (실제 카드 크기로 맞춰야 함)
@@ -173,7 +177,7 @@ public class PlayerCardManager : MonoBehaviour
 
         for (int i = 0; i < cardCount; i++)
         {
-            RectTransform rt = handZone.GetChild(i).GetComponent<RectTransform>();
+            RectTransform rt = playerHandZone.GetChild(i).GetComponent<RectTransform>();
             if (rt != null)
             {
                 // 카드 Pivot도 (0,0.5)여서 anchoredPosition은 카드 왼쪽 위치 기준임

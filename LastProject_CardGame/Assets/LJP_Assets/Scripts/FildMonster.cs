@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -100,30 +102,37 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
         {
             BattleManager.Instance.SetAbilityTarget(gameObject);
             Entrance(monsterCardData.cardAbility, monsterCardData.abilityValue);
+            BattleManager.Instance.IsAbilityTargeting = false;
         }
 		
 	}
 
-    private void Entrance(CardAbility cardAbility, int abilityValue) //진입
-    {
-		AbilityParameter parameter = new AbilityParameter() { value = abilityValue};
+	private void Entrance(CardAbility cardAbility, int abilityValue) // 진입
+	{
+		AbilityParameter parameter = new AbilityParameter() { value = abilityValue };
 
-        switch(monsterCardData.cardAbility.targetType)
-        {
-            case TargetType.Single:
-                if (BattleManager.Instance.AbilityTarget?.GetComponent<CardUI>() != null)
-                    parameter.target = BattleManager.Instance.AbilityTarget?.GetComponent<CardUI>(); 
-				break;
-            case TargetType.Fild:
-                
-                break;
-            case TargetType.Hand:
-                break;
-            case TargetType.Deck:
-                break;
-        }
+		if (monsterCardData.cardAbility.targetType == TargetType.Single)
+		{
+			var targetUI = BattleManager.Instance.AbilityTarget?.GetComponent<CardUI>();
+			if (targetUI != null)
+				parameter.target = targetUI;
+		}
+		else
+		{
+			var targets = GetAbilityTargets(
+				monsterCardData.cardAbility.targetType,
+				monsterCardData.cardAbility.targetOwner
+			);
+
+			parameter.targets.AddRange(targets);
+		}
 
 		cardAbility?.Activate(cardUI, parameter);
+
+		// 정리
+		parameter = null;
+		BattleManager.Instance.AbilityCaster = null;
+		BattleManager.Instance.AbilityTarget = null;
 	}
 
 	private void Continuous() // 지속효과
@@ -142,7 +151,62 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
         cardAbility?.Activate(cardUI, parameter);
     }
 
-    private void HandleDestroyed()
+	private IEnumerable<CardUI> GetAbilityTargets(TargetType type, TargetOwner owner)
+	{
+		switch (type)
+		{
+			case TargetType.Fild:
+				return GetFromZones(owner,
+					PlayerCardManager.Instance.playerMonsterZone,
+					PlayerCardManager.Instance.enemyMonsterZone,
+					getChildOfChild: true);
+
+			case TargetType.Hand:
+				return GetFromZones(owner,
+					PlayerCardManager.Instance.playerHandZone,
+					PlayerCardManager.Instance.enemyHandZone);
+
+			case TargetType.Deck:
+				return GetFromZones(owner,
+					PlayerCardManager.Instance.playerDeckZone,
+					PlayerCardManager.Instance.enemyDeckZone);
+
+			default:
+				return Enumerable.Empty<CardUI>();
+		}
+	}
+
+	private IEnumerable<CardUI> GetFromZones(TargetOwner owner, Transform playerZone, Transform enemyZone, bool getChildOfChild = false)
+	{
+		switch (owner)
+		{
+			case TargetOwner.Player:
+				return GetCardUIsFromZone(playerZone, getChildOfChild);
+			case TargetOwner.Enemy:
+				return GetCardUIsFromZone(enemyZone, getChildOfChild);
+			case TargetOwner.All:
+				return GetCardUIsFromZone(playerZone, getChildOfChild)
+					.Concat(GetCardUIsFromZone(enemyZone, getChildOfChild));
+			default:
+				return Enumerable.Empty<CardUI>();
+		}
+	}
+
+	private IEnumerable<CardUI> GetCardUIsFromZone(Transform zone, bool getChildOfChild)
+	{
+		for (int i = 0; i < zone.childCount; i++)
+		{
+			Transform target = zone.GetChild(i);
+			if (getChildOfChild && target.childCount > 0)
+				target = target.GetChild(0);
+
+			var cardUI = target?.GetComponent<CardUI>();
+			if (cardUI != null)
+				yield return cardUI;
+		}
+	}
+
+	private void HandleDestroyed()
     {
         if (hasReverberated) return;
         if (monsterCardData != null && monsterCardData.monsterAbilityType == MonsterCardAbilityType.Reverberation)

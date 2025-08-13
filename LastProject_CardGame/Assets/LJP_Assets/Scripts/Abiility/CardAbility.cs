@@ -17,11 +17,20 @@ public enum TargetType
 	Deck
 }
 
+public enum TargetOwner
+{
+	None,
+	Player,
+	Enemy,
+	All
+}
+
 public abstract class CardAbility : ScriptableObject
 {
 	public abstract void Activate(CardUI card, AbilityParameter param);
 
 	public TargetType targetType;
+	public TargetOwner targetOwner;
 
     [Header("발동 조건")]
     public EffectCondition condition;

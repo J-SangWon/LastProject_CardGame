@@ -70,7 +70,7 @@ public class Ability_SummonFromDeck : CardAbility
             }
         };
 
-        var hand = isPlayer ? PlayerCardManager.Instance.handZone : OpponentCardManager.Instance.handZone;
+        var hand = isPlayer ? PlayerCardManager.Instance.playerHandZone : OpponentCardManager.Instance.handZone;
         var before = new HashSet<Transform>();
         foreach (Transform t in hand)
         {
