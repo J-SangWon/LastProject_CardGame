@@ -104,15 +104,8 @@ public class EnemyAI : MonoBehaviour
         Debug.Log("[EnemyAI] 메인 페이즈 시작");
         yield return new WaitForSeconds(thinkingTime);
 
-        // AI가 소환할 수 있는 카드가 있는지 확인
-        if (CanSummonCard())
-        {
-            yield return StartCoroutine(SummonRandomCard());
-        }
-        else
-        {
-            Debug.Log("[EnemyAI] 소환할 카드가 없습니다");
-        }
+        // 남은 코스트를 최대한 사용하여 소환
+        yield return StartCoroutine(SummonAsMuchAsPossible());
 
         yield return new WaitForSeconds(actionDelay);
     }
@@ -125,15 +118,15 @@ public class EnemyAI : MonoBehaviour
         Debug.Log("[EnemyAI] 배틀 페이즈 시작");
         yield return new WaitForSeconds(thinkingTime);
 
-        // AI 필드의 몬스터들이 공격할 수 있는지 확인
+        // AI 필드의 모든 공격 가능한 몬스터로 공격 수행
         var enemyMonsters = GetEnemyMonsters();
-        var playerMonsters = GetPlayerMonsters();
-
         foreach (var monster in enemyMonsters)
         {
-            if (monster != null && !monster.hasAttackedThisTurn)
+            if (monster != null && monster.gameObject != null && monster.isOnField && !monster.hasAttackedThisTurn)
             {
-                yield return StartCoroutine(AttackWithMonster(monster, playerMonsters));
+                // 매 공격자마다 최신 타깃 목록을 갱신하여 전투 결과 반영
+                var currentPlayerMonsters = GetPlayerMonsters();
+                yield return StartCoroutine(AttackWithMonster(monster, currentPlayerMonsters));
                 yield return new WaitForSeconds(actionDelay);
             }
         }
@@ -169,42 +162,58 @@ public class EnemyAI : MonoBehaviour
     /// <summary>
     /// 랜덤 카드 소환
     /// </summary>
-    private IEnumerator SummonRandomCard()
+    private IEnumerator SummonAsMuchAsPossible()
     {
-        Debug.Log("[EnemyAI] 카드 소환 시도");
-
-        // OpponentCardManager에서 핸드의 첫 번째 카드를 소환
-        if (OpponentCardManager.Instance != null && GameManager.Instance != null)
-        {
-            var handCards = OpponentCardManager.Instance.GetHandCards();
-            if (handCards.Count > 0)
-            {
-                var cardToSummon = handCards[0]; // 첫 번째 카드 선택
-
-                // 코스트 확인 및 사용
-                if (GameManager.Instance.enemyCurrentCost >= cardToSummon.cost)
-                {
-                    GameManager.Instance.enemyCurrentCost -= cardToSummon.cost;
-                    GameManager.Instance.UpdateCostUI(); // UI 업데이트
-                    yield return StartCoroutine(OpponentCardManager.Instance.SummonCard(cardToSummon));
-                    Debug.Log($"[EnemyAI] {cardToSummon.cardName} 소환 완료");
-                }
-                else
-                {
-                    Debug.Log("[EnemyAI] 코스트 부족으로 소환 실패");
-                }
-            }
-            else
-            {
-                Debug.Log("[EnemyAI] 핸드에 카드가 없습니다.");
-            }
-        }
-        else
+        if (OpponentCardManager.Instance == null || GameManager.Instance == null)
         {
             Debug.LogWarning("[EnemyAI] OpponentCardManager.Instance 또는 GameManager.Instance가 null입니다.");
+            yield break;
         }
 
-        yield return new WaitForSeconds(actionDelay);
+        bool summonedAtLeastOne = false;
+        while (GameManager.Instance.enemyCurrentCost > 0)
+        {
+            // 적 몬스터 슬롯에 빈 자리가 없으면 소환 종료
+            if (OpponentCardManager.Instance != null && !OpponentCardManager.Instance.HasEmptyEnemySlot())
+            {
+                Debug.Log("[EnemyAI] 적 몬스터 슬롯이 가득 찼습니다. 소환을 중단합니다.");
+                break;
+            }
+
+            var handCards = OpponentCardManager.Instance.GetHandCards();
+            if (handCards == null || handCards.Count == 0)
+            {
+                break;
+            }
+
+            // 현재 코스트로 낼 수 있는 카드 중 가장 비싼 카드 우선 소환
+            int currentCost = GameManager.Instance.enemyCurrentCost;
+            var affordable = handCards
+                .Where(c => c != null && c.cost <= currentCost)
+                .OrderByDescending(c => c.cost)
+                .ToList();
+
+            if (affordable.Count == 0)
+            {
+                break;
+            }
+
+            var cardToSummon = affordable[0];
+            Debug.Log($"[EnemyAI] 카드 소환 시도: {cardToSummon.cardName} (코스트 {cardToSummon.cost})");
+
+            GameManager.Instance.enemyCurrentCost -= cardToSummon.cost;
+            GameManager.Instance.UpdateCostUI();
+            yield return StartCoroutine(OpponentCardManager.Instance.SummonCard(cardToSummon));
+            Debug.Log($"[EnemyAI] {cardToSummon.cardName} 소환 완료. 남은 코스트: {GameManager.Instance.enemyCurrentCost}");
+
+            summonedAtLeastOne = true;
+            yield return new WaitForSeconds(actionDelay);
+        }
+
+        if (!summonedAtLeastOne)
+        {
+            Debug.Log("[EnemyAI] 소환할 수 있는 카드가 없습니다");
+        }
     }
 
     /// <summary>

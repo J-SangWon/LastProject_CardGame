@@ -255,12 +255,34 @@ public class OpponentCardManager : MonoBehaviour
 	private readonly string[] enemySlotNames = new string[] { "E_MonsterZone1", "E_MonsterZone2", "E_MonsterZone3", "E_MonsterZone4", "E_MonsterZone5" };
 	private Transform[] enemySlots;
 
+	/// <summary>
+	/// 적 몬스터 슬롯(E_MonsterZone1~5)에 빈 자리가 있는지 여부
+	/// </summary>
+	public bool HasEmptyEnemySlot()
+	{
+		EnsureEnemySlots();
+		if (enemySlots == null || enemySlots.Length == 0)
+		{
+			// 슬롯을 못 찾는 경우, 폴백 필드 유무에 따라 판단
+			EnsureFieldZone();
+			return fieldZone != null; // 폴백 필드가 있으면 일단 배치 가능으로 간주
+		}
+		foreach (var slot in enemySlots)
+		{
+			if (slot == null) continue;
+			if (slot.name == "EnemyGraveZone") continue;
+			if (slot.childCount == 0) return true;
+		}
+		return false;
+	}
+
 	public void PlayCardToField(GameObject card)
 	{
-		// 1) 우선 적 몬스터 슬롯(E_MonsterZone1~5)을 탐색하여 빈 슬롯으로 배치
+		// 1) 적 몬스터 슬롯(E_MonsterZone1~5) 중 빈 슬롯에만 배치
 		EnsureEnemySlots();
 		Transform parentSlot = null;
-		if (enemySlots != null && enemySlots.Length > 0)
+		bool hasEnemySlots = enemySlots != null && enemySlots.Length > 0;
+		if (hasEnemySlots)
 		{
 			foreach (var slot in enemySlots)
 			{
@@ -272,25 +294,16 @@ public class OpponentCardManager : MonoBehaviour
 					break;
 				}
 			}
-			// 빈 슬롯이 없다면, 가장 자식 수가 적은 슬롯 선택
+			// 빈 슬롯이 없다면 배치하지 않음
 			if (parentSlot == null)
 			{
-				int minChildren = int.MaxValue;
-				foreach (var slot in enemySlots)
-				{
-					if (slot == null) continue;
-					if (slot.name == "EnemyGraveZone") continue;
-					if (slot.childCount < minChildren)
-					{
-						minChildren = slot.childCount;
-						parentSlot = slot;
-					}
-				}
+				Debug.LogWarning("[OpponentCardManager] 적 몬스터 슬롯이 가득 찼습니다. 배치 취소.");
+				return;
 			}
 		}
 
-		// 2) 슬롯을 못 찾으면 기존 fieldZone(폴백) 사용
-		if (parentSlot == null)
+		// 2) 적 슬롯 자체를 찾지 못한 경우에만 폴백 필드 사용
+		if (!hasEnemySlots)
 		{
 			EnsureFieldZone();
 			if (fieldZone == null)
