@@ -9,10 +9,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 127161b8f29e5c0409b4284c227685ad, type: 3}
-  m_Name: CrateCardToHand
+  m_Script: {fileID: 11500000, guid: 68bd28aa2720ed9468898114af1f5e4f, type: 3}
+  m_Name: Coun
   m_EditorClassIdentifier: 
-  targetType: 3
-  targetOwner: 1
+  targetType: 0
+  targetOwner: 0
   condition: {fileID: 0}
-  cardData: {fileID: 11400000, guid: 12f1a4814e75e7a4a89ff0b71355a148, type: 2}
+  searchType: 0
+  cardType: 0
+  race: 0
+  cost: 0
+  costOp: 0
+  cardID: 
+  tag: 
+  useCompositeConditions: 0
+  compositeOperator: 0
+  conditions: []

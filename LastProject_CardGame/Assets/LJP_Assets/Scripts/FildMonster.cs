@@ -71,7 +71,7 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
         // 이 카드가 소스로 등록한 모든 지속 오라 해제
         if (cardUI != null)
         {
-            AuraManager.UnregisterAllFromSource(cardUI);
+            AuraManager.Instance.UnregisterAllFromSource(cardUI);
         }
         
         // 마법/함정 카드 제거 시 효과
@@ -94,9 +94,19 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
 		// 마법/함정 카드 클릭 처리
 		if (cardUI.cardData is SpellCardData || cardUI.cardData is TrapCardData)
 		{
-			HandleSpellTrapClick();
-			return;
-		}
+            // 마법 카드는 여기서 즉시 발동하지 않고, 선택만 수행하여 SpellPlayTarget 클릭으로 발동되도록 함
+            var spellData = cardUI.cardData as SpellCardData;
+            if (spellData != null)
+            {
+                if (spellData.spellType != SpellType.Field && spellData.spellType != SpellType.Continuous)
+                {
+                    CardSummonManager.Instance?.SelectCard(this.gameObject);
+                    return;
+                }
+                // 필드/지속 마법은 여기서 처리하지 않음(각 전용 흐름으로)
+                return;
+            }
+        }
 		
         if(BattleManager.Instance.AbilityCaster != null && BattleManager.Instance.IsAbilityTargeting)
         {
@@ -143,7 +153,8 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
 
 	private void Continuous() // 지속효과
     {
-
+        // 몬스터 지속 효과는 필드 배치 시 1회 등록되고, Update에서는 조건 체크만 수행
+        // 실제 등록은 OnPlacedOnField()에서 처리됨
     }
 
 
@@ -230,13 +241,19 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
             isAppeared = true;
         }
         
+        // 몬스터 지속 효과 등록
+        if (monsterCardData != null && monsterCardData.monsterAbilityType == MonsterCardAbilityType.Continuous)
+        {
+            RegisterMonsterContinuousEffect();
+        }
+        
         // 마법/함정 카드 필드 배치 효과
         HandleFieldPlacement();
 
         // 이 카드가 필드에 진입했으므로, 현재 활성 오라를 적용
         if (cardUI != null && cardUI.isOnField)
         {
-            AuraManager.NotifyCardEnteredField(cardUI);
+            AuraManager.Instance.NotifyCardEnteredField(cardUI);
         }
     }
     
@@ -247,7 +264,14 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
         {
             Debug.Log($"마법 카드 필드 배치: {spellCard.cardName}");
             
-            // 지속 마법이나 필드 마법인 경우
+            // 지속 마법은 턴 트리거로만 발동, 즉시 발동하지 않음
+            if (spellCard.spellType == SpellType.Continuous)
+            {
+                Debug.Log($"지속 마법 {spellCard.cardName}은 턴 트리거로만 발동됩니다.");
+                return;
+            }
+            
+            // 필드 마법이나 기타 마법인 경우만 즉시 발동
             if (spellCard.cardAbility != null)
             {
                 AbilityParameter param = new AbilityParameter();
@@ -259,7 +283,8 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
         {
             Debug.Log($"함정 카드 필드 배치: {trapCard.cardName}");
             
-            // 지속 함정인 경우
+            // 지속 함정은 턴 트리거로만 발동 (TrapType.Continuous가 있다면)
+            // 현재는 즉시 발동으로 처리
             if (trapCard.cardAbility != null)
             {
                 AbilityParameter param = new AbilityParameter();
@@ -285,7 +310,7 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
     }
     
     // 마법 카드 효과 발동
-    private void ActivateSpellEffect(SpellCardData spellCard)
+    public void ActivateSpellEffect(SpellCardData spellCard)
     {
         if (spellCard.cardAbility == null)
         {
@@ -326,6 +351,297 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
         catch (System.Exception e)
         {
             Debug.LogError($"마법 카드 효과 발동 실패: {spellCard.cardName}, 오류: {e.Message}");
+        }
+    }
+
+    // 지속 마법 카드 효과 발동 및 등록
+    public void ActivateContinuousSpell(SpellCardData spellCard)
+    {
+        if (spellCard.cardAbility == null)
+        {
+            Debug.LogError($"지속 마법 카드 {spellCard.cardName}의 cardAbility가 null입니다.");
+            return;
+        }
+        
+        // 조건 확인
+        if (spellCard.cardAbility.condition != null)
+        {
+            bool conditionMet = EffectConditionEvaluator.IsConditionMet(
+                spellCard.cardAbility.condition, 
+                GameManager.Instance.CurrentPhase,
+                ConditionType.OnCardPlayed,
+                spellCard.cardId,
+                0
+            );
+            
+            if (!conditionMet)
+            {
+                Debug.Log("지속 마법 카드 효과 조건이 충족되지 않았습니다.");
+                return;
+            }
+        }
+        
+        // 지속 효과 등록
+        AbilityParameter param = new AbilityParameter();
+        param.value = spellCard.abilityValue;
+        
+        // 대상 산출
+        if (spellCard.cardAbility.targetType != TargetType.None)
+        {
+            var targets = GetAbilityTargets(
+                spellCard.cardAbility.targetType,
+                spellCard.cardAbility.targetOwner
+            );
+            param.targets = param.targets ?? new List<CardUI>();
+            param.targets.AddRange(targets);
+        }
+        
+        try
+        {
+            // AuraManager를 통해 지속 효과 등록
+            if (AuraManager.Instance != null)
+            {
+                AuraManager.Instance.RegisterContinuousEffect(cardUI, spellCard.cardAbility, param);
+            }
+            else
+            {
+                // AuraManager가 없으면 직접 발동 (폴백)
+                spellCard.cardAbility.Activate(cardUI, param);
+            }
+            
+            Debug.Log($"지속 마법 효과 등록 성공: {spellCard.cardName}");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"지속 마법 효과 등록 실패: {spellCard.cardName}, 오류: {e.Message}");
+        }
+    }
+
+    // 몬스터 지속 효과 등록
+    private void RegisterMonsterContinuousEffect()
+    {
+        if (monsterCardData?.cardAbility == null)
+        {
+            Debug.LogError($"몬스터 {monsterCardData?.cardName}의 cardAbility가 null입니다.");
+            return;
+        }
+        
+        // 조건 확인
+        if (monsterCardData.cardAbility.condition != null)
+        {
+            bool conditionMet = EffectConditionEvaluator.IsConditionMet(
+                monsterCardData.cardAbility.condition, 
+                GameManager.Instance.CurrentPhase,
+                ConditionType.OnCardPlayed,
+                monsterCardData.cardId,
+                0
+            );
+            
+            if (!conditionMet)
+            {
+                Debug.Log("몬스터 지속 효과 조건이 충족되지 않았습니다.");
+                return;
+            }
+        }
+        
+        // 지속 효과 등록
+        AbilityParameter param = new AbilityParameter();
+        param.value = monsterCardData.abilityValue;
+        
+        // 대상 산출
+        if (monsterCardData.cardAbility.targetType != TargetType.None)
+        {
+            var targets = GetAbilityTargets(
+                monsterCardData.cardAbility.targetType,
+                monsterCardData.cardAbility.targetOwner
+            );
+            param.targets = param.targets ?? new List<CardUI>();
+            param.targets.AddRange(targets);
+        }
+        
+        try
+        {
+            // AuraManager를 통해 지속 효과 등록
+            if (AuraManager.Instance != null)
+            {
+                AuraManager.Instance.RegisterContinuousEffect(cardUI, monsterCardData.cardAbility, param);
+            }
+            else
+            {
+                // AuraManager가 없으면 직접 발동 (폴백)
+                monsterCardData.cardAbility.Activate(cardUI, param);
+            }
+            
+            Debug.Log($"몬스터 지속 효과 등록 성공: {monsterCardData.cardName}");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"몬스터 지속 효과 등록 실패: {monsterCardData.cardName}, 오류: {e.Message}");
+        }
+    }
+
+    /// <summary>
+    /// 턴 시작 시 발동되는 효과 처리 (First Phase)
+    /// </summary>
+    public void TriggerTurnStartEffect()
+    {
+        // 몬스터 턴 시작 효과
+        if (monsterCardData != null && HasTurnTriggerEffect(ConditionType.OnTurnStart))
+        {
+            ExecuteTurnTriggerEffect(ConditionType.OnTurnStart);
+        }
+        
+        // 마법/함정 카드 턴 시작 효과
+        if (cardUI.cardData is SpellCardData spellCard && HasSpellTurnTriggerEffect(spellCard, ConditionType.OnTurnStart))
+        {
+            ExecuteSpellTurnTriggerEffect(spellCard, ConditionType.OnTurnStart);
+        }
+        else if (cardUI.cardData is TrapCardData trapCard && HasTrapTurnTriggerEffect(trapCard, ConditionType.OnTurnStart))
+        {
+            ExecuteTrapTurnTriggerEffect(trapCard, ConditionType.OnTurnStart);
+        }
+    }
+
+    /// <summary>
+    /// 턴 종료 시 발동되는 효과 처리 (End Phase)
+    /// </summary>
+    public void TriggerTurnEndEffect()
+    {
+        // 몬스터 턴 종료 효과
+        if (monsterCardData != null && HasTurnTriggerEffect(ConditionType.OnTurnEnd))
+        {
+            ExecuteTurnTriggerEffect(ConditionType.OnTurnEnd);
+        }
+        
+        // 마법/함정 카드 턴 종료 효과
+        if (cardUI.cardData is SpellCardData spellCard && HasSpellTurnTriggerEffect(spellCard, ConditionType.OnTurnEnd))
+        {
+            ExecuteSpellTurnTriggerEffect(spellCard, ConditionType.OnTurnEnd);
+        }
+        else if (cardUI.cardData is TrapCardData trapCard && HasTrapTurnTriggerEffect(trapCard, ConditionType.OnTurnEnd))
+        {
+            ExecuteTrapTurnTriggerEffect(trapCard, ConditionType.OnTurnEnd);
+        }
+    }
+
+    // 몬스터 턴 트리거 효과 체크
+    private bool HasTurnTriggerEffect(ConditionType triggerType)
+    {
+        return monsterCardData?.cardAbility?.condition != null &&
+               EffectConditionEvaluator.IsConditionMet(
+                   monsterCardData.cardAbility.condition,
+                   GameManager.Instance.CurrentPhase,
+                   triggerType,
+                   monsterCardData.cardId,
+                   0
+               );
+    }
+
+    // 몬스터 턴 트리거 효과 실행
+    private void ExecuteTurnTriggerEffect(ConditionType triggerType)
+    {
+        try
+        {
+            AbilityParameter param = new AbilityParameter();
+            param.value = monsterCardData.abilityValue;
+            
+            // 대상 산출
+            if (monsterCardData.cardAbility.targetType != TargetType.None)
+            {
+                var targets = GetAbilityTargets(
+                    monsterCardData.cardAbility.targetType,
+                    monsterCardData.cardAbility.targetOwner
+                );
+                param.targets = param.targets ?? new List<CardUI>();
+                param.targets.AddRange(targets);
+            }
+            
+            monsterCardData.cardAbility.Activate(cardUI, param);
+            Debug.Log($"[FildMonster] 몬스터 턴 트리거 효과 발동: {monsterCardData.cardName} ({triggerType})");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"[FildMonster] 몬스터 턴 트리거 효과 실패: {e.Message}");
+        }
+    }
+
+    // 마법 카드 턴 트리거 효과 체크
+    private bool HasSpellTurnTriggerEffect(SpellCardData spellCard, ConditionType triggerType)
+    {
+        return spellCard?.cardAbility?.condition != null &&
+               EffectConditionEvaluator.IsConditionMet(
+                   spellCard.cardAbility.condition,
+                   GameManager.Instance.CurrentPhase,
+                   triggerType,
+                   spellCard.cardId,
+                   0
+               );
+    }
+
+    // 마법 카드 턴 트리거 효과 실행
+    private void ExecuteSpellTurnTriggerEffect(SpellCardData spellCard, ConditionType triggerType)
+    {
+        try
+        {
+            AbilityParameter param = new AbilityParameter();
+            param.value = spellCard.abilityValue;
+            
+            if (spellCard.cardAbility.targetType != TargetType.None)
+            {
+                var targets = GetAbilityTargets(
+                    spellCard.cardAbility.targetType,
+                    spellCard.cardAbility.targetOwner
+                );
+                param.targets = param.targets ?? new List<CardUI>();
+                param.targets.AddRange(targets);
+            }
+            
+            spellCard.cardAbility.Activate(cardUI, param);
+            Debug.Log($"[FildMonster] 마법 카드 턴 트리거 효과 발동: {spellCard.cardName} ({triggerType})");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"[FildMonster] 마법 카드 턴 트리거 효과 실패: {e.Message}");
+        }
+    }
+
+    // 함정 카드 턴 트리거 효과 체크
+    private bool HasTrapTurnTriggerEffect(TrapCardData trapCard, ConditionType triggerType)
+    {
+        return trapCard?.cardAbility?.condition != null &&
+               EffectConditionEvaluator.IsConditionMet(
+                   trapCard.cardAbility.condition,
+                   GameManager.Instance.CurrentPhase,
+                   triggerType,
+                   trapCard.cardId,
+                   0
+               );
+    }
+
+    // 함정 카드 턴 트리거 효과 실행
+    private void ExecuteTrapTurnTriggerEffect(TrapCardData trapCard, ConditionType triggerType)
+    {
+        try
+        {
+            AbilityParameter param = new AbilityParameter();
+            param.value = trapCard.abilityValue;
+            
+            if (trapCard.cardAbility.targetType != TargetType.None)
+            {
+                var targets = GetAbilityTargets(
+                    trapCard.cardAbility.targetType,
+                    trapCard.cardAbility.targetOwner
+                );
+                param.targets = param.targets ?? new List<CardUI>();
+                param.targets.AddRange(targets);
+            }
+            
+            trapCard.cardAbility.Activate(cardUI, param);
+            Debug.Log($"[FildMonster] 함정 카드 턴 트리거 효과 발동: {trapCard.cardName} ({triggerType})");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"[FildMonster] 함정 카드 턴 트리거 효과 실패: {e.Message}");
         }
     }
     

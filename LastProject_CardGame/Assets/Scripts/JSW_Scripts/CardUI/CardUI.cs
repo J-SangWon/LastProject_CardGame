@@ -43,7 +43,7 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
     public int FixedHealth;
 
     private Outline outline;
-    private bool isFront = true;
+    public bool isFront = true;
     public bool isOnField = false;
 
     // IsDead는 이제 currentHealth 기준
