@@ -7,7 +7,6 @@ public class GameManager : MonoBehaviour
 {
     // ===== 싱글턴 =====
     public static GameManager Instance;
-    public CardDragHandler selectedCard;
     private void Awake()
     {
         if (Instance == null)
@@ -374,6 +373,18 @@ public class GameManager : MonoBehaviour
             }
         }
     }
+    public bool CanSummonCard()
+    {
+        // Main Phase에서만 소환 가능
+        return currentPhase == GamePhase.MainPhase && isPlayerTurn;
+    }
+
+    public bool CanAttack()
+    {
+        // Battle Phase에서만 공격 가능
+        return currentPhase == GamePhase.BattlePhase && isPlayerTurn;
+    }
+
     public bool CanSpendPlayerCost(int amount)
     {
         return playerCurrentCost >= amount;
@@ -415,6 +426,18 @@ public class GameManager : MonoBehaviour
         }
         return false;
     }
+    public void TakeDamageToPlayer(int amount)
+    {
+        playerHealth -= amount;
+        if (playerHealth < 0) playerHealth = 0;
+        UpdateHealthUI();
+    }
 
+    public void TakeDamageToEnemy(int amount)
+    {
+        enemyHealth -= amount;
+        if (enemyHealth < 0) enemyHealth = 0;
+        UpdateHealthUI();
+    }
 
 }

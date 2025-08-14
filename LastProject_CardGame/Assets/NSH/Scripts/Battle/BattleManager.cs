@@ -6,7 +6,7 @@ public class BattleManager : MonoBehaviour
 {
     public static BattleManager Instance;
 
-    private GameObject attacker;
+    public GameObject attacker;
     private GameObject target;
 
     private GameObject abilityCaster;

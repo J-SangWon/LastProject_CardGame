@@ -8,29 +8,10 @@ public class MonsterZoneSlot : MonoBehaviour, IPointerClickHandler
 
     private void Update()
     {
-        //슬롯이 점유되었는데 자식 오브젝트가 없거나 모두 비활성 상태면 비어있다고 판단
-        if (isOccupied)
-        {
-            if (transform.childCount == 0)
-            {
-                isOccupied = false;
-            }
-            else
-            {
-                bool allInactive = true;
-                foreach (Transform child in transform)
-                {
-                    if (child.gameObject.activeSelf)
-                    {
-                        allInactive = false;
-                        break;
-                    }
-                }
-                if (allInactive)
-                    isOccupied = false;
-            }
-        }
+        // 자식이 하나라도 있으면 슬롯 점유로 판단
+        isOccupied = transform.childCount > 0;
     }
+
 
     public void OnPointerClick(PointerEventData eventData)
     {
