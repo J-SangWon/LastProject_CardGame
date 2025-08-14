@@ -27,6 +27,11 @@ public class MonsterZoneSlot : MonoBehaviour, IPointerClickHandler
                 return;
             }
             cardUI.SetOutline(false);
+            if (!GameManager.Instance.CanSummonCard())
+            {
+                Debug.Log("현재 페이즈에서는 카드 소환 불가!");
+                return;
+            }
             // 몬스터 카드인지 체크 (추가)
             if (cardUI.cardData == null || cardUI.cardData.cardType != CardType.Monster)
             {

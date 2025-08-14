@@ -7,32 +7,31 @@ public class HitZone : MonoBehaviour
 
     private void OnMouseDown()
     {
-        // BattleManager.Instance가 존재해야 처리
         if (BattleManager.Instance == null) return;
 
-        // 현재 공격자가 존재하면
+        // 공격자가 존재할 때만
         if (BattleManager.Instance.HasAttacker())
         {
-            var attackerGO = BattleManager.Instance.attacker; // 공격자 가져오기
+            var attackerGO = BattleManager.Instance.attacker;
             var attackerUI = attackerGO.GetComponent<CardUI>();
             if (attackerUI == null) return;
 
             int damage = attackerUI.attack;
 
-            // 대상에 따라 처리
+            // 대상에 따라 체력 감소
             if (targetType == TargetType.Player)
             {
                 GameManager.Instance.TakeDamageToPlayer(damage);
             }
-            else
+            else if (targetType == TargetType.Enemy)
             {
                 GameManager.Instance.TakeDamageToEnemy(damage);
             }
 
-            // 공격 카드 플래그 설정
+            // 공격자 상태 업데이트
             attackerUI.MarkAsAttacked();
 
-            // 공격 후 공격자 초기화
+            // 공격 후 초기화
             BattleManager.Instance.CancelAttack();
         }
     }

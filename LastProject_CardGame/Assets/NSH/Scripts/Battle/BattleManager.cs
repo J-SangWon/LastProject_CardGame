@@ -56,6 +56,11 @@ public class BattleManager : MonoBehaviour
     /// </summary>
     public void SetAttacker(GameObject card)
     {
+        if (GameManager.Instance.CurrentPhase != GamePhase.BattlePhase)
+        {
+            Debug.Log("배틀 페이즈에서만 공격할 수 있습니다!");
+            return;
+        }
         CardUI cardUI = card.GetComponent<CardUI>();
         if (cardUI == null || !cardUI.isOnField) return;
 
@@ -113,6 +118,13 @@ public class BattleManager : MonoBehaviour
 
         target = card;
         ExecuteBattle();
+    }
+    private void Update()
+    {
+        if (attacker != null && Input.GetMouseButtonDown(1)) // 우클릭
+        {
+            CancelAttack();
+        }
     }
 
     public void SetAbilityCaster(GameObject card)

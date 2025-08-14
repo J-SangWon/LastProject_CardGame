@@ -1513,7 +1513,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1077e5f6a9081ff4ab2524518597f8a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  selectedCard: {fileID: 0}
   playerCurrentCost: 0
   enemyCurrentCost: 0
   phaseText: {fileID: 1487777885}
@@ -1532,6 +1531,8 @@ MonoBehaviour:
   enemyTurnColor: {r: 1, g: 0, b: 0, a: 1}
   cardObject: {fileID: 9154549864915518465, guid: fb5d7a836d885c545a65f7f306934848, type: 3}
   enemyCardObject: {fileID: 0}
+  playerHeroPosition: {fileID: 1290015589}
+  enemyHeroPosition: {fileID: 1254588167}
   enemyAIObject: {fileID: 0}
 --- !u!4 &315712735
 Transform:
