@@ -264,7 +264,14 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
         {
             Debug.Log($"마법 카드 필드 배치: {spellCard.cardName}");
             
-            // 지속 마법이나 필드 마법인 경우
+            // 지속 마법은 턴 트리거로만 발동, 즉시 발동하지 않음
+            if (spellCard.spellType == SpellType.Continuous)
+            {
+                Debug.Log($"지속 마법 {spellCard.cardName}은 턴 트리거로만 발동됩니다.");
+                return;
+            }
+            
+            // 필드 마법이나 기타 마법인 경우만 즉시 발동
             if (spellCard.cardAbility != null)
             {
                 AbilityParameter param = new AbilityParameter();
@@ -276,7 +283,8 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
         {
             Debug.Log($"함정 카드 필드 배치: {trapCard.cardName}");
             
-            // 지속 함정인 경우
+            // 지속 함정은 턴 트리거로만 발동 (TrapType.Continuous가 있다면)
+            // 현재는 즉시 발동으로 처리
             if (trapCard.cardAbility != null)
             {
                 AbilityParameter param = new AbilityParameter();

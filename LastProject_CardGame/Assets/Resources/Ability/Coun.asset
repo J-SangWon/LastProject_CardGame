@@ -9,11 +9,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 70f15c1e8d5f3dd4fa1ba4ad7a095eee, type: 3}
-  m_Name: New Ability_Buff
+  m_Script: {fileID: 11500000, guid: 68bd28aa2720ed9468898114af1f5e4f, type: 3}
+  m_Name: Coun
   m_EditorClassIdentifier: 
   targetType: 0
   targetOwner: 0
   condition: {fileID: 0}
-  buffType: 0
-  isReset: 1
+  searchType: 0
+  cardType: 0
+  race: 0
+  cost: 0
+  costOp: 0
+  cardID: 
+  tag: 
+  useCompositeConditions: 0
+  compositeOperator: 0
+  conditions: []
