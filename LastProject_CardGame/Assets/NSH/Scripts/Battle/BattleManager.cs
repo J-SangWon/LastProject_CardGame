@@ -1,4 +1,4 @@
-﻿using Kalkatos.DottedArrow;
+using Kalkatos.DottedArrow;
 using System.Collections;
 using UnityEngine;
 
@@ -152,10 +152,17 @@ public class BattleManager : MonoBehaviour
 		}
 
 		abilityTarget = card;
-		Debug.Log($"{targetUI.cardData.cardName}가 어빌리티 대상으로 설정됨 ");
+		Debug.Log($"{targetUI.cardData.cardName}가 어빌리티 대상으로 설정됨");
 
-        FildMonster FM = abilityCaster.GetComponent<FildMonster>();
-        FM.Entrance(FM.monsterCardData.cardAbility, FM.monsterCardData.abilityValue);
+        // 어빌리티 즉시 실행
+        var casterFM = abilityCaster.GetComponent<FildMonster>();
+        if (casterFM != null)
+        {
+            casterFM.Entrance(casterFM.monsterCardData.cardAbility, casterFM.monsterCardData.abilityValue);
+        }
+        
+        // 상태 초기화
+        CancelAbility();
 	}
 
 
