@@ -40,12 +40,12 @@ public class MonsterZoneSlot : MonoBehaviour, IPointerClickHandler
         if (selectedCard != null)
         {
             var cardUI = selectedCard.GetComponent<CardUI>();
-            cardUI.SetOutline(false); // ���� ����
+            cardUI.SetOutline(false); 
             if (cardUI == null)
             {
                 return;
             }
-
+            cardUI.SetOutline(false);
             // 몬스터 카드인지 체크 (추가)
             if (cardUI.cardData == null || cardUI.cardData.cardType != CardType.Monster)
             {
@@ -64,6 +64,16 @@ public class MonsterZoneSlot : MonoBehaviour, IPointerClickHandler
             if (isEnemySlot && cardUI.ownerType != OwnerType.Opponent)
             {
                 return;
+            }
+
+            if (isPlayerSlot)
+            {
+                int cost = cardUI.cardData.cost;
+                if (!GameManager.Instance.TrySpendPlayerCost(cost))
+                {
+                    Debug.Log($"코스트 부족: 필요 {cost}, 현재 {GameManager.Instance.playerCurrentCost}");
+                    return;
+                }
             }
 
             SummonCardToSlot(selectedCard);

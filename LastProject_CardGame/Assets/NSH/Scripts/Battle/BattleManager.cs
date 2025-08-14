@@ -77,7 +77,9 @@ public class BattleManager : MonoBehaviour
     {
         CardUI targetUI = card.GetComponent<CardUI>();
         if (targetUI == null || !targetUI.isOnField || attacker == null) return;
-
+       
+        CardUI attackerUI = attacker.GetComponent<CardUI>();
+        if (attackerUI == null) return;
         // 자기 자신을 타겟으로 지정 못하게
         if (card == attacker)
         {
@@ -85,6 +87,11 @@ public class BattleManager : MonoBehaviour
             return;
         }
 
+        if (attackerUI.ownerType == targetUI.ownerType)
+        {
+            Debug.Log("아군 몬스터는 공격할 수 없습니다.");
+            return;
+        }
         target = card;
         ExecuteBattle();
     }
