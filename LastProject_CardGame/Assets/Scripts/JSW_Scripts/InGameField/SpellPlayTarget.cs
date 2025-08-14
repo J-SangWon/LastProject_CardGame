@@ -20,13 +20,31 @@ public class SpellPlayTarget : MonoBehaviour, IPointerClickHandler
         var cardUI = selected.GetComponent<CardUI>();
         if (cardUI == null || cardUI.cardData == null) return;
         if (!cardUI.isFront) return; // 앞면만 발동 허용
-        if (cardUI.ownerType != OwnerType.Player) return; // 내 카드만
         if (cardUI.cardData.cardType != CardType.Spell) return; // 마법만
 
         var spell = cardUI.cardData as SpellCardData;
         if (spell == null) return;
         // 필드 마법은 제외 (전용 존에서 처리)
         if (spell.spellType == SpellType.Field) return;
+        
+        // 코스트 체크 및 소모 (카드 이동 전에 먼저 체크)
+        int cost = spell.cost;
+        if (cardUI.ownerType == OwnerType.Player)
+        {
+            if (!GameManager.Instance.TrySpendPlayerCost(cost))
+            {
+                Debug.Log($"플레이어 코스트 부족: 필요 {cost}, 현재 {GameManager.Instance.playerCurrentCost}");
+                return;
+            }
+        }
+        else if (cardUI.ownerType == OwnerType.Opponent)
+        {
+            if (!GameManager.Instance.SpendEnemyCost(cost))
+            {
+                Debug.Log($"적 코스트 부족: 필요 {cost}, 현재 {GameManager.Instance.enemyCurrentCost}");
+                return;
+            }
+        }
 
         // 애니메이션 타겟 및 부모 지정 (FieldSpellZone 패턴과 유사)
         Transform target = targetAnchor != null ? targetAnchor : transform;
@@ -36,10 +54,6 @@ public class SpellPlayTarget : MonoBehaviour, IPointerClickHandler
         // 트윈 시작 전 레이아웃 간섭 방지
         var layout = selected.GetComponent<LayoutElement>();
         if (layout != null) layout.ignoreLayout = true;
-
-        // 부모를 잠시 최상위로 올려 연출 안정화(필요 시)
-        // 그대로 두어도 되지만, 캔버스 레이어가 다르면 어긋날 수 있어 선택지 제공
-        // selected.transform.SetParent(target.root, true);
 
         // 기존 트윈 정리 후 이동
         selected.transform.DOKill();
