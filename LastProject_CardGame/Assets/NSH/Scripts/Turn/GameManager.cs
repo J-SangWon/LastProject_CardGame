@@ -60,6 +60,7 @@ public class GameManager : MonoBehaviour
     public GamePhase CurrentPhase => currentPhase;
     public bool IsPlayerTurn() => isPlayerTurn;
     public bool IsEnemyTurn() => !isPlayerTurn;
+    public int TurnNumber => turnCount;
 
     private GamePhase currentPhase = GamePhase.None;
     private bool isPlayerTurn = true;

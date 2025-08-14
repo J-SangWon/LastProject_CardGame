@@ -85,6 +85,7 @@ public class PlayerCardManager : MonoBehaviour
             card.GetComponent<CardUI>().EnableCardFlip = false;
             card.GetComponent<CardUI>().FlipCard(false); // 초기에는 뒷면으로 설정
             card.AddComponent<FildMonster>();
+            card.AddComponent<AuraTracker>();
             zIndex++;
 
             deck.Add(card);
@@ -260,6 +261,12 @@ public class PlayerCardManager : MonoBehaviour
             }
         }
 
+        // AuraTracker 보장: 없으면 추가
+        if (card.GetComponent<AuraTracker>() == null)
+        {
+            card.AddComponent<AuraTracker>();
+        }
+
         return card;
     }
 
@@ -282,6 +289,11 @@ public class PlayerCardManager : MonoBehaviour
         if (cardUI != null)
         {
             cardUI.isOnField = true;
+        }
+
+        if (card.GetComponent<AuraTracker>() == null)
+        {
+            card.AddComponent<AuraTracker>();
         }
 
         // 소환 시점 효과 트리거
@@ -386,6 +398,12 @@ public class PlayerCardManager : MonoBehaviour
             slot.isOccupied = true;
         }
 
+        // AuraTracker 보장: 없으면 추가
+        if (card.GetComponent<AuraTracker>() == null)
+        {
+            card.AddComponent<AuraTracker>();
+        }
+
         var fm = card.GetComponent<FildMonster>();
         if (fm != null)
         {
@@ -446,6 +464,11 @@ public class PlayerCardManager : MonoBehaviour
                 collider.offset = rect.rect.center;
                 collider.size = rect.rect.size;
             }
+        }
+
+        if (card.GetComponent<AuraTracker>() == null)
+        {
+            card.AddComponent<AuraTracker>();
         }
 
         var fm = card.GetComponent<FildMonster>();

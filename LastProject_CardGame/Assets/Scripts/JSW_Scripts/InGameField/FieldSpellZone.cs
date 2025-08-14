@@ -55,12 +55,62 @@ public class FieldSpellZone : MonoBehaviour, IPointerClickHandler
 
         // 새 필드마법 설정
         currentFieldSpell = fieldSpell;
-        CreateFieldSpellVisual();
+        // 선택 카드 재사용 흐름이 아닌 경우(오브젝트가 없는 경우)에는 새로 생성
+        if (currentFieldSpellCardObj == null)
+        {
+            CreateFieldSpellVisual();
+        }
+        else
+        {
+            // 현재 선택된 카드 오브젝트를 재사용하므로 별도 재생성하지 않음
+            // AuraTracker 보장
+            if (currentFieldSpellCardObj.GetComponent<AuraTracker>() == null)
+            {
+                currentFieldSpellCardObj.AddComponent<AuraTracker>();
+            }
+            // FildMonster는 제거하지 않으며, 없으면 보장
+            if (currentFieldSpellCardObj.GetComponent<FildMonster>() == null)
+            {
+                currentFieldSpellCardObj.AddComponent<FildMonster>();
+            }
+            // 카드 UI 동기화 보장
+            var reusedCardUI = currentFieldSpellCardObj.GetComponent<CardUI>();
+            if (reusedCardUI != null)
+            {
+                reusedCardUI.SetCard(currentFieldSpell);
+                reusedCardUI.isOnField = true;
+                reusedCardUI.ownerType = OwnerType.Player;
+                reusedCardUI.SetFace(true);
+                reusedCardUI.EnableCardFlip = false;
+            }
+        }
 
         Debug.Log($"필드마법 발동: {fieldSpell.cardName}");
 
         // 필드마법 효과 발동
         // ActivateFieldSpellEffect(); // 즉시 발동하지 않음
+
+        // 지속 효과 등록: 필드마법은 지속형으로 간주하고 AuraManager에 등록한다 (즉시 발동 아님)
+        var cardUIComp = currentFieldSpellCardObj != null ? currentFieldSpellCardObj.GetComponent<CardUI>() : null;
+        var fildMonster = currentFieldSpellCardObj != null ? currentFieldSpellCardObj.GetComponent<FildMonster>() : null;
+        var spellDataForReg = currentFieldSpell as SpellCardData;
+        if (spellDataForReg != null && fildMonster != null)
+        {
+            try
+            {
+                fildMonster.ActivateContinuousSpell(spellDataForReg);
+                Debug.Log($"[FieldSpellZone] 지속 효과 등록 완료: {spellDataForReg.cardName}");
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"[FieldSpellZone] 지속 효과 등록 실패: {spellDataForReg.cardName}, 오류: {e.Message}");
+            }
+        }
+        // 현재 필드에 진입했음을 AuraManager에 통지 (즉시 오라 적용 필요 시)
+        if (cardUIComp != null && AuraManager.Instance != null)
+        {
+            AuraManager.Instance.NotifyCardEnteredField(cardUIComp);
+        }
 
         if (currentFieldSpellCardObj != null)
         {
@@ -162,6 +212,8 @@ public class FieldSpellZone : MonoBehaviour, IPointerClickHandler
         // 기존 필드마법 카드 오브젝트가 있다면 제거
         if (currentFieldSpellCardObj != null)
         {
+            // 진행 중인 트윈 정리 후 파괴 (DOTween 에러 방지)
+            DOTween.Kill(currentFieldSpellCardObj, true);
             Destroy(currentFieldSpellCardObj);
             currentFieldSpellCardObj = null;
         }
@@ -192,6 +244,17 @@ public class FieldSpellZone : MonoBehaviour, IPointerClickHandler
                 cardUIComponent.SetFace(true);
                 cardUIComponent.isOnField = true;
                 cardUIComponent.EnableCardFlip = false;
+            }
+
+            // AuraTracker 보장
+            if (currentFieldSpellCardObj.GetComponent<AuraTracker>() == null)
+            {
+                currentFieldSpellCardObj.AddComponent<AuraTracker>();
+            }
+            // FildMonster 보장 (필요 시)
+            if (currentFieldSpellCardObj.GetComponent<FildMonster>() == null)
+            {
+                currentFieldSpellCardObj.AddComponent<FildMonster>();
             }
 
             // UI 텍스트 업데이트
@@ -231,7 +294,8 @@ public class FieldSpellZone : MonoBehaviour, IPointerClickHandler
                 Debug.LogWarning("DuelZoneManager.Instance가 null입니다. 묘지로 보내지 못했습니다.");
             }
 
-            // 오브젝트 제거
+            // 오브젝트 제거 전 진행 중 트윈 정리 (DOTween 에러 방지)
+            DOTween.Kill(currentFieldSpellCardObj, true);
             Destroy(currentFieldSpellCardObj);
             currentFieldSpellCardObj = null;
         }
@@ -275,28 +339,13 @@ public class FieldSpellZone : MonoBehaviour, IPointerClickHandler
                 var spellCard = cardUI.cardData as SpellCardData;
                 if (spellCard != null && spellCard.spellType == SpellType.Field)
                 {
-                    // 필드마법인 경우에만 처리
-                    bool success = ActivateFieldSpell(cardUI.cardData);
-                    if (success)
+                    // 필드마법인 경우에만 처리: 드롭된 카드 오브젝트를 그대로 재사용하여 배치
+                    if (currentFieldSpell != null)
                     {
-                        // 드롭 성공 시 원본 카드 제거 (손패에서)
-                        Debug.Log($"필드마법 드롭 성공: {cardUI.cardData.cardName}");
-
-                        // 원본 카드가 손패에 있다면 제거
-                        if (cardUI.ownerType == OwnerType.Player)
-                        {
-                            // PlayerCardManager에서 손패에서 제거 (간단하게 Destroy로 처리)
-                            Debug.Log($"플레이어 손패에서 필드마법 카드 제거: {cardUI.cardData.cardName}");
-                        }
-                        else
-                        {
-                            // OpponentCardManager에서 손패에서 제거 (간단하게 Destroy로 처리)
-                            Debug.Log($"상대방 손패에서 필드마법 카드 제거: {cardUI.cardData.cardName}");
-                        }
-
-                        // 원본 카드 오브젝트 제거
-                        Destroy(cardObject);
+                        RemoveFieldSpell();
                     }
+
+                    PlaceFieldSpellObject(cardObject, cardUI);
                 }
                 else
                 {
@@ -350,40 +399,8 @@ public class FieldSpellZone : MonoBehaviour, IPointerClickHandler
             RemoveFieldSpell();
         }
 
-        // 실제 선택된 카드 오브젝트를 필드마법 존으로 이동 (MonsterZoneSlot과 동일 패턴)
-        selected.transform.SetParent(transform);
-        selected.transform.localScale = Vector3.one;
-        selected.transform.DOMove(transform.position, 0.5f).SetEase(Ease.OutQuad);
-
-        // 카드 UI 상태 갱신: 앞면, 필드표시, 소유자, 플립 비활성화
-        cardUI.SetFace(true);
-        cardUI.isOnField = true;
-        if (cardUI.ownerType != OwnerType.Player)
-        {
-            cardUI.ownerType = OwnerType.Player; // 플레이어 소유로 설정
-        }
-        cardUI.EnableCardFlip = false;
-
-        // 손패 상태 해제
-        var handCard = selected.GetComponent<HandCard>();
-        if (handCard != null) handCard.isInHand = false;
-
-        // FildMonster를 제거하지 않습니다. 턴 트리거 처리를 위해 필요합니다.
-
-        // 내부 상태 반영
-        currentFieldSpell = cardUI.cardData;
-        currentFieldSpellCardObj = selected;
-        isOccupied = true;
-
-        // UI 텍스트 업데이트
-        if (fieldSpellNameText != null)
-            fieldSpellNameText.text = currentFieldSpell.cardName;
-
-        // 선택 해제/손패 레이아웃 갱신 (코스트 소모는 다른 곳에서 처리)
-        CardSummonManager.Instance?.DeselectCard();
-        PlayerCardManager.Instance?.UpdateHandLayout();
-
-        CreateFieldSpellVisual();
+        // 선택된 카드 오브젝트를 그대로 배치 (DOMove) 및 등록 처리
+        PlaceFieldSpellObject(selected, cardUI);
 
         // 턴 트리거 조건이 있는 경우: 즉시 발동하지 않음 (OnTurnStart/OnTurnEnd)
         bool hasTurnTrigger = false;
@@ -411,5 +428,71 @@ public class FieldSpellZone : MonoBehaviour, IPointerClickHandler
             Debug.Log($"필드마법 {currentFieldSpell.cardName}은 턴 트리거 조건이 있어 배치 시 즉시 발동하지 않습니다.");
         }
         return true;
+    }
+
+    // 드롭/선택 공통: 기존 카드 오브젝트를 재사용해 필드마법 존으로 이동시키고 상태/등록을 완료한다.
+    private void PlaceFieldSpellObject(GameObject cardObj, CardUI cardUI)
+    {
+        // 이동 및 부모 설정
+        cardObj.transform.SetParent(transform);
+        cardObj.transform.localScale = Vector3.one;
+        cardObj.transform.DOMove(transform.position, 0.5f).SetEase(Ease.OutQuad);
+
+        // 카드 UI 상태 갱신
+        cardUI.SetFace(true);
+        cardUI.isOnField = true;
+        if (cardUI.ownerType != OwnerType.Player)
+        {
+            cardUI.ownerType = OwnerType.Player;
+        }
+        cardUI.EnableCardFlip = false;
+
+        // 손패 플래그 해제
+        var handCard = cardObj.GetComponent<HandCard>();
+        if (handCard != null) handCard.isInHand = false;
+
+        // 드래그 플래그 갱신
+        var drag = cardObj.GetComponent<CardDragHandler>();
+        if (drag != null) drag.isSummoned = true;
+
+        // 내부 상태 반영
+        currentFieldSpell = cardUI.cardData;
+        currentFieldSpellCardObj = cardObj;
+        isOccupied = true;
+
+        // UI 텍스트 업데이트
+        if (fieldSpellNameText != null)
+            fieldSpellNameText.text = currentFieldSpell.cardName;
+
+        // 선택/손패 레이아웃 갱신
+        CardSummonManager.Instance?.DeselectCard();
+        PlayerCardManager.Instance?.UpdateHandLayout();
+
+        // 지속 효과 등록 (즉시 발동 없음)
+        var fm = cardObj.GetComponent<FildMonster>();
+        if (fm == null) fm = cardObj.AddComponent<FildMonster>(); // 안전망
+        var spellDataForReg = currentFieldSpell as SpellCardData;
+        if (spellDataForReg != null && fm != null)
+        {
+            try
+            {
+                fm.ActivateContinuousSpell(spellDataForReg);
+                Debug.Log($"[FieldSpellZone] 지속 효과 등록 완료(재사용): {spellDataForReg.cardName}");
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"[FieldSpellZone] 지속 효과 등록 실패(재사용): {spellDataForReg.cardName}, 오류: {e.Message}");
+            }
+        }
+        if (AuraManager.Instance != null)
+        {
+            AuraManager.Instance.NotifyCardEnteredField(cardUI);
+        }
+
+        // AuraTracker 안전망 (프리팹에 이미 있으면 추가하지 않음)
+        if (cardObj.GetComponent<AuraTracker>() == null)
+        {
+            cardObj.AddComponent<AuraTracker>();
+        }
     }
 }
