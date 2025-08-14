@@ -92,13 +92,12 @@ public class AuraManager : MonoBehaviour
 
         try
         {
-            // 지속 효과 즉시 발동 (초기 적용)
-            ability.Activate(source, param);
-            
-            Debug.Log($"[AuraManager] 지속 효과 등록: {source.cardData.cardName}");
+            // 턴 트리거 지속 효과는 등록만 하고 즉시 발동하지 않음
+            // 턴 시작/종료 시에만 TriggerTurnStartEffects/TriggerTurnEndEffects에서 발동
+            Debug.Log($"[AuraManager] 턴 트리거 지속 효과 등록: {source.cardData.cardName}");
             
             // TODO: 실제 지속 효과 추적이 필요하다면 여기에 추가 로직 구현
-            // 현재는 단순히 즉시 발동 후, 카드가 파괴될 때 UnregisterAllFromSource로 정리
+            // 현재는 턴 트리거에서만 발동하고, 카드가 파괴될 때 UnregisterAllFromSource로 정리
         }
         catch (System.Exception e)
         {

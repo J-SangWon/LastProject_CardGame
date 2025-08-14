@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -65,6 +65,7 @@ public class OpponentCardManager : MonoBehaviour
                 card.GetComponent<CardUI>().ownerType = OwnerType.Opponent; // 적 카드로 설정
                 card.GetComponent<CardUI>().FlipCard(false); // 카드 뒷면으로 설정
                 card.AddComponent<FildMonster>();
+                card.AddComponent<AuraTracker>();
                 zIndex++;
 
                 deck.Add(card);
@@ -238,6 +239,12 @@ public class OpponentCardManager : MonoBehaviour
             }
         }
 
+        // AuraTracker 보장: 없으면 추가
+        if (card.GetComponent<AuraTracker>() == null)
+        {
+            card.AddComponent<AuraTracker>();
+        }
+
         return card;
     }
 
@@ -334,6 +341,12 @@ public class OpponentCardManager : MonoBehaviour
 		{
 			cardUI.isOnField = true;
 		}
+
+        // AuraTracker 보장: 없으면 추가
+        if (card.GetComponent<AuraTracker>() == null)
+        {
+            card.AddComponent<AuraTracker>();
+        }
 
         // 필드 컨테이너에 직접 붙은 경우에만 필드 레이아웃 업데이트
         if (parentSlot == fieldZone)
