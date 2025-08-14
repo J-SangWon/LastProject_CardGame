@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8cad01678617b1842bc28343f7994162, type: 3}
-  m_Name: TakeDamage
+  m_Script: {fileID: 11500000, guid: efb3ad27ebfed7340aa33299b6e9fc83, type: 3}
+  m_Name: TakeDamager_test
   m_EditorClassIdentifier: 
-  targetType: 1
+  targetType: 2
   targetOwner: 2
   condition: {fileID: 0}

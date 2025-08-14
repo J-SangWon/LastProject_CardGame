@@ -117,6 +117,7 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
         if (currentHealth == 0)
         {
             isDeadFlag = true; // 죽음 표식(하지만 아직 무덤 이동/Destroy는 하지 않음)
+            ResolveDeath();
         }
     }
 
@@ -296,7 +297,14 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
 
         if (!(cardData is MonsterCardData))
             return;
-        if (GameManager.Instance.CurrentPhase != GamePhase.BattlePhase)
+
+		if (BattleManager.Instance.AbilityCaster != null && BattleManager.Instance.IsAbilityTargeting)
+		{
+			BattleManager.Instance.SetAbilityTarget(this.gameObject);
+			BattleManager.Instance.IsAbilityTargeting = false;
+		}
+
+		if (GameManager.Instance.CurrentPhase != GamePhase.BattlePhase)
         {
             Debug.Log("BattlePhase가 아니라 공격할 수 없습니다.");
             return;

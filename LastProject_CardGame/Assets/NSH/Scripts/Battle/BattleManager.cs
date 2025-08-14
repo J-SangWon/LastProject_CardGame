@@ -1,4 +1,4 @@
-﻿using Kalkatos.DottedArrow;
+using Kalkatos.DottedArrow;
 using System.Collections;
 using UnityEngine;
 
@@ -152,11 +152,12 @@ public class BattleManager : MonoBehaviour
     public void SetAbilityCaster(GameObject card)
     {
 		CardUI cardUI = card.GetComponent<CardUI>();
+		Debug.Log($"능력 시전자 설정됨: {cardUI.cardData.cardName}");
 		if (cardUI == null || !cardUI.isOnField) return;
 
 		abilityCaster = card;
 		Debug.Log($"능력 시전자 설정됨: {cardUI.cardData.cardName}");
-		BeginAttack(abilityCaster);
+		BeginAbility(abilityCaster);
 	}
 
     public void SetAbilityTarget(GameObject card)
@@ -171,6 +172,17 @@ public class BattleManager : MonoBehaviour
 		}
 
 		abilityTarget = card;
+		Debug.Log($"{targetUI.cardData.cardName}가 어빌리티 대상으로 설정됨");
+
+        // 어빌리티 즉시 실행
+        var casterFM = abilityCaster.GetComponent<FildMonster>();
+        if (casterFM != null)
+        {
+            casterFM.Entrance(casterFM.monsterCardData.cardAbility, casterFM.monsterCardData.abilityValue);
+        }
+        
+        // 상태 초기화
+        CancelAbility();
 	}
 
 
@@ -311,5 +323,21 @@ public class BattleManager : MonoBehaviour
             attacker = null;
         }
     }
-    #endregion
+
+	public void BeginAbility(GameObject card)
+	{
+		CancelAbility();
+		arrow.SetupAndActivate(card.transform);
+		abilityCaster = card;
+	}
+
+	public void CancelAbility()
+	{
+		arrow.Deactivate();
+		if (abilityCaster != null)
+		{
+			abilityCaster = null;
+		}
+	}
+	#endregion
 }

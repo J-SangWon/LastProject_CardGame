@@ -17,7 +17,7 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
     private int lastStartTriggeredTurn = -1;
     private int lastEndTriggeredTurn = -1;
 
-    void Awake()
+	void Awake()
     { 
 		cardUI = GetComponent<CardUI>();
 		if(cardUI.cardData is MonsterCardData)
@@ -31,22 +31,9 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
             targetable.OnDestroyed += HandleDestroyed;
         }
     }
-
+    
     private void OnEnable()
     {
-        // 필드에 올라간 상태에서만 진입 효과 1회 발동
-        if (monsterCardData != null && monsterCardData.monsterAbilityType == MonsterCardAbilityType.Entrance 
-            && isAppeared == false 
-            && cardUI != null && cardUI.isOnField)
-        {
-			BattleManager.Instance.SetAbilityCaster(gameObject);
-
-            if (monsterCardData.cardAbility.targetType == TargetType.Single) BattleManager.Instance.IsAbilityTargeting = true;
-            else Entrance(monsterCardData.cardAbility, monsterCardData.abilityValue);
-
-			isAppeared = true;
-        }
-        
         // 마법/함정 카드의 필드 배치 효과
         if (cardUI != null && cardUI.isOnField)
         {
@@ -98,16 +85,18 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
             }
         }
 		
+        // 어빌리티 타겟 지정 처리
         if(BattleManager.Instance.AbilityCaster != null && BattleManager.Instance.IsAbilityTargeting)
         {
+            Debug.Log($"[FildMonster] 타겟 지정 시도: {cardUI.cardData.cardName}");
             BattleManager.Instance.SetAbilityTarget(gameObject);
-            Entrance(monsterCardData.cardAbility, monsterCardData.abilityValue);
-            BattleManager.Instance.IsAbilityTargeting = false;
+            return;
         }
-		
+        
+        Debug.Log($"[FildMonster] 클릭됨: {cardUI.cardData.cardName}, AbilityCaster={BattleManager.Instance.AbilityCaster}, IsTargeting={BattleManager.Instance.IsAbilityTargeting}");
 	}
 
-	private void Entrance(CardAbility cardAbility, int abilityValue) // 진입
+	public void Entrance(CardAbility cardAbility, int abilityValue) // 진입
 	{
 		AbilityParameter parameter = new AbilityParameter() { value = abilityValue };
 
@@ -208,7 +197,7 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
 				target = target.GetChild(0);
 
 			var cardUI = target?.GetComponent<CardUI>();
-			if (cardUI != null)
+			if (cardUI != null && cardUI.gameObject != this.gameObject)
 				yield return cardUI;
 		}
 	}
@@ -227,7 +216,16 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
     {
         if (monsterCardData != null && monsterCardData.monsterAbilityType == MonsterCardAbilityType.Entrance && !isAppeared)
         {
-            Entrance(monsterCardData.cardAbility, monsterCardData.abilityValue);
+            if (monsterCardData.cardAbility.targetType == TargetType.Single)
+            {
+                Debug.Log($"[FildMonster] 타겟팅 모드 활성화: {monsterCardData.cardName}");
+                BattleManager.Instance.IsAbilityTargeting = true;
+                BattleManager.Instance.SetAbilityCaster(this.gameObject);
+            }
+            else
+            {
+                Entrance(monsterCardData.cardAbility, monsterCardData.abilityValue);
+            }
             isAppeared = true;
         }
         
