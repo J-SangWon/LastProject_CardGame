@@ -1498,6 +1498,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   selectedCard: {fileID: 0}
+  enemyCurrentCost: 0
   phaseText: {fileID: 1487777885}
   playerHealthText: {fileID: 1014715089}
   enemyHealthText: {fileID: 904313016}
@@ -1514,6 +1515,7 @@ MonoBehaviour:
   enemyTurnColor: {r: 1, g: 0, b: 0, a: 1}
   cardObject: {fileID: 9154549864915518465, guid: fb5d7a836d885c545a65f7f306934848, type: 3}
   enemyCardObject: {fileID: 0}
+  enemyAIObject: {fileID: 0}
 --- !u!4 &315712735
 Transform:
   m_ObjectHideFlags: 0
@@ -2103,6 +2105,52 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 451198802}
   m_CullTransparentMesh: 1
+--- !u!1 &452895257
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 452895258}
+  - component: {fileID: 452895259}
+  m_Layer: 0
+  m_Name: EnemyAI
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &452895258
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 452895257}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 35.643276, y: 522.3598, z: 151.93701}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &452895259
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 452895257}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91bbe88c2cfe2574b9bd30b420fa1d0c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  actionDelay: 1
+  thinkingTime: 0.5
 --- !u!1 &454626083
 GameObject:
   m_ObjectHideFlags: 0
@@ -11358,3 +11406,4 @@ SceneRoots:
   - {fileID: 528524129}
   - {fileID: 1628615782}
   - {fileID: 110133653}
+  - {fileID: 452895258}
