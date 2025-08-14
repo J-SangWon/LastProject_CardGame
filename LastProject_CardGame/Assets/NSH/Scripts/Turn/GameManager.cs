@@ -68,7 +68,7 @@ public class GameManager : MonoBehaviour
     private int playerHealth;
     private int enemyHealth;
 
-    private int playerCurrentCost;
+    public int playerCurrentCost;
     private int playerMaxCost;
     public int enemyCurrentCost;
     private int enemyMaxCost;
@@ -376,7 +376,17 @@ public class GameManager : MonoBehaviour
         }
         return false;
     }
+    public bool TrySpendPlayerCost(int amount)
+    {
+        if (playerCurrentCost < amount)
+        {
+            return false; // 코스트 부족
+        }
 
+        playerCurrentCost -= amount;
+        UpdateCostUI();
+        return true;
+    }
     public bool CanSpendEnemyCost(int amount)
     {
         return enemyCurrentCost >= amount;
@@ -392,4 +402,6 @@ public class GameManager : MonoBehaviour
         }
         return false;
     }
+
+
 }
