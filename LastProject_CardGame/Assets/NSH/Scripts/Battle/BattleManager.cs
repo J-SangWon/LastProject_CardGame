@@ -64,11 +64,12 @@ public class BattleManager : MonoBehaviour
         CardUI cardUI = card.GetComponent<CardUI>();
         if (cardUI == null || !cardUI.isOnField) return;
 
-        // 몬스터존에 있는 카드인지 확인
+        // 몬스터존/필드 여부 확인: 슬롯이 있으면 점유 여부, 없으면 isOnField로 판단
         MonsterZoneSlot slot = card.transform.parent.GetComponent<MonsterZoneSlot>();
-        if (slot == null || !slot.isOccupied)
+        bool canAttackFromHere = slot != null ? slot.isOccupied : cardUI.isOnField;
+        if (!canAttackFromHere)
         {
-            Debug.Log("몬스터존에 있는 카드만 공격할 수 있습니다.");
+            Debug.Log("몬스터존(또는 필드)에 있는 카드만 공격할 수 있습니다.");
             return;
         }
 
@@ -91,11 +92,12 @@ public class BattleManager : MonoBehaviour
         CardUI targetUI = card.GetComponent<CardUI>();
         if (targetUI == null || !targetUI.isOnField || attacker == null) return;
 
-        // 몬스터존에 있는 카드인지 확인
+        // 몬스터존/필드 여부 확인: 슬롯이 있으면 점유 여부, 없으면 isOnField로 판단
         MonsterZoneSlot slot = card.transform.parent.GetComponent<MonsterZoneSlot>();
-        if (slot == null || !slot.isOccupied)
+        bool canBeTargetHere = slot != null ? slot.isOccupied : targetUI.isOnField;
+        if (!canBeTargetHere)
         {
-            Debug.Log("몬스터존에 있는 카드만 공격 대상이 될 수 있습니다.");
+            Debug.Log("몬스터존(또는 필드)에 있는 카드만 공격 대상이 될 수 있습니다.");
             return;
         }
 

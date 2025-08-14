@@ -118,6 +118,12 @@ public class EnemyAI : MonoBehaviour
         Debug.Log("[EnemyAI] 배틀 페이즈 시작");
         yield return new WaitForSeconds(thinkingTime);
 
+        // 적 턴의 배틀 페이즈 보장
+        if (GameManager.Instance != null && GameManager.Instance.IsEnemyTurn())
+        {
+            GameManager.Instance.StartEnemyBattlePhase();
+        }
+
         // AI 필드의 모든 공격 가능한 몬스터로 공격 수행
         var enemyMonsters = GetEnemyMonsters();
         foreach (var monster in enemyMonsters)

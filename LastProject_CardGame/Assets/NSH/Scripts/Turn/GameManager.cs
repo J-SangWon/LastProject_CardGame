@@ -280,6 +280,17 @@ public class GameManager : MonoBehaviour
         StartCoroutine(EndPhaseAndAutoTurnCoroutine());
     }
 
+    // === 적 턴용 배틀 페이즈 전환 ===
+    public void StartEnemyBattlePhase()
+    {
+        if (!isPlayerTurn)
+        {
+            currentPhase = GamePhase.BattlePhase;
+            turnButton.interactable = false;
+            UpdateAllUI();
+        }
+    }
+
     IEnumerator EndPhaseAndAutoTurnCoroutine()
     {
         yield return new WaitForSeconds(2f);
