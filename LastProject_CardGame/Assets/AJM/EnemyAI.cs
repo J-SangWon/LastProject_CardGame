@@ -13,6 +13,31 @@ public class EnemyAI : MonoBehaviour
 
     private bool isAITurnActive = false;
 
+        // 제한 존 이름들: 이 존들에 있는 카드는 공격 대상에서 제외
+        private static readonly HashSet<string> restrictedZoneNames = new HashSet<string>
+        {
+            "FieldZone",
+            "GraveZone",
+            "EnemyGraveZone"
+        };
+
+        /// <summary>
+        /// 주어진 트랜스폼이 제한된 존(FieldZone/GraveZone/EnemyGraveZone)의 하위에 있는지 확인
+        /// </summary>
+        private bool IsInRestrictedZone(Transform targetTransform)
+        {
+            var current = targetTransform;
+            while (current != null)
+            {
+                if (restrictedZoneNames.Contains(current.name))
+                {
+                    return true;
+                }
+                current = current.parent;
+            }
+            return false;
+        }
+
     private void Awake()
     {
         if (Instance == null)
@@ -192,7 +217,7 @@ public class EnemyAI : MonoBehaviour
 
         foreach (var card in allCards)
         {
-            if (card.isOnField && card.cardData != null && card.ownerType == OwnerType.Opponent)
+            if (card.isOnField && card.cardData != null && card.ownerType == OwnerType.Opponent && !IsInRestrictedZone(card.transform))
             {
                 enemyMonsters.Add(card);
             }
@@ -211,7 +236,7 @@ public class EnemyAI : MonoBehaviour
 
         foreach (var card in allCards)
         {
-            if (card.isOnField && card.cardData != null && card.ownerType == OwnerType.Player)
+            if (card.isOnField && card.cardData != null && card.ownerType == OwnerType.Player && !IsInRestrictedZone(card.transform))
             {
                 playerMonsters.Add(card);
             }
@@ -268,6 +293,11 @@ public class EnemyAI : MonoBehaviour
     /// </summary>
     private IEnumerator AttackMonster(CardUI attacker, CardUI target)
     {
+        // 안전장치: 타깃이 제한 존에 있다면 공격 취소
+        if (target == null || IsInRestrictedZone(target.transform))
+        {
+            yield break;
+        }
         Debug.Log($"[EnemyAI] {attacker.cardData.cardName} -> {target.cardData.cardName} 공격");
 
         // BattleManager를 통해 공격 실행
