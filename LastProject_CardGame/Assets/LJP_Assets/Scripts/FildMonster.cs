@@ -17,7 +17,7 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
     private int lastStartTriggeredTurn = -1;
     private int lastEndTriggeredTurn = -1;
 
-    void Awake()
+	void Awake()
     { 
 		cardUI = GetComponent<CardUI>();
 		if(cardUI.cardData is MonsterCardData)
@@ -31,7 +31,7 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
             targetable.OnDestroyed += HandleDestroyed;
         }
     }
-
+    
     private void OnEnable()
     {
         // 필드에 올라간 상태에서만 진입 효과 1회 발동
@@ -39,9 +39,12 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
             && isAppeared == false 
             && cardUI != null && cardUI.isOnField)
         {
-			BattleManager.Instance.SetAbilityCaster(gameObject);
 
-            if (monsterCardData.cardAbility.targetType == TargetType.Single) BattleManager.Instance.IsAbilityTargeting = true;
+            if (monsterCardData.cardAbility.targetType == TargetType.Single)
+            {
+                BattleManager.Instance.IsAbilityTargeting = true;
+			    BattleManager.Instance.SetAbilityCaster(this.gameObject);
+            }
             else Entrance(monsterCardData.cardAbility, monsterCardData.abilityValue);
 
 			isAppeared = true;
@@ -97,17 +100,9 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
                 return;
             }
         }
-		
-        if(BattleManager.Instance.AbilityCaster != null && BattleManager.Instance.IsAbilityTargeting)
-        {
-            BattleManager.Instance.SetAbilityTarget(gameObject);
-            Entrance(monsterCardData.cardAbility, monsterCardData.abilityValue);
-            BattleManager.Instance.IsAbilityTargeting = false;
-        }
-		
 	}
 
-	private void Entrance(CardAbility cardAbility, int abilityValue) // 진입
+	public void Entrance(CardAbility cardAbility, int abilityValue) // 진입
 	{
 		AbilityParameter parameter = new AbilityParameter() { value = abilityValue };
 
@@ -208,7 +203,7 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
 				target = target.GetChild(0);
 
 			var cardUI = target?.GetComponent<CardUI>();
-			if (cardUI != null)
+			if (cardUI != null && cardUI.gameObject != this.gameObject)
 				yield return cardUI;
 		}
 	}
