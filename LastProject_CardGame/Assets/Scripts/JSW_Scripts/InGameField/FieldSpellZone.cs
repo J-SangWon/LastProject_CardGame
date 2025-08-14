@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
@@ -339,6 +339,33 @@ public class FieldSpellZone : MonoBehaviour, IPointerClickHandler
                 var spellCard = cardUI.cardData as SpellCardData;
                 if (spellCard != null && spellCard.spellType == SpellType.Field)
                 {
+                    // 코스트 체크 및 소모 (카드 이동 전에 먼저 체크)
+                    int cost = spellCard.cost;
+                    if (cardUI.ownerType == OwnerType.Player)
+                    {
+                        if (!GameManager.Instance.TrySpendPlayerCost(cost))
+                        {
+                            Debug.Log($"플레이어 코스트 부족: 필요 {cost}, 현재 {GameManager.Instance.playerCurrentCost}");
+                            // 카드를 원래 위치로 되돌림
+                            cardObject.transform.SetParent(PlayerCardManager.Instance.playerHandZone, false);
+                            cardObject.transform.localScale = Vector3.one;
+                            cardObject.transform.localPosition = Vector3.zero;
+                            return;
+                        }
+                    }
+                    else if (cardUI.ownerType == OwnerType.Opponent)
+                    {
+                        if (!GameManager.Instance.SpendEnemyCost(cost))
+                        {
+                            Debug.Log($"적 코스트 부족: 필요 {cost}, 현재 {GameManager.Instance.enemyCurrentCost}");
+                            // 카드를 원래 위치로 되돌림
+                            cardObject.transform.SetParent(OpponentCardManager.Instance.handZone, false);
+                            cardObject.transform.localScale = Vector3.one;
+                            cardObject.transform.localPosition = Vector3.zero;
+                            return;
+                        }
+                    }
+
                     // 필드마법인 경우에만 처리: 드롭된 카드 오브젝트를 그대로 재사용하여 배치
                     if (currentFieldSpell != null)
                     {
@@ -386,14 +413,31 @@ public class FieldSpellZone : MonoBehaviour, IPointerClickHandler
         var cardUI = selected.GetComponent<CardUI>();
         if (cardUI == null || cardUI.cardData == null) { return false; }
         if (cardUI.isOnField) { return false; }
-        if (cardUI.ownerType != OwnerType.Player) { return false; }
 
         if (cardUI.cardData.cardType != CardType.Spell) { return false; }
         var spellCard = cardUI.cardData as SpellCardData;
         if (spellCard == null || spellCard.spellType != SpellType.Field) { return false; }
 
+        // 코스트 체크 및 소모 (카드 이동 전에 먼저 체크)
+        int cost = spellCard.cost;
+        if (cardUI.ownerType == OwnerType.Player)
+        {
+            if (!GameManager.Instance.TrySpendPlayerCost(cost))
+            {
+                Debug.Log($"코스트 부족: 필요 {cost}, 현재 {GameManager.Instance.playerCurrentCost}");
+                return false;
+            }
+        }
+        else if (cardUI.ownerType == OwnerType.Opponent)
+        {
+            if (!GameManager.Instance.SpendEnemyCost(cost))
+            {
+                Debug.Log($"적 코스트 부족: 필요 {cost}, 현재 {GameManager.Instance.enemyCurrentCost}");
+                return false;
+            }
+        }
 
-        // 교체 정책: 기존 필드마법이 있으면 제거 후 교체
+        // 기존 필드마법이 있다면 제거
         if (currentFieldSpell != null)
         {
             RemoveFieldSpell();
