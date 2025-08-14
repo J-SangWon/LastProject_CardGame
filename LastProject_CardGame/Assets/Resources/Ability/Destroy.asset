@@ -9,17 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fa4e6bd3ad4d89e4b8948b89f26ab7eb, type: 3}
-  m_Name: SearchField
+  m_Script: {fileID: 11500000, guid: d7b92c941e625ea448352da9683a4861, type: 3}
+  m_Name: Destroy
   m_EditorClassIdentifier: 
+  targetType: 1
+  targetOwner: 0
   condition: {fileID: 0}
-  searchType: 3
-  cardType: 1
-  race: 0
-  cost: 0
-  costOp: 0
-  cardID: f0fc53aa-54c3-4fa6-b16c-9f89d0e875cd
-  tag: 
-  useCompositeConditions: 0
-  compositeOperator: 0
-  conditions: []
+  destroyType: 0

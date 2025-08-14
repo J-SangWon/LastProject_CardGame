@@ -25,6 +25,7 @@ MonoBehaviour:
   live2DPath: 
   cardAbility: {fileID: 0}
   abilityValue: 0
+  monsterAbilityType: 0
   tags:
   - DogmaRequiem
   ownerType: 0
@@ -38,4 +39,3 @@ MonoBehaviour:
   attack: 5
   health: 4
   race: 1
-  monsterAbilityType: 0

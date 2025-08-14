@@ -13,10 +13,8 @@ MonoBehaviour:
   m_Name: DogmaRequiem SherapJain
   m_EditorClassIdentifier: 
   cardName: "\uB3C4\uADF8\uB9C8\uB808\uD034\uC5E0 \uC138\uB77C\uD504\uC81C\uC778"
-  description: "\uC18C\uD658 \uC2DC \uC774 \uCE74\uB4DC \uC774\uC678\uC758 \uD544\uB4DC
-    \uC704 \uBAAC\uC2A4\uD130 \uC804\uCCB4\uC5D0 \uAD11\uC5ED 3\uB370\uBBF8\uC9C0,
-    \uD134 \uC885\uB8CC\uC2DC \uBB18\uC9C0\uC5D0\uC11C \uB3C4\uADF8\uB9C8\uB808\uD034\uC5E0
-    \uCE74\uB4DC \uD55C\uC7A5 \uC190\uC73C\uB85C \uAC00\uC838\uC634"
+  description: "\uC9C4\uC785 : \uC0C1\uB300 \uBAAC\uC2A4\uD130 \uC804\uCCB4\uC5D0
+    \uAD11\uC5ED 3\uB370\uBBF8\uC9C0"
   artwork: {fileID: 21300000, guid: 1af841b420b74204cad56a56a20ac72b, type: 3}
   cardType: 0
   rarity: 3
@@ -24,8 +22,9 @@ MonoBehaviour:
   cardId: a90e6a60-2eb1-4d57-b98a-6094920878f0
   haveLive2D: 0
   live2DPath: 
-  cardAbility: {fileID: 0}
-  abilityValue: 0
+  cardAbility: {fileID: 11400000, guid: 08dbb5421deb89c43ac21163a130f0ea, type: 2}
+  abilityValue: 3
+  monsterAbilityType: 1
   tags:
   - DogmaRequiem
   ownerType: 0
@@ -39,4 +38,3 @@ MonoBehaviour:
   attack: 5
   health: 10
   race: 1
-  monsterAbilityType: 0

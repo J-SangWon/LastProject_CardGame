@@ -27,6 +27,23 @@ public class SpellPlayTarget : MonoBehaviour, IPointerClickHandler
         // 필드 마법은 제외 (전용 존에서 처리)
         if (spell.spellType == SpellType.Field) return;
         
+        // 조건 선체크: 조건 미충족이면 손패 유지(코스트 미소모/이동 없음)
+        if (spell.spellType != SpellType.Continuous && spell.cardAbility != null && spell.cardAbility.condition != null)
+        {
+            bool cond = EffectConditionEvaluator.IsConditionMet(
+                spell.cardAbility.condition,
+                GameManager.Instance.CurrentPhase,
+                ConditionType.OnCardPlayed,
+                spell.cardId,
+                0
+            );
+            if (!cond)
+            {
+                Debug.Log("[SpellPlayTarget] 조건 미충족: 마법 카드는 손패에 유지됩니다.");
+                return;
+            }
+        }
+        
         // 코스트 체크 및 소모 (카드 이동 전에 먼저 체크)
         int cost = spell.cost;
         if (cardUI.ownerType == OwnerType.Player)
@@ -88,8 +105,16 @@ public class SpellPlayTarget : MonoBehaviour, IPointerClickHandler
                     }
                     else
                     {
-                        // 일반/속공: 발동 후 제거
+                        // 일반/속공: 발동 후 묘지로 이동
                         fm.ActivateSpellEffect(spell);
+                        var dz = DuelZoneManager.Instance;
+                        if (dz != null)
+                        {
+                            if (cardUI.ownerType == OwnerType.Player)
+                                dz.graveyardZone?.SendToGraveyard(spell);
+                            else if (cardUI.ownerType == OwnerType.Opponent)
+                                dz.enemyGraveyardZone?.SendToGraveyard(spell);
+                        }
                         Object.Destroy(selected);
                     }
                 }
@@ -97,7 +122,17 @@ public class SpellPlayTarget : MonoBehaviour, IPointerClickHandler
                 {
                     // FildMonster가 없으면 안전하게 제거 처리(연결 누락 대비)
                     if (spell.spellType != SpellType.Continuous)
+                    {
+                        var dz = DuelZoneManager.Instance;
+                        if (dz != null)
+                        {
+                            if (cardUI.ownerType == OwnerType.Player)
+                                dz.graveyardZone?.SendToGraveyard(spell);
+                            else if (cardUI.ownerType == OwnerType.Opponent)
+                                dz.enemyGraveyardZone?.SendToGraveyard(spell);
+                        }
                         Object.Destroy(selected);
+                    }
                 }
             });
     }

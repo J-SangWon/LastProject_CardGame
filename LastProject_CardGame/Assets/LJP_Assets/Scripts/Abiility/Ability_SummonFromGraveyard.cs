@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "CardAbilities/SummonFromGraveyard")]
@@ -11,6 +11,8 @@ public class Ability_SummonFromGraveyard : CardAbility
     public NumericCompareOp costOp = NumericCompareOp.Equal;
     public string cardID;
     public string tag;
+    [Header("선택 필터")]
+    public bool excludeSelfId = true; // 발동한 카드의 cardId와 동일한 카드는 부활 대상에서 제외
 
     [Header("다중 효과 조건")]
     public bool useCompositeConditions = false;
@@ -47,6 +49,9 @@ public class Ability_SummonFromGraveyard : CardAbility
         foreach (var e in entries)
         {
             if (count <= 0) break;
+            // 본인 카드ID 제외 조건
+            if (excludeSelfId && card != null && card.cardData != null && e.card != null && e.card.cardId == card.cardData.cardId)
+                continue;
             if (e.card != null && (useCompositeConditions ? AbilityConditionUtils.MatchesAll(conditions, compositeOperator, e.card) : MatchByData(e.card)))
             {
                 bool removed = isPlayer ? duel.graveyardZone.RemoveFromGraveyard(e.card) : duel.enemyGraveyardZone.RemoveFromGraveyard(e.card);
