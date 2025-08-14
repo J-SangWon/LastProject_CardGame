@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using Unity.VisualScripting;
@@ -262,11 +262,12 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
             return;
         }
 
-        // 2) 지속 마법은 AuraManager를 통해 등록하고, 턴 트리거가 있으면 즉시 발동하지 않음.
+        // 2) 지속 마법은 필드에 남아서 지속 효과를 발휘한다.
         if (spellCard.spellType == SpellType.Continuous)
         {
+            // 턴 트리거 조건이 있는지 확인
             bool hasTurnTrigger = false;
-            var cond = spellCard.cardAbility != null ? spellCard.cardAbility.condition : null;
+            var cond = spellCard.cardAbility?.condition;
             if (cond != null && cond.conditionType != null)
             {
                 foreach (var t in cond.conditionType)
@@ -278,8 +279,8 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
                     }
                 }
             }
-
-            // AuraManager 등록 (RegisterContinuousEffect는 즉시 발동하지 않고 턴 트리거에서만 처리)
+            
+            // 지속 마법 등록
             ActivateContinuousSpell(spellCard);
             if (hasTurnTrigger)
             {
@@ -287,8 +288,6 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
             }
             return;
         }
-
-    }
     else if (cardUI.cardData is TrapCardData trapCard)
     {
         Debug.Log($"함정 카드 필드 배치: {trapCard.cardName}");
@@ -300,6 +299,7 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
             param.value = trapCard.abilityValue;
             trapCard.cardAbility.Activate(cardUI, param);
         }
+    }
     }
 }
     
