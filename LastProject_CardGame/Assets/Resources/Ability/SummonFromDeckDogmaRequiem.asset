@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68bd28aa2720ed9468898114af1f5e4f, type: 3}
   m_Name: SummonFromDeckDogmaRequiem
   m_EditorClassIdentifier: 
-  condition: {fileID: 0}
+  targetType: 0
+  targetOwner: 0
+  condition: {fileID: 11400000, guid: 940f1002fbd67fa4ca5a8d6e8e0fcce7, type: 2}
   searchType: 0
   cardType: 0
   race: 0

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
@@ -60,7 +60,7 @@ public class FieldSpellZone : MonoBehaviour, IPointerClickHandler
         Debug.Log($"필드마법 발동: {fieldSpell.cardName}");
 
         // 필드마법 효과 발동
-        ActivateFieldSpellEffect();
+        // ActivateFieldSpellEffect(); // 즉시 발동하지 않음
 
         if (currentFieldSpellCardObj != null)
         {
@@ -182,18 +182,17 @@ public class FieldSpellZone : MonoBehaviour, IPointerClickHandler
                 cardUI.ownerType = OwnerType.Player; // 플레이어 소유로 설정
             }
 
-            // FildMonster 컴포넌트 제거
-            var existingFieldMonster = currentFieldSpellCardObj.GetComponent<FildMonster>();
-            if (existingFieldMonster != null)
-            {
-                DestroyImmediate(existingFieldMonster);
-                Debug.Log("필드마법 카드에서 FildMonster 컴포넌트를 제거했습니다.");
-            }
+            // FildMonster 컴포넌트를 제거하지 않습니다.
+            // AuraManager가 턴 시작/종료 시 FildMonster를 통해 턴 트리거를 호출합니다.
 
-            // 카드 플립 기능 비활성화 (필드마법은 플립 불필요)
+            // 카드 상태: 앞면, 필드 표시, 플립 비활성화
             var cardUIComponent = currentFieldSpellCardObj.GetComponent<CardUI>();
             if (cardUIComponent != null)
+            {
+                cardUIComponent.SetFace(true);
+                cardUIComponent.isOnField = true;
                 cardUIComponent.EnableCardFlip = false;
+            }
 
             // UI 텍스트 업데이트
             if (fieldSpellNameText != null)
@@ -359,19 +358,17 @@ public class FieldSpellZone : MonoBehaviour, IPointerClickHandler
         // 카드 UI 상태 갱신: 앞면, 필드표시, 소유자, 플립 비활성화
         cardUI.SetFace(true);
         cardUI.isOnField = true;
-        cardUI.ownerType = OwnerType.Player;
+        if (cardUI.ownerType != OwnerType.Player)
+        {
+            cardUI.ownerType = OwnerType.Player; // 플레이어 소유로 설정
+        }
         cardUI.EnableCardFlip = false;
 
         // 손패 상태 해제
         var handCard = selected.GetComponent<HandCard>();
         if (handCard != null) handCard.isInHand = false;
 
-        // 몬스터 전용 컴포넌트 제거 (있을 경우)
-        var fm = selected.GetComponent<FildMonster>();
-        if (fm != null)
-        {
-            DestroyImmediate(fm);
-        }
+        // FildMonster를 제거하지 않습니다. 턴 트리거 처리를 위해 필요합니다.
 
         // 내부 상태 반영
         currentFieldSpell = cardUI.cardData;
@@ -386,8 +383,33 @@ public class FieldSpellZone : MonoBehaviour, IPointerClickHandler
         CardSummonManager.Instance?.DeselectCard();
         PlayerCardManager.Instance?.UpdateHandLayout();
 
-        // 효과 발동
-        ActivateFieldSpellEffect();
+        CreateFieldSpellVisual();
+
+        // 턴 트리거 조건이 있는 경우: 즉시 발동하지 않음 (OnTurnStart/OnTurnEnd)
+        bool hasTurnTrigger = false;
+        var spellData = currentFieldSpell as SpellCardData;
+        var cond = spellData != null && spellData.cardAbility != null ? spellData.cardAbility.condition : null;
+        if (cond != null && cond.conditionType != null)
+        {
+            foreach (var t in cond.conditionType)
+            {
+                if (t == ConditionType.OnTurnStart || t == ConditionType.OnTurnEnd)
+                {
+                    hasTurnTrigger = true;
+                    break;
+                }
+            }
+        }
+
+        if (!hasTurnTrigger)
+        {
+            // 즉시 발동형 필드마법만 바로 발동
+            ActivateFieldSpellEffect();
+        }
+        else
+        {
+            Debug.Log($"필드마법 {currentFieldSpell.cardName}은 턴 트리거 조건이 있어 배치 시 즉시 발동하지 않습니다.");
+        }
         return true;
     }
 }

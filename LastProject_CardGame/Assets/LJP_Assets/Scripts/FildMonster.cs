@@ -264,10 +264,25 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
         {
             Debug.Log($"마법 카드 필드 배치: {spellCard.cardName}");
             
-            // 지속 마법은 턴 트리거로만 발동, 즉시 발동하지 않음
-            if (spellCard.spellType == SpellType.Continuous)
+            // 지속/필드 마법 중 '턴 트리거 조건'이 설정된 경우: 즉시 발동하지 않음
+            // 조건: EffectCondition.conditionType 내에 OnTurnStart 또는 OnTurnEnd 포함
+            bool hasTurnTrigger = false;
+            var cond = spellCard.cardAbility != null ? spellCard.cardAbility.condition : null;
+            if (cond != null && cond.conditionType != null)
             {
-                Debug.Log($"지속 마법 {spellCard.cardName}은 턴 트리거로만 발동됩니다.");
+                foreach (var t in cond.conditionType)
+                {
+                    if (t == ConditionType.OnTurnStart || t == ConditionType.OnTurnEnd)
+                    {
+                        hasTurnTrigger = true;
+                        break;
+                    }
+                }
+            }
+
+            if (spellCard.spellType == SpellType.Continuous || hasTurnTrigger)
+            {
+                Debug.Log($"턴 트리거 지속/필드 마법 {spellCard.cardName}: 배치 시 즉시 발동하지 않음");
                 return;
             }
             
@@ -361,24 +376,6 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
         {
             Debug.LogError($"지속 마법 카드 {spellCard.cardName}의 cardAbility가 null입니다.");
             return;
-        }
-        
-        // 조건 확인
-        if (spellCard.cardAbility.condition != null)
-        {
-            bool conditionMet = EffectConditionEvaluator.IsConditionMet(
-                spellCard.cardAbility.condition, 
-                GameManager.Instance.CurrentPhase,
-                ConditionType.OnCardPlayed,
-                spellCard.cardId,
-                0
-            );
-            
-            if (!conditionMet)
-            {
-                Debug.Log("지속 마법 카드 효과 조건이 충족되지 않았습니다.");
-                return;
-            }
         }
         
         // 지속 효과 등록
