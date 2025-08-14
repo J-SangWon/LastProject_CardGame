@@ -10,6 +10,7 @@ namespace Kalkatos.DottedArrow
 		[SerializeField] private RectTransform baseRect;
 		[SerializeField] private Transform origin;
 		[SerializeField] private bool startsActive;
+		[SerializeField] private Transform fixedTarget; // AI용: 마우스 대신 특정 타깃을 향하도록 함
 
 		private RectTransform myRect;
 		private Canvas canvas;
@@ -43,10 +44,11 @@ namespace Kalkatos.DottedArrow
 				return;
             Vector2 originPosOnScreen = origin.position;
 			myRect.anchoredPosition = new Vector2(originPosOnScreen.x - Screen.width / 2, originPosOnScreen.y - Screen.height / 2) / canvas.scaleFactor;
-			Vector2 differenceToMouse = Input.mousePosition - (Vector3)originPosOnScreen;
-			differenceToMouse.Scale(new Vector2(1f / myRect.localScale.x, 1f / myRect.localScale.y));
-			transform.up = differenceToMouse;
-			baseRect.anchorMax = new Vector2(baseRect.anchorMax.x, differenceToMouse.magnitude / canvas.scaleFactor / baseHeight);
+			Vector2 targetScreenPos = fixedTarget != null ? (Vector2)fixedTarget.position : (Vector2)Input.mousePosition;
+			Vector2 differenceToTarget = targetScreenPos - originPosOnScreen;
+			differenceToTarget.Scale(new Vector2(1f / myRect.localScale.x, 1f / myRect.localScale.y));
+			transform.up = differenceToTarget;
+			baseRect.anchorMax = new Vector2(baseRect.anchorMax.x, differenceToTarget.magnitude / canvas.scaleFactor / baseHeight);
 		}
 
 		private void SetActive (bool b)
@@ -58,10 +60,22 @@ namespace Kalkatos.DottedArrow
 		}
 
 		public void Activate () => SetActive(true);
-		public void Deactivate () => SetActive(false);
+		public void Deactivate ()
+		{
+			SetActive(false);
+			fixedTarget = null;
+		}
 		public void SetupAndActivate (Transform origin)
 		{
 			Origin = origin;
+			Activate();
+		}
+
+		// AI 등에서: 원점과 타깃을 명시해 화살표가 타깃을 향하게 함
+		public void SetupAndActivate (Transform origin, Transform target)
+		{
+			Origin = origin;
+			fixedTarget = target;
 			Activate();
 		}
 	}
