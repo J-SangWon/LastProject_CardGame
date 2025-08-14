@@ -6,7 +6,7 @@ public class BattleManager : MonoBehaviour
 {
     public static BattleManager Instance;
 
-    private GameObject attacker;
+    public GameObject attacker;
     private GameObject target;
 
     private GameObject abilityCaster;
@@ -56,8 +56,21 @@ public class BattleManager : MonoBehaviour
     /// </summary>
     public void SetAttacker(GameObject card)
     {
+        if (GameManager.Instance.CurrentPhase != GamePhase.BattlePhase)
+        {
+            Debug.Log("배틀 페이즈에서만 공격할 수 있습니다!");
+            return;
+        }
         CardUI cardUI = card.GetComponent<CardUI>();
         if (cardUI == null || !cardUI.isOnField) return;
+
+        // 몬스터존에 있는 카드인지 확인
+        MonsterZoneSlot slot = card.transform.parent.GetComponent<MonsterZoneSlot>();
+        if (slot == null || !slot.isOccupied)
+        {
+            Debug.Log("몬스터존에 있는 카드만 공격할 수 있습니다.");
+            return;
+        }
 
         if (cardUI.hasAttackedThisTurn)
         {
@@ -77,9 +90,18 @@ public class BattleManager : MonoBehaviour
     {
         CardUI targetUI = card.GetComponent<CardUI>();
         if (targetUI == null || !targetUI.isOnField || attacker == null) return;
-       
+
+        // 몬스터존에 있는 카드인지 확인
+        MonsterZoneSlot slot = card.transform.parent.GetComponent<MonsterZoneSlot>();
+        if (slot == null || !slot.isOccupied)
+        {
+            Debug.Log("몬스터존에 있는 카드만 공격 대상이 될 수 있습니다.");
+            return;
+        }
+
         CardUI attackerUI = attacker.GetComponent<CardUI>();
         if (attackerUI == null) return;
+
         // 자기 자신을 타겟으로 지정 못하게
         if (card == attacker)
         {
@@ -87,13 +109,22 @@ public class BattleManager : MonoBehaviour
             return;
         }
 
+        // 아군 카드 공격 방지
         if (attackerUI.ownerType == targetUI.ownerType)
         {
             Debug.Log("아군 몬스터는 공격할 수 없습니다.");
             return;
         }
+
         target = card;
         ExecuteBattle();
+    }
+    private void Update()
+    {
+        if (attacker != null && Input.GetMouseButtonDown(1)) // 우클릭
+        {
+            CancelAttack();
+        }
     }
 
     public void SetAbilityCaster(GameObject card)
