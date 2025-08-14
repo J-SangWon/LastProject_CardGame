@@ -312,8 +312,8 @@ public class EnemyAI : MonoBehaviour
         // BattleManager를 통해 공격 실행
         if (BattleManager.Instance != null)
         {
+            // 전투 트리거(공격자/대상 설정을 즉시 실행) + BattleManager가 화살표를 타깃으로 향하게 처리
             BattleManager.Instance.SetAttacker(attacker.gameObject);
-            yield return new WaitForSeconds(0.1f);
             BattleManager.Instance.SetTarget(target.gameObject);
 
             // 공격 완료까지 대기
@@ -323,6 +323,8 @@ public class EnemyAI : MonoBehaviour
         yield return new WaitForSeconds(actionDelay);
     }
 
+    // (임시 라인) 필요 없어져서 제거
+
     /// <summary>
     /// 직접 공격
     /// </summary>
@@ -330,15 +332,15 @@ public class EnemyAI : MonoBehaviour
     {
         Debug.Log($"[EnemyAI] {attacker.cardData.cardName} 직접 공격");
 
-        // BattleManager를 통해 직접 공격 실행
+        // 직접 공격 시 드래그 라인(Arrow) 잔상 제거 및 상태 리셋
         if (BattleManager.Instance != null)
         {
-            BattleManager.Instance.SetAttacker(attacker.gameObject);
-            yield return new WaitForSeconds(0.1f);
-            // 직접 공격은 플레이어 생명력에 직접 데미지를 주는 방식으로 처리
-            // 여기서는 간단히 로그만 출력
-            Debug.Log($"[EnemyAI] {attacker.cardData.cardName} 직접 공격으로 플레이어에게 {attacker.attack} 데미지");
+            BattleManager.Instance.CancelAttack();
         }
+
+        // 직접 공격 처리(현재는 로그만) + 공격 플래그 설정
+        Debug.Log($"[EnemyAI] {attacker.cardData.cardName} 직접 공격으로 플레이어에게 {attacker.attack} 데미지");
+        attacker.MarkAsAttacked();
 
         yield return new WaitForSeconds(actionDelay);
     }
