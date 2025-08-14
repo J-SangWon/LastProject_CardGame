@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using Unity.VisualScripting;
@@ -9,12 +9,13 @@ using UnityEngine.UI;
 public class FildMonster : MonoBehaviour, IPointerClickHandler
 {
     public MonsterCardData monsterCardData; 
-//{ get; private set; }
 	public CardUI cardUI; 
-//{ get; private set; }
 
 	private bool isAppeared = false;
     private bool hasReverberated = false;
+    // 동일 턴 내 중복 트리거 방지용
+    private int lastStartTriggeredTurn = -1;
+    private int lastEndTriggeredTurn = -1;
 
     void Awake()
     { 
@@ -58,23 +59,15 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
         if(monsterCardData != null && monsterCardData.monsterAbilityType == MonsterCardAbilityType.Continuous) 
             Continuous();
             
-        // 지속 마법/함정 효과 처리
-        HandleContinuousSpellTrap();
     }
 
     private void OnDestroy()
     {
-        // 주의: 파괴 시점(OnDestroy)에는 트랜스폼 이동/생성 등 무거운 로직을 호출하지 않습니다.
-        // 여운(리버브)은 TargetableCard.OnDestroyed 이벤트에서 선행 처리되며,
-        // OnDestroy에서는 중복 실행을 피하고 안전하게 정리만 수행합니다.
-        
-        // 이 카드가 소스로 등록한 모든 지속 오라 해제
         if (cardUI != null)
         {
             AuraManager.Instance.UnregisterAllFromSource(cardUI);
         }
         
-        // 마법/함정 카드 제거 시 효과
         HandleSpellTrapRemoval();
         
         var targetable = GetComponent<TargetableCard>();
@@ -91,10 +84,8 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
 
 	public void OnPointerClick(PointerEventData eventData)
 	{
-		// 마법/함정 카드 클릭 처리
 		if (cardUI.cardData is SpellCardData || cardUI.cardData is TrapCardData)
 		{
-            // 마법 카드는 여기서 즉시 발동하지 않고, 선택만 수행하여 SpellPlayTarget 클릭으로 발동되도록 함
             var spellData = cardUI.cardData as SpellCardData;
             if (spellData != null)
             {
@@ -103,7 +94,6 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
                     CardSummonManager.Instance?.SelectCard(this.gameObject);
                     return;
                 }
-                // 필드/지속 마법은 여기서 처리하지 않음(각 전용 흐름으로)
                 return;
             }
         }
@@ -259,55 +249,60 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
     
     // 마법/함정 카드 필드 배치 시 효과
     private void HandleFieldPlacement()
+{
+    if (cardUI.cardData is SpellCardData spellCard)
     {
-        if (cardUI.cardData is SpellCardData spellCard)
+        Debug.Log($"마법 카드 필드 배치: {spellCard.cardName}");
+
+        // 1) 필드 마법은 FildMonster가 발동을 절대 수행하지 않는다.
+        //    FieldSpellZone 경로에서만 발동/조건 분기가 이루어지도록 완전히 위임하여 2중 발동을 방지.
+        if (spellCard.spellType == SpellType.Field)
         {
-            Debug.Log($"마법 카드 필드 배치: {spellCard.cardName}");
-            
-            // 지속 마법은 턴 트리거로만 발동, 즉시 발동하지 않음
-            if (spellCard.spellType == SpellType.Continuous)
-            {
-                Debug.Log($"지속 마법 {spellCard.cardName}은 턴 트리거로만 발동됩니다.");
-                return;
-            }
-            
-            // 필드 마법이나 기타 마법인 경우만 즉시 발동
-            if (spellCard.cardAbility != null)
-            {
-                AbilityParameter param = new AbilityParameter();
-                param.value = spellCard.abilityValue;
-                spellCard.cardAbility.Activate(cardUI, param);
-            }
+            Debug.Log($"[FildMonster] 필드 마법은 FieldSpellZone에서만 처리: {spellCard.cardName}");
+            return;
         }
-        else if (cardUI.cardData is TrapCardData trapCard)
+
+        // 2) 지속 마법은 AuraManager를 통해 등록하고, 턴 트리거가 있으면 즉시 발동하지 않음.
+        if (spellCard.spellType == SpellType.Continuous)
         {
-            Debug.Log($"함정 카드 필드 배치: {trapCard.cardName}");
-            
-            // 지속 함정은 턴 트리거로만 발동 (TrapType.Continuous가 있다면)
-            // 현재는 즉시 발동으로 처리
-            if (trapCard.cardAbility != null)
+            bool hasTurnTrigger = false;
+            var cond = spellCard.cardAbility != null ? spellCard.cardAbility.condition : null;
+            if (cond != null && cond.conditionType != null)
             {
-                AbilityParameter param = new AbilityParameter();
-                param.value = trapCard.abilityValue;
-                trapCard.cardAbility.Activate(cardUI, param);
+                foreach (var t in cond.conditionType)
+                {
+                    if (t == ConditionType.OnTurnStart || t == ConditionType.OnTurnEnd)
+                    {
+                        hasTurnTrigger = true;
+                        break;
+                    }
+                }
             }
+
+            // AuraManager 등록 (RegisterContinuousEffect는 즉시 발동하지 않고 턴 트리거에서만 처리)
+            ActivateContinuousSpell(spellCard);
+            if (hasTurnTrigger)
+            {
+                Debug.Log($"[FildMonster] 지속 마법은 턴 트리거에서만 발동: {spellCard.cardName}");
+            }
+            return;
+        }
+
+    }
+    else if (cardUI.cardData is TrapCardData trapCard)
+    {
+        Debug.Log($"함정 카드 필드 배치: {trapCard.cardName}");
+        
+        // 현재는 즉시 발동으로 처리
+        if (trapCard.cardAbility != null)
+        {
+            AbilityParameter param = new AbilityParameter();
+            param.value = trapCard.abilityValue;
+            trapCard.cardAbility.Activate(cardUI, param);
         }
     }
+}
     
-    // 마법/함정 카드 클릭 시 효과
-    private void HandleSpellTrapClick()
-    {
-        if (cardUI.cardData is SpellCardData spellCard && spellCard.spellType != SpellType.Field)
-        {
-            Debug.Log($"마법 카드 클릭: {spellCard.cardName}");
-            ActivateSpellEffect(spellCard);
-        }
-        else if (cardUI.cardData is TrapCardData trapCard)
-        {
-            Debug.Log($"함정 카드 클릭: {trapCard.cardName}");
-            ActivateTrapEffect(trapCard);
-        }
-    }
     
     // 마법 카드 효과 발동
     public void ActivateSpellEffect(SpellCardData spellCard)
@@ -361,24 +356,6 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
         {
             Debug.LogError($"지속 마법 카드 {spellCard.cardName}의 cardAbility가 null입니다.");
             return;
-        }
-        
-        // 조건 확인
-        if (spellCard.cardAbility.condition != null)
-        {
-            bool conditionMet = EffectConditionEvaluator.IsConditionMet(
-                spellCard.cardAbility.condition, 
-                GameManager.Instance.CurrentPhase,
-                ConditionType.OnCardPlayed,
-                spellCard.cardId,
-                0
-            );
-            
-            if (!conditionMet)
-            {
-                Debug.Log("지속 마법 카드 효과 조건이 충족되지 않았습니다.");
-                return;
-            }
         }
         
         // 지속 효과 등록
@@ -479,12 +456,16 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
             Debug.LogError($"몬스터 지속 효과 등록 실패: {monsterCardData.cardName}, 오류: {e.Message}");
         }
     }
-
+    
     /// <summary>
     /// 턴 시작 시 발동되는 효과 처리 (First Phase)
     /// </summary>
     public void TriggerTurnStartEffect()
     {
+        // 같은 턴에 중복 발동 방지
+        int currentTurn = GameManager.Instance != null ? GameManager.Instance.TurnNumber : -1;
+        if (lastStartTriggeredTurn == currentTurn) return;
+
         // 몬스터 턴 시작 효과
         if (monsterCardData != null && HasTurnTriggerEffect(ConditionType.OnTurnStart))
         {
@@ -500,6 +481,9 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
         {
             ExecuteTrapTurnTriggerEffect(trapCard, ConditionType.OnTurnStart);
         }
+
+        // 이번 턴 처리 완료로 표시
+        lastStartTriggeredTurn = currentTurn;
     }
 
     /// <summary>
@@ -507,6 +491,10 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
     /// </summary>
     public void TriggerTurnEndEffect()
     {
+        // 같은 턴에 중복 발동 방지
+        int currentTurn = GameManager.Instance != null ? GameManager.Instance.TurnNumber : -1;
+        if (lastEndTriggeredTurn == currentTurn) return;
+
         // 몬스터 턴 종료 효과
         if (monsterCardData != null && HasTurnTriggerEffect(ConditionType.OnTurnEnd))
         {
@@ -687,19 +675,6 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
         catch (System.Exception e)
         {
             Debug.LogError($"함정 카드 효과 발동 실패: {trapCard.cardName}, 오류: {e.Message}");
-        }
-    }
-    
-    // 지속 마법/함정 효과 처리
-    private void HandleContinuousSpellTrap()
-    {
-        if (cardUI.cardData is SpellCardData spellCard && spellCard.cardAbility != null)
-        {
-            // 지속 마법 효과 (필요시 구현)
-        }
-        else if (cardUI.cardData is TrapCardData trapCard && trapCard.cardAbility != null)
-        {
-            // 지속 함정 효과 (필요시 구현)
         }
     }
     

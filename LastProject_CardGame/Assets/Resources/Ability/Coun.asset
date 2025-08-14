@@ -17,7 +17,7 @@ MonoBehaviour:
   condition: {fileID: 0}
   searchType: 0
   cardType: 0
-  race: 0
+  race: 4
   cost: 0
   costOp: 0
   cardID: 

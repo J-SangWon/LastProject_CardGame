@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: TurnStartCondition
   m_EditorClassIdentifier: 
   gamePhase: 1
-  conditionType: 
+  conditionType: 0a000000
   targetCardId: 
   intValue: 0

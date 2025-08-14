@@ -1,10 +1,6 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// 카드 개체에 부착되어, 오라(지속효과)로 인한 능력치 변화를 소스별로 관리합니다.
-/// CardUI는 수정하지 않고, 이 컴포넌트가 CardUI.AddAttack() 등을 호출합니다.
-/// </summary>
 [DisallowMultipleComponent]
 public class AuraTracker : MonoBehaviour
 {
