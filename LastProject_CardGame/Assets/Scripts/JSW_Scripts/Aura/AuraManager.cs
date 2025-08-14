@@ -13,7 +13,7 @@ public enum OwnerScope
 /// - 같은 소스(카드 인스턴스)에서 동일 효과는 1회만 적용(비중첩)
 /// - 서로 다른 소스는 각각 적용되어 스택 가능
 /// </summary>
-public static class AuraManager
+public class AuraManager : MonoBehaviour
 {
     private class SourceState
     {
@@ -24,10 +24,23 @@ public static class AuraManager
         public bool MonstersOnly;
     }
 
+    public static AuraManager Instance;
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
     // 소스ID -> 상태
     private static readonly Dictionary<int, SourceState> stateBySource = new Dictionary<int, SourceState>();
 
-    public static void RegisterAttackAura(CardUI source, OwnerScope scope, int amount, bool monstersOnly = true)
+    public void RegisterAttackAura(CardUI source, OwnerScope scope, int amount, bool monstersOnly = true)
     {
         if (source == null) { Debug.LogWarning("[AuraManager] source is null"); return; }
         int sourceId = source.GetInstanceID();
@@ -66,7 +79,70 @@ public static class AuraManager
         }
     }
 
-    public static void UnregisterAllFromSource(CardUI source)
+    /// <summary>
+    /// 지속 마법/함정 효과를 등록하고 지속적으로 적용
+    /// </summary>
+    public void RegisterContinuousEffect(CardUI source, CardAbility ability, AbilityParameter param)
+    {
+        if (source == null || ability == null)
+        {
+            Debug.LogWarning("[AuraManager] RegisterContinuousEffect: source or ability is null");
+            return;
+        }
+
+        try
+        {
+            // 지속 효과 즉시 발동 (초기 적용)
+            ability.Activate(source, param);
+            
+            Debug.Log($"[AuraManager] 지속 효과 등록: {source.cardData.cardName}");
+            
+            // TODO: 실제 지속 효과 추적이 필요하다면 여기에 추가 로직 구현
+            // 현재는 단순히 즉시 발동 후, 카드가 파괴될 때 UnregisterAllFromSource로 정리
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"[AuraManager] 지속 효과 등록 실패: {e.Message}");
+        }
+    }
+
+    /// <summary>
+    /// 턴 시작 시 발동되는 지속 효과들을 처리
+    /// </summary>
+    public void TriggerTurnStartEffects()
+    {
+        var allCards = Object.FindObjectsOfType<CardUI>();
+        foreach (var cardUI in allCards)
+        {
+            if (!cardUI.isOnField) continue;
+            
+            var fm = cardUI.GetComponent<FildMonster>();
+            if (fm != null)
+            {
+                fm.TriggerTurnStartEffect();
+            }
+        }
+    }
+
+    /// <summary>
+    /// 턴 종료 시 발동되는 지속 효과들을 처리
+    /// </summary>
+    public void TriggerTurnEndEffects()
+    {
+        var allCards = Object.FindObjectsOfType<CardUI>();
+        foreach (var cardUI in allCards)
+        {
+            if (!cardUI.isOnField) continue;
+            
+            var fm = cardUI.GetComponent<FildMonster>();
+            if (fm != null)
+            {
+                fm.TriggerTurnEndEffect();
+            }
+        }
+    }
+
+    public void UnregisterAllFromSource(CardUI source)
     {
         if (source == null) return;
         int sourceId = source.GetInstanceID();
@@ -83,7 +159,7 @@ public static class AuraManager
     }
 
     // 새 카드가 필드에 들어왔을 때, 현재 활성화된 모든 오라를 그 카드에 적용
-    public static void NotifyCardEnteredField(CardUI entered)
+    public void NotifyCardEnteredField(CardUI entered)
     {
         if (entered == null) return;
         if (!entered.isOnField) return;
@@ -144,7 +220,7 @@ public static class AuraManager
         }
     }
 
-    private static List<CardUI> CollectTargets(CardUI source, OwnerScope scope, bool monstersOnly)
+    private List<CardUI> CollectTargets(CardUI source, OwnerScope scope, bool monstersOnly)
     {
         var result = new List<CardUI>();
         var all = Object.FindObjectsOfType<CardUI>(true);

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections;
@@ -136,6 +136,12 @@ public class GameManager : MonoBehaviour
 
         if (currentPhase == GamePhase.FirstPhase)
         {
+            // 턴 시작 시 지속 효과 트리거
+            if (AuraManager.Instance != null)
+            {
+                AuraManager.Instance.TriggerTurnStartEffects();
+            }
+            
             turnButton.interactable = false;
             StartCoroutine(FirstPhaseDrawAndGoMainPhase());
         }
@@ -264,6 +270,13 @@ public class GameManager : MonoBehaviour
         currentPhase = GamePhase.EndPhase;
         turnButton.interactable = false;
         UpdateAllUI();
+        
+        // 턴 종료 시 지속 효과 트리거
+        if (AuraManager.Instance != null)
+        {
+            AuraManager.Instance.TriggerTurnEndEffects();
+        }
+        
         StartCoroutine(EndPhaseAndAutoTurnCoroutine());
     }
 
