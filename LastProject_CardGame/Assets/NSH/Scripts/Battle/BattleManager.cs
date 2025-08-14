@@ -87,40 +87,60 @@ public class BattleManager : MonoBehaviour
     /// <summary>
     /// 공격 대상 지정 → 전투 실행
     /// </summary>
-    public void SetTarget(GameObject card)
+    public void SetTarget(GameObject targetObj)
     {
-        CardUI targetUI = card.GetComponent<CardUI>();
-        if (targetUI == null || !targetUI.isOnField || attacker == null) return;
+        if (attacker == null) return;
 
-        // 몬스터존/필드 여부 확인: 슬롯이 있으면 점유 여부, 없으면 isOnField로 판단
-        MonsterZoneSlot slot = card.transform.parent.GetComponent<MonsterZoneSlot>();
-        bool canBeTargetHere = slot != null ? slot.isOccupied : targetUI.isOnField;
-        if (!canBeTargetHere)
+        // 1) 카드 대상인지 확인
+        CardUI targetUI = targetObj.GetComponent<CardUI>();
+        if (targetUI != null)
         {
-            Debug.Log("몬스터존(또는 필드)에 있는 카드만 공격 대상이 될 수 있습니다.");
+            // 기존 카드 공격 로직 유지
+            MonsterZoneSlot slot = targetObj.transform.parent.GetComponent<MonsterZoneSlot>();
+            bool canBeTargetHere = slot != null ? slot.isOccupied : targetUI.isOnField;
+            if (!canBeTargetHere)
+            {
+                Debug.Log("몬스터존(또는 필드)에 있는 카드만 공격 대상이 될 수 있습니다.");
+                return;
+            }
+
+            CardUI attackerUI = attacker.GetComponent<CardUI>();
+            if (attackerUI == null) return;
+
+            if (targetObj == attacker)
+            {
+                Debug.Log("자기 자신은 공격할 수 없습니다.");
+                return;
+            }
+
+            if (attackerUI.ownerType == targetUI.ownerType)
+            {
+                Debug.Log("아군 몬스터는 공격할 수 없습니다.");
+                return;
+            }
+
+            target = targetObj;
+            ExecuteBattle();
             return;
         }
 
-        CardUI attackerUI = attacker.GetComponent<CardUI>();
-        if (attackerUI == null) return;
-
-        // 자기 자신을 타겟으로 지정 못하게
-        if (card == attacker)
+        // 2) HitZone 대상인지 확인
+        HitZone hitZone = targetObj.GetComponent<HitZone>();
+        if (hitZone != null)
         {
-            Debug.Log("자기 자신은 공격할 수 없습니다.");
+            hitZone.OnHitByCard(attacker);   // 히트존 체력 감소 처리
+            Debug.Log($"히트존 공격: {attacker.GetComponent<CardUI>().cardData.cardName} → {(hitZone.isPlayerZone ? "Player" : "Enemy")}");
+
+            // 공격자 초기화 및 화살표 비활성화
+            attacker = null;
+            arrow.Deactivate();
             return;
         }
 
-        // 아군 카드 공격 방지
-        if (attackerUI.ownerType == targetUI.ownerType)
-        {
-            Debug.Log("아군 몬스터는 공격할 수 없습니다.");
-            return;
-        }
-
-        target = card;
-        ExecuteBattle();
+        // 3) 카드도 히트존도 아닌 경우는 무시
+        Debug.Log("유효하지 않은 공격 대상입니다.");
     }
+
     private void Update()
     {
         if (attacker != null && Input.GetMouseButtonDown(1)) // 우클릭
