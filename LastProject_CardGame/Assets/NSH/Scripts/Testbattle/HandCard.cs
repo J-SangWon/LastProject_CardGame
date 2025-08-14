@@ -15,34 +15,18 @@ public class HandCard : MonoBehaviour, IPointerClickHandler
     {
         if (!isInHand) return;
 
-        // GameManager, CardUI, CardData 모두 존재하는지 체크
-        if (cardUI == null || cardUI.cardData == null || GameManager.Instance == null)
-            return;
-
-        // 메인 페이즈가 아니면 소환 불가
-        if (GameManager.Instance.CurrentPhase != GamePhase.MainPhase)
+        // 이미 선택된 카드면 선택 해제
+        if (CardSummonManager.Instance.GetSelectedCard() == gameObject)
         {
-            Debug.Log("소환 실패: 메인 페이즈가 아닙니다.");
+            cardUI.SetOutline(false);
+            CardSummonManager.Instance.DeselectCard();
             return;
         }
 
-        // 코스트 체크 및 소비 시도
-        int cost = cardUI.cardData.cost;
-        if (!GameManager.Instance.CanSpendPlayerCost(cost))
-        {
-            Debug.Log("소환 실패: 코스트가 부족합니다.");
-            return;
-        }
-
-        if (!GameManager.Instance.SpendPlayerCost(cost))
-        {
-            Debug.Log("소환 실패: 코스트 소비 실패");
-            return;
-        }
-
-        // 코스트 검사 통과하면 카드 선택 처리
-        CardSummonManager.Instance.SelectCard(this.gameObject);
+        // 새 카드 선택
+        CardSummonManager.Instance.DeselectCard();
+        CardSummonManager.Instance.SelectCard(gameObject);
         cardUI.SetOutline(true);
-        Debug.Log("카드 선택됨: " + gameObject.name);
     }
+
 }
