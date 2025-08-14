@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efb3ad27ebfed7340aa33299b6e9fc83, type: 3}
   m_Name: TakeDamager_test
   m_EditorClassIdentifier: 
-  targetType: 0
-  targetOwner: 0
+  targetType: 2
+  targetOwner: 2
   condition: {fileID: 0}

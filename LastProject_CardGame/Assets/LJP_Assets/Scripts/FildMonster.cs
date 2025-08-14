@@ -31,7 +31,7 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
             targetable.OnDestroyed += HandleDestroyed;
         }
     }
-
+    
     private void OnEnable()
     {
         // 필드에 올라간 상태에서만 진입 효과 1회 발동

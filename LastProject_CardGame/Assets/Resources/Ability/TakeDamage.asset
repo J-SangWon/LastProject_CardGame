@@ -12,4 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8cad01678617b1842bc28343f7994162, type: 3}
   m_Name: TakeDamage
   m_EditorClassIdentifier: 
-  damage: 0
+  targetType: 1
+  targetOwner: 2
+  condition: {fileID: 0}

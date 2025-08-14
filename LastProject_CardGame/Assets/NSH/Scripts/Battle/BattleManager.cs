@@ -130,11 +130,12 @@ public class BattleManager : MonoBehaviour
     public void SetAbilityCaster(GameObject card)
     {
 		CardUI cardUI = card.GetComponent<CardUI>();
+		Debug.Log($"능력 시전자 설정됨: {cardUI.cardData.cardName}");
 		if (cardUI == null || !cardUI.isOnField) return;
 
 		abilityCaster = card;
 		Debug.Log($"능력 시전자 설정됨: {cardUI.cardData.cardName}");
-		BeginAttack(abilityCaster);
+		BeginAbility(abilityCaster);
 	}
 
     public void SetAbilityTarget(GameObject card)
@@ -292,11 +293,22 @@ public class BattleManager : MonoBehaviour
         {
             attacker = null;
         }
-        if (abilityCaster != null)
-        {
-			abilityCaster = null;
-
-		}
     }
-    #endregion
+
+	public void BeginAbility(GameObject card)
+	{
+		CancelAbility();
+		arrow.SetupAndActivate(card.transform);
+		abilityCaster = card;
+	}
+
+	public void CancelAbility()
+	{
+		arrow.Deactivate();
+		if (abilityCaster != null)
+		{
+			abilityCaster = null;
+		}
+	}
+	#endregion
 }
