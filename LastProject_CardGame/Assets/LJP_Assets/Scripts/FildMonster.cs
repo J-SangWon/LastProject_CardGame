@@ -94,9 +94,19 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
 		// 마법/함정 카드 클릭 처리
 		if (cardUI.cardData is SpellCardData || cardUI.cardData is TrapCardData)
 		{
-			HandleSpellTrapClick();
-			return;
-		}
+            // 마법 카드는 여기서 즉시 발동하지 않고, 선택만 수행하여 SpellPlayTarget 클릭으로 발동되도록 함
+            var spellData = cardUI.cardData as SpellCardData;
+            if (spellData != null)
+            {
+                if (spellData.spellType != SpellType.Field && spellData.spellType != SpellType.Continuous)
+                {
+                    CardSummonManager.Instance?.SelectCard(this.gameObject);
+                    return;
+                }
+                // 필드/지속 마법은 여기서 처리하지 않음(각 전용 흐름으로)
+                return;
+            }
+        }
 		
         if(BattleManager.Instance.AbilityCaster != null && BattleManager.Instance.IsAbilityTargeting)
         {
@@ -285,7 +295,7 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
     }
     
     // 마법 카드 효과 발동
-    private void ActivateSpellEffect(SpellCardData spellCard)
+    public void ActivateSpellEffect(SpellCardData spellCard)
     {
         if (spellCard.cardAbility == null)
         {
