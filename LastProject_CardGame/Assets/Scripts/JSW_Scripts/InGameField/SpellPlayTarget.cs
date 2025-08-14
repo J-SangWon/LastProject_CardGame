@@ -25,9 +25,8 @@ public class SpellPlayTarget : MonoBehaviour, IPointerClickHandler
 
         var spell = cardUI.cardData as SpellCardData;
         if (spell == null) return;
-        // 필드/지속 마법은 제외 (요청사항)
+        // 필드 마법은 제외 (전용 존에서 처리)
         if (spell.spellType == SpellType.Field) return;
-        if (spell.spellType == SpellType.Continuous) return;
 
         // 애니메이션 타겟 및 부모 지정 (FieldSpellZone 패턴과 유사)
         Transform target = targetAnchor != null ? targetAnchor : transform;
@@ -68,12 +67,24 @@ public class SpellPlayTarget : MonoBehaviour, IPointerClickHandler
                 var fm = selected.GetComponent<FildMonster>();
                 if (fm != null)
                 {
-                    fm.ActivateSpellEffect(spell);
+                    if (spell.spellType == SpellType.Continuous)
+                    {
+                        // 지속 마법: 필드에 남기고 지속 효과 활성화
+                        fm.ActivateContinuousSpell(spell);
+                    }
+                    else
+                    {
+                        // 일반/속공: 발동 후 제거
+                        fm.ActivateSpellEffect(spell);
+                        Object.Destroy(selected);
+                    }
                 }
-
-                // 효과 실행 후 제거(묘지 시스템이 있다면 교체)
-                // 사라지게 처리(묘지 시스템이 있다면 그쪽으로 이동시키도록 교체 가능)
-                Object.Destroy(selected);
+                else
+                {
+                    // FildMonster가 없으면 안전하게 제거 처리(연결 누락 대비)
+                    if (spell.spellType != SpellType.Continuous)
+                        Object.Destroy(selected);
+                }
             });
     }
 }
