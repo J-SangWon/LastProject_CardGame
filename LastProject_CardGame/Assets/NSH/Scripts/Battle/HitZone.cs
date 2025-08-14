@@ -3,30 +3,30 @@ using UnityEngine.EventSystems;
 
 public class HitZone : MonoBehaviour, IPointerClickHandler
 {
-    [Header("HitZone ¼³Á¤")]
-    public bool isPlayerZone = true; // true = ÇÃ·¹ÀÌ¾î Ã¼·Â, false = Àû Ã¼·Â
+    [Header("HitZone ï¿½ï¿½ï¿½ï¿½")]
+    public bool isPlayerZone = true; // true = ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ Ã¼ï¿½ï¿½, false = ï¿½ï¿½ Ã¼ï¿½ï¿½
 
     /// <summary>
-    /// Ä«µå°¡ È÷Æ®Á¸À» Å¬¸¯ÇßÀ» ¶§ BattleManager¸¦ ÅëÇØ °ø°İ
+    /// Ä«ï¿½å°¡ ï¿½ï¿½Æ®ï¿½ï¿½ï¿½ï¿½ Å¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ BattleManagerï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     /// <param name="eventData"></param>
     public void OnPointerClick(PointerEventData eventData)
     {
-        // ÁÂÅ¬¸¯¸¸ Ã³¸®
+        // ï¿½ï¿½Å¬ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½
         if (eventData.button != PointerEventData.InputButton.Left) return;
 
-        // °ø°İÀÚ°¡ ¼±ÅÃµÇ¾î ÀÖ´Â °æ¿ì¸¸ Ã³¸®
+        // ï¿½ï¿½ï¿½ï¿½ï¿½Ú°ï¿½ ï¿½ï¿½ï¿½ÃµÇ¾ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ì¸¸ Ã³ï¿½ï¿½
         if (BattleManager.Instance.attacker != null)
         {
-            OnHitByCard(BattleManager.Instance.attacker);
-            BattleManager.Instance.CancelAttack(); // °ø°İ ³¡³ª¸é ¼±ÅÃ ÃÊ±âÈ­
+            // ì¹´ë“œ ì „íˆ¬ì™€ ë™ì¼í•œ ì—°ì¶œë¡œ ì§ì ‘ ê³µê²© ì²˜ë¦¬
+            BattleManager.Instance.DirectAttackHitZone(this);
         }
     }
 
     /// <summary>
-    /// BattleManager¿¡¼­ °ø°İÀÚ°¡ ¼±ÅÃµÉ ¶§ È£Ãâ
+    /// BattleManagerï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ú°ï¿½ ï¿½ï¿½ï¿½Ãµï¿½ ï¿½ï¿½ È£ï¿½ï¿½
     /// </summary>
-    /// <param name="attacker">°ø°İ Ä«µå</param>
+    /// <param name="attacker">ï¿½ï¿½ï¿½ï¿½ Ä«ï¿½ï¿½</param>
     public void OnHitByCard(GameObject attacker)
     {
         var cardUI = attacker.GetComponent<CardUI>();
@@ -41,6 +41,6 @@ public class HitZone : MonoBehaviour, IPointerClickHandler
 
         cardUI.MarkAsAttacked();
 
-        Debug.Log($"{cardUI.cardData.cardName} °¡ {(isPlayerZone ? "Player" : "Enemy")} È÷Æ®Á¸À» °ø°İ, {damage} µ¥¹ÌÁö!");
+        Debug.Log($"{cardUI.cardData.cardName} ï¿½ï¿½ {(isPlayerZone ? "Player" : "Enemy")} ï¿½ï¿½Æ®ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, {damage} ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½!");
     }
 }

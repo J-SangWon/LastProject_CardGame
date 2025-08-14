@@ -474,6 +474,117 @@ public class FieldSpellZone : MonoBehaviour, IPointerClickHandler
         return true;
     }
 
+    /// <summary>
+    /// AI가 손패의 필드마법 카드를 이 존에 발동하도록 시도
+    /// </summary>
+    public bool TryActivateFieldSpellForAI(GameObject cardObj)
+    {
+        if (cardObj == null) return false;
+        var cardUI = cardObj.GetComponent<CardUI>();
+        if (cardUI == null || cardUI.cardData == null) return false;
+        if (cardUI.cardData.cardType != CardType.Spell) return false;
+        var spellCard = cardUI.cardData as SpellCardData;
+        if (spellCard == null || spellCard.spellType != SpellType.Field) return false;
+
+        int cost = spellCard.cost;
+        if (cardUI.ownerType == OwnerType.Opponent)
+        {
+            if (!GameManager.Instance.SpendEnemyCost(cost))
+            {
+                Debug.Log($"[AI] 적 코스트 부족: 필요 {cost}, 현재 {GameManager.Instance.enemyCurrentCost}");
+                return false;
+            }
+        }
+        else
+        {
+            if (!GameManager.Instance.TrySpendPlayerCost(cost)) return false;
+        }
+
+        if (currentFieldSpell != null)
+        {
+            RemoveFieldSpell();
+        }
+
+        PlaceFieldSpellObjectKeepOwner(cardObj, cardUI);
+
+        // 즉시 발동형이면 발동
+        bool hasTurnTrigger = false;
+        var cond = spellCard.cardAbility != null ? spellCard.cardAbility.condition : null;
+        if (cond != null && cond.conditionType != null)
+        {
+            foreach (var t in cond.conditionType)
+            {
+                if (t == ConditionType.OnTurnStart || t == ConditionType.OnTurnEnd)
+                {
+                    hasTurnTrigger = true;
+                    break;
+                }
+            }
+        }
+        if (!hasTurnTrigger)
+        {
+            ActivateFieldSpellEffect();
+        }
+        return true;
+    }
+
+    // AI용: 소유자(ownerType) 유지하여 배치
+    private void PlaceFieldSpellObjectKeepOwner(GameObject cardObj, CardUI cardUI)
+    {
+        cardObj.transform.SetParent(transform);
+        cardObj.transform.localScale = Vector3.one;
+        cardObj.transform.DOMove(transform.position, 0.5f).SetEase(Ease.OutQuad);
+
+        cardUI.SetFace(true);
+        cardUI.isOnField = true;
+        cardUI.EnableCardFlip = false;
+
+        var handCard = cardObj.GetComponent<HandCard>();
+        if (handCard != null) handCard.isInHand = false;
+
+        var drag = cardObj.GetComponent<CardDragHandler>();
+        if (drag != null) drag.isSummoned = true;
+
+        currentFieldSpell = cardUI.cardData;
+        currentFieldSpellCardObj = cardObj;
+        isOccupied = true;
+
+        if (fieldSpellNameText != null)
+            fieldSpellNameText.text = currentFieldSpell.cardName;
+
+        // 손패 레이아웃 갱신
+        if (cardUI.ownerType == OwnerType.Player)
+            PlayerCardManager.Instance?.UpdateHandLayout();
+        else
+            OpponentCardManager.Instance?.UpdateHandLayout();
+
+        // 지속 효과 등록 (즉시 발동 없음)
+        var fm = cardObj.GetComponent<FildMonster>();
+        if (fm == null) fm = cardObj.AddComponent<FildMonster>();
+        var spellDataForReg = currentFieldSpell as SpellCardData;
+        if (spellDataForReg != null && fm != null)
+        {
+            try
+            {
+                fm.ActivateContinuousSpell(spellDataForReg);
+                Debug.Log($"[FieldSpellZone] 지속 효과 등록 완료(소유자 유지): {spellDataForReg.cardName}");
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"[FieldSpellZone] 지속 효과 등록 실패(소유자 유지): {spellDataForReg.cardName}, 오류: {e.Message}");
+            }
+        }
+        if (AuraManager.Instance != null)
+        {
+            AuraManager.Instance.NotifyCardEnteredField(cardUI);
+        }
+
+        if (cardObj.GetComponent<AuraTracker>() == null)
+        {
+            cardObj.AddComponent<AuraTracker>();
+        }
+    }
+
     // 드롭/선택 공통: 기존 카드 오브젝트를 재사용해 필드마법 존으로 이동시키고 상태/등록을 완료한다.
     private void PlaceFieldSpellObject(GameObject cardObj, CardUI cardUI)
     {
