@@ -117,6 +117,7 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
         if (currentHealth == 0)
         {
             isDeadFlag = true; // 죽음 표식(하지만 아직 무덤 이동/Destroy는 하지 않음)
+            ResolveDeath();
         }
     }
 

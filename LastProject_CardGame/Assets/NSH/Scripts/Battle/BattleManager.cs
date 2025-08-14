@@ -257,6 +257,10 @@ public class BattleManager : MonoBehaviour
         {
             attacker = null;
         }
+        if (abilityCaster != null)
+        {
+            abilityCaster = null;
+        }
     }
     #endregion
 }

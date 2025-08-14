@@ -38,7 +38,7 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
             && isAppeared == false 
             && cardUI != null && cardUI.isOnField)
         {
-			BattleManager.Instance.SetAbilityCaster(gameObject);
+			BattleManager.Instance.SetAbilityCaster(this.gameObject);
 
             if (monsterCardData.cardAbility.targetType == TargetType.Single) BattleManager.Instance.IsAbilityTargeting = true;
             else Entrance(monsterCardData.cardAbility, monsterCardData.abilityValue);
@@ -110,10 +110,13 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
 		
         if(BattleManager.Instance.AbilityCaster != null && BattleManager.Instance.IsAbilityTargeting)
         {
+            isAppeared = false;
             BattleManager.Instance.SetAbilityTarget(gameObject);
             Entrance(monsterCardData.cardAbility, monsterCardData.abilityValue);
             BattleManager.Instance.IsAbilityTargeting = false;
-        }
+            isAppeared = true;
+
+		}
 		
 	}
 
@@ -218,7 +221,7 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
 				target = target.GetChild(0);
 
 			var cardUI = target?.GetComponent<CardUI>();
-			if (cardUI != null)
+			if (cardUI != null && cardUI.gameObject != this.gameObject)
 				yield return cardUI;
 		}
 	}
