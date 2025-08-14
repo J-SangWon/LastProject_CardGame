@@ -118,6 +118,10 @@ public class BattleManager : MonoBehaviour
 		}
 
 		abilityTarget = card;
+		Debug.Log($"{targetUI.cardData.cardName}가 어빌리티 대상으로 설정됨 ");
+
+        FildMonster FM = abilityCaster.GetComponent<FildMonster>();
+        FM.Entrance(FM.monsterCardData.cardAbility, FM.monsterCardData.abilityValue);
 	}
 
 
@@ -259,8 +263,9 @@ public class BattleManager : MonoBehaviour
         }
         if (abilityCaster != null)
         {
-            abilityCaster = null;
-        }
+			abilityCaster = null;
+
+		}
     }
     #endregion
 }
