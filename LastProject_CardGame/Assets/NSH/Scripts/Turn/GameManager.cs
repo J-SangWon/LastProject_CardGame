@@ -70,7 +70,7 @@ public class GameManager : MonoBehaviour
 
     private int playerCurrentCost;
     private int playerMaxCost;
-    private int enemyCurrentCost;
+    public int enemyCurrentCost;
     private int enemyMaxCost;
     private const int MAX_COST_LIMIT = 10;
 
@@ -101,6 +101,9 @@ public class GameManager : MonoBehaviour
     [Header("Cards")]
     public GameObject cardObject;
     public GameObject enemyCardObject;
+    
+    [Header("AI")]
+    public GameObject enemyAIObject; // 씬에 있는 EnemyAI 오브젝트 참조 (선택)
 
     // ===== 매 프레임 업데이트 =====
     void Update()
@@ -158,17 +161,42 @@ public class GameManager : MonoBehaviour
         isPlayerTurn = false;
         currentPhase = GamePhase.MainPhase;
 
+        ResetEnemyCardAttacks(); // 적 카드 공격 플래그 초기화
+
         isTimerRunning = true;
-        turnButton.interactable = false;
+        turnButton.interactable = false; // AI 턴에서는 버튼 비활성화
 
         if (enemyMaxCost < MAX_COST_LIMIT)
             enemyMaxCost++;
         enemyCurrentCost = enemyMaxCost;
 
+		// 적 턴 시작 시 1장 드로우
+		OpponentCardManager.Instance?.DrawCards(1);
+
         UpdateAllUI();
+
+        // AI 턴 시작 (타입 의존 제거: SendMessage 사용)
+        try
+        {
+            GameObject aiGO = enemyAIObject != null ? enemyAIObject : GameObject.Find("EnemyAI");
+            if (aiGO != null)
+            {
+                aiGO.SendMessage("StartAITurn", SendMessageOptions.DontRequireReceiver);
+            }
+            else
+            {
+                Debug.LogWarning("[GameManager] EnemyAI 오브젝트를 찾을 수 없습니다. (이름: 'EnemyAI' 또는 인스펙터 참조 설정 필요) AI 턴을 건너뜁니다.");
+                EndPlayerTurn();
+            }
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"[GameManager] AI 턴 시작 중 오류 발생: {e.Message}");
+            EndPlayerTurn();
+        }
     }
 
-    void EndPlayerTurn()
+    public void EndPlayerTurn()
     {
         isTimerRunning = false;
         turnButton.interactable = false;
@@ -186,20 +214,18 @@ public class GameManager : MonoBehaviour
             StartPlayerTurn(currentPhase);
         }
     }
-
+    //ai 턴 처리 - AI가 자동으로 처리하므로 코루틴 제거
     IEnumerator EnemyTurnCoroutine()
     {
         StartEnemyTurn();
-
-        // TODO: 적 AI 처리
-        yield return new WaitForSeconds(2f);
-
-        EndPlayerTurn();
+        // AI가 자동으로 턴을 진행하므로 여기서는 아무것도 하지 않음
+        yield break;
     }
 
     // ===== 버튼 처리 =====
     void OnTurnButtonClicked()
     {
+        // AI 턴 중에는 버튼 클릭 무시
         if (!isPlayerTurn)
             return;
 
@@ -223,6 +249,8 @@ public class GameManager : MonoBehaviour
                 break;
         }
     }
+
+
 
     // ===== 페이즈 전환 =====
     void StartBattlePhase()
@@ -258,7 +286,7 @@ public class GameManager : MonoBehaviour
 
     void UpdatePhaseText()
     {
-        phaseText.text = currentPhase switch
+        string phaseName = currentPhase switch
         {
             GamePhase.FirstPhase => "First Phase",
             GamePhase.MainPhase => "Main Phase",
@@ -266,6 +294,16 @@ public class GameManager : MonoBehaviour
             GamePhase.EndPhase => "End Phase",
             _ => ""
         };
+
+        // AI 턴일 때는 턴 소유자 표시 추가
+        if (!isPlayerTurn)
+        {
+            phaseText.text = $"Enemy {phaseName}";
+        }
+        else
+        {
+            phaseText.text = phaseName;
+        }
     }
 
     void UpdateHealthUI()
@@ -279,7 +317,7 @@ public class GameManager : MonoBehaviour
         timerText.text = $"{Mathf.FloorToInt(turnTimer)}s";
     }
 
-    void UpdateCostUI()
+    public void UpdateCostUI()
     {
         playerCostText.text = playerCurrentCost.ToString();
         playerMaxCostText.text = playerMaxCost.ToString();
@@ -311,6 +349,18 @@ public class GameManager : MonoBehaviour
             }
         }
     }
+
+    void ResetEnemyCardAttacks()
+    {
+        var cards = FindObjectsByType<CardUI>(FindObjectsSortMode.None);
+        foreach (var cardUI in cards)
+        {
+            if (cardUI.isOnField && cardUI.cardData != null && !isPlayerTurn)
+            {
+                cardUI.ResetAttackFlag();
+            }
+        }
+    }
     public bool CanSpendPlayerCost(int amount)
     {
         return playerCurrentCost >= amount;
@@ -321,6 +371,22 @@ public class GameManager : MonoBehaviour
         if (playerCurrentCost >= amount)
         {
             playerCurrentCost -= amount;
+            UpdateCostUI();
+            return true;
+        }
+        return false;
+    }
+
+    public bool CanSpendEnemyCost(int amount)
+    {
+        return enemyCurrentCost >= amount;
+    }
+
+    public bool SpendEnemyCost(int amount)
+    {
+        if (enemyCurrentCost >= amount)
+        {
+            enemyCurrentCost -= amount;
             UpdateCostUI();
             return true;
         }

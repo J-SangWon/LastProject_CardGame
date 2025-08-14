@@ -25,7 +25,8 @@ public class OpponentCardManager : MonoBehaviour
 
     void Start()
     {
-        LoadDeckFromTransfer();
+		LoadDeckFromTransfer();
+		EnsureFieldZone();
     }
 
     #region 적 덱 로딩 및 드로우
@@ -250,33 +251,215 @@ public class OpponentCardManager : MonoBehaviour
     }
 
     public Transform fieldZone; // 필드 영역 참조 필요
+	private const string EnemyFieldZoneName = "MonsterZoneG_E"; // 적 필드 전용 존 이름 (폴백)
+	private readonly string[] enemySlotNames = new string[] { "E_MonsterZone1", "E_MonsterZone2", "E_MonsterZone3", "E_MonsterZone4", "E_MonsterZone5" };
+	private Transform[] enemySlots;
 
-    public void PlayCardToField(GameObject card)
-    {
-        card.transform.SetParent(fieldZone, false);
-        card.transform.localScale = Vector3.one;
+	public void PlayCardToField(GameObject card)
+	{
+		// 1) 우선 적 몬스터 슬롯(E_MonsterZone1~5)을 탐색하여 빈 슬롯으로 배치
+		EnsureEnemySlots();
+		Transform parentSlot = null;
+		if (enemySlots != null && enemySlots.Length > 0)
+		{
+			foreach (var slot in enemySlots)
+			{
+				if (slot == null) continue;
+				if (slot.name == "EnemyGraveZone") continue; // 안전 장치
+				if (slot.childCount == 0)
+				{
+					parentSlot = slot;
+					break;
+				}
+			}
+			// 빈 슬롯이 없다면, 가장 자식 수가 적은 슬롯 선택
+			if (parentSlot == null)
+			{
+				int minChildren = int.MaxValue;
+				foreach (var slot in enemySlots)
+				{
+					if (slot == null) continue;
+					if (slot.name == "EnemyGraveZone") continue;
+					if (slot.childCount < minChildren)
+					{
+						minChildren = slot.childCount;
+						parentSlot = slot;
+					}
+				}
+			}
+		}
 
-        var cardUI = card.GetComponent<CardUI>();
-        if (cardUI != null)
+		// 2) 슬롯을 못 찾으면 기존 fieldZone(폴백) 사용
+		if (parentSlot == null)
+		{
+			EnsureFieldZone();
+			if (fieldZone == null)
+			{
+				Debug.LogWarning("[OpponentCardManager] 적 몬스터 슬롯과 폴백 필드 모두 찾지 못했습니다. 배치 취소.");
+				return;
+			}
+			parentSlot = fieldZone;
+		}
+
+        card.transform.SetParent(parentSlot, false);
+		card.transform.localScale = Vector3.one;
+		card.transform.localRotation = Quaternion.identity;
+		card.transform.localPosition = Vector3.zero;
+		card.transform.SetAsLastSibling();
+		// UI RectTransform을 슬롯 중앙에 정렬
+		var rect = card.GetComponent<RectTransform>();
+		if (rect != null)
+		{
+			rect.anchorMin = new Vector2(0.5f, 0.5f);
+			rect.anchorMax = new Vector2(0.5f, 0.5f);
+			rect.pivot = new Vector2(0.5f, 0.5f);
+			rect.anchoredPosition = Vector2.zero;
+		}
+
+		var cardUI = card.GetComponent<CardUI>();
+		if (cardUI != null)
+		{
+			cardUI.isOnField = true;
+		}
+
+        // 필드 컨테이너에 직접 붙은 경우에만 필드 레이아웃 업데이트
+        if (parentSlot == fieldZone)
         {
-            cardUI.isOnField = true;
+            UpdateFieldLayout();
         }
+	}
 
-        // 위치 정렬 예시 (필요시 커스터마이즈 가능)
-        UpdateFieldLayout();
+	private void UpdateFieldLayout()
+	{
+		float spacing = 160f;
+		int total = fieldZone.childCount;
+		for (int i = 0; i < total; i++)
+		{
+			RectTransform rt = fieldZone.GetChild(i).GetComponent<RectTransform>();
+			if (rt != null)
+			{
+				Vector3 pos = GetSlotPosition(i, total, spacing);
+				rt.anchoredPosition = new Vector2(pos.x, pos.y);
+			}
+		}
+	}
+
+	private void EnsureFieldZone()
+	{
+        if (fieldZone != null && fieldZone.name == EnemyFieldZoneName) return;
+        var go = GameObject.Find(EnemyFieldZoneName);
+		if (go != null)
+		{
+			fieldZone = go.transform;
+		}
+	}
+
+	private void EnsureEnemySlots()
+	{
+		if (enemySlots != null && enemySlots.Length == enemySlotNames.Length)
+		{
+			bool allSet = true;
+			for (int i = 0; i < enemySlots.Length; i++)
+			{
+				if (enemySlots[i] == null) { allSet = false; break; }
+			}
+			if (allSet) return;
+		}
+
+		enemySlots = new Transform[enemySlotNames.Length];
+		for (int i = 0; i < enemySlotNames.Length; i++)
+		{
+			var go = GameObject.Find(enemySlotNames[i]);
+			if (go != null)
+				enemySlots[i] = go.transform;
+		}
+	}
+
+    #endregion
+
+    #region AI를 위한 메서드들
+
+    /// <summary>
+    /// 핸드 카드 개수 반환
+    /// </summary>
+    public int GetHandCardCount()
+    {
+        if (handZone == null) return 0;
+        return handZone.childCount;
     }
 
-    private void UpdateFieldLayout()
+    /// <summary>
+    /// 핸드의 모든 카드 데이터 반환
+    /// </summary>
+    public List<BaseCardData> GetHandCards()
     {
-        float spacing = 160f;
-        for (int i = 0; i < fieldZone.childCount; i++)
+        var handCards = new List<BaseCardData>();
+        if (handZone == null) return handCards;
+        
+        for (int i = 0; i < handZone.childCount; i++)
         {
-            RectTransform rt = fieldZone.GetChild(i).GetComponent<RectTransform>();
-            if (rt != null)
+            var child = handZone.GetChild(i);
+            if (child == null) continue;
+            
+            var cardUI = child.GetComponent<CardUI>();
+            if (cardUI != null && cardUI.cardData != null)
             {
-                rt.anchoredPosition = new Vector2(i * spacing, 0);
+                handCards.Add(cardUI.cardData);
             }
         }
+        return handCards;
+    }
+
+    /// <summary>
+    /// 카드 소환 (AI용)
+    /// </summary>
+    public System.Collections.IEnumerator SummonCard(BaseCardData cardData)
+    {
+        if (cardData == null) yield break;
+        if (handZone == null) yield break;
+
+        // 핸드에서 해당 카드 찾기
+        GameObject cardToSummon = null;
+        for (int i = 0; i < handZone.childCount; i++)
+        {
+            var child = handZone.GetChild(i);
+            if (child == null) continue;
+            
+            var childCardUI = child.GetComponent<CardUI>();
+            if (childCardUI != null && childCardUI.cardData == cardData)
+            {
+                cardToSummon = child.gameObject;
+                break;
+            }
+        }
+
+        if (cardToSummon == null)
+        {
+            Debug.LogWarning("[OpponentCardManager] 핸드에서 소환할 카드를 찾을 수 없습니다.");
+            yield break;
+        }
+
+        // 필드로 이동
+        PlayCardToField(cardToSummon);
+
+        // 카드 UI 설정
+        var cardUIComponent = cardToSummon.GetComponent<CardUI>();
+        if (cardUIComponent != null)
+        {
+            cardUIComponent.isOnField = true;
+            cardUIComponent.ownerType = OwnerType.Opponent;
+            cardUIComponent.FlipCard(true);
+        }
+
+        // 드래그 비활성화
+        var dragHandler = cardToSummon.GetComponent<CardDragHandler>();
+        if (dragHandler != null)
+        {
+            dragHandler.enabled = false;
+        }
+
+        Debug.Log($"[OpponentCardManager] {cardData.cardName} 소환 완료");
+        yield return new WaitForSeconds(0.5f); // 소환 애니메이션 시간
     }
 
     #endregion
