@@ -225,12 +225,17 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
         {
             if (monsterCardData.cardAbility.targetType == TargetType.Single)
             {
-                Debug.Log($"[FildMonster] 타겟팅 모드 활성화: {monsterCardData.cardName}");
-                BattleManager.Instance.IsAbilityTargeting = true;
-                BattleManager.Instance.SetAbilityCaster(this.gameObject);
+                // 플레이어 카드만 타겟팅 화살표 활성화. AI(상대) 카드는 EnemyAI가 자동 처리하므로 화살표 비활성.
+                if (cardUI != null && cardUI.ownerType == OwnerType.Player)
+                {
+                    Debug.Log($"[FildMonster] 타겟팅 모드 활성화: {monsterCardData.cardName}");
+                    BattleManager.Instance.IsAbilityTargeting = true;
+                    BattleManager.Instance.SetAbilityCaster(this.gameObject);
+                }
             }
             else
             {
+                // 범위/비타겟 효과는 즉시 처리
                 Entrance(monsterCardData.cardAbility, monsterCardData.abilityValue);
             }
             isAppeared = true;
