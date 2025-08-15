@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
@@ -260,6 +260,9 @@ public class FieldSpellZone : MonoBehaviour, IPointerClickHandler
             // UI 텍스트 업데이트
             if (fieldSpellNameText != null)
                 fieldSpellNameText.text = currentFieldSpell.cardName;
+
+            // 필드존 위 카드가 클릭을 가로채지 않도록 레이캐스트 비활성화
+            SetCardRaycastForZone(currentFieldSpellCardObj, false);
 
             isOccupied = true;
         }
@@ -583,6 +586,9 @@ public class FieldSpellZone : MonoBehaviour, IPointerClickHandler
         {
             cardObj.AddComponent<AuraTracker>();
         }
+
+        // 필드존 클릭 우선권 보장: 카드의 레이캐스트 비활성화
+        SetCardRaycastForZone(cardObj, false);
     }
 
     // 드롭/선택 공통: 기존 카드 오브젝트를 재사용해 필드마법 존으로 이동시키고 상태/등록을 완료한다.
@@ -648,6 +654,23 @@ public class FieldSpellZone : MonoBehaviour, IPointerClickHandler
         if (cardObj.GetComponent<AuraTracker>() == null)
         {
             cardObj.AddComponent<AuraTracker>();
+        }
+
+        // 필드존 클릭 우선권 보장: 카드의 레이캐스트 비활성화
+        SetCardRaycastForZone(cardObj, false);
+    }
+
+    // 필드존에 배치된 카드가 클릭을 가로채지 않도록 레이캐스트 토글
+    private void SetCardRaycastForZone(GameObject cardObj, bool enable)
+    {
+        if (cardObj == null) return;
+        var cg = cardObj.GetComponent<CanvasGroup>();
+        if (cg == null) cg = cardObj.AddComponent<CanvasGroup>();
+        cg.blocksRaycasts = enable;
+        var graphics = cardObj.GetComponentsInChildren<Graphic>(true);
+        foreach (var g in graphics)
+        {
+            g.raycastTarget = enable;
         }
     }
 }

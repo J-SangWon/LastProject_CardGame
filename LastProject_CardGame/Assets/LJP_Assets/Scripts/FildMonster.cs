@@ -24,6 +24,11 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
 		{
 			monsterCardData = (MonsterCardData)cardUI.cardData;
         }
+        // CardUI 사망 이벤트 구독: ReduceHealth/ResolveDeath 경로에서 호출됨
+        if (cardUI != null)
+        {
+            cardUI.OnDeath += HandleDestroyed;
+        }
         // 파괴(사망) 이벤트 구독: TargetableCard 경로에서 먼저 호출됨
         var targetable = GetComponent<TargetableCard>();
         if (targetable != null)
@@ -53,6 +58,8 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
         if (cardUI != null)
         {
             AuraManager.Instance.UnregisterAllFromSource(cardUI);
+            // 구독 해제
+            cardUI.OnDeath -= HandleDestroyed;
         }
         
         HandleSpellTrapRemoval();
