@@ -1,10 +1,11 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
 using System.Collections;
 using DG.Tweening;
 using UnityEngine.SceneManagement;
+using System;
 
 public class CardUI : MonoBehaviour, IPointerClickHandler
 {
@@ -53,6 +54,9 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
     public bool hasAttackedThisTurn = false;
     public OwnerType ownerType = OwnerType.Player;
     private bool isStun = false;
+
+    // 사망(무덤 이동 직전) 알림 이벤트
+    public event Action OnDeath;
 
     // 내부 플래그: 중복 파괴/무덤 이동 방지
     private bool deathResolved = false;
@@ -137,6 +141,9 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
         {
             Debug.LogWarning("SendToGraveyard 호출 중 예외: " + ex.Message);
         }
+
+        // 잔향 효과 등 사망 트리거 알림
+        try { OnDeath?.Invoke(); } catch (Exception e) { Debug.LogError($"OnDeath 이벤트 처리 중 예외: {e.Message}"); }
 
         HandleDeath();
     }
@@ -280,6 +287,20 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
+        // 우클릭: 상세 정보 전용
+        if (eventData != null && eventData.button == PointerEventData.InputButton.Right)
+        {
+            if (isFront && cardData != null && SceneManager.GetActiveScene().name == "InGame")
+            {
+                ShowDetailPanel(cardData);
+            }
+            return;
+        }
+
+        // 좌클릭 외에는 무시
+        if (eventData == null || eventData.button != PointerEventData.InputButton.Left)
+            return;
+
         if (enableCardFlip)
         {
             isFront = !isFront;
@@ -289,11 +310,6 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
 
         if (!isFront || cardData == null)
             return;
-
-        if (SceneManager.GetActiveScene().name == "InGame" && isFront)
-        {
-            ShowDetailPanel(cardData);
-        }
 
         if (!(cardData is MonsterCardData))
             return;
