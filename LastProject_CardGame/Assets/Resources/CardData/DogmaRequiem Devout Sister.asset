@@ -13,28 +13,28 @@ MonoBehaviour:
   m_Name: DogmaRequiem Devout Sister
   m_EditorClassIdentifier: 
   cardName: "\uB3C4\uADF8\uB9C8\uB808\uD034\uC5E0 \uC218\uB140"
-  description: "\uC0AC\uB9DD \uC2DC \uB3C4\uADF8\uB9C8\uB808\uD034\uC5E0 \uB9C8\uBC95\uCE74\uB4DC
+  description: "\uC794\uD5A5 : \uB3C4\uADF8\uB9C8\uB808\uD034\uC5E0 \uB9C8\uBC95\uCE74\uB4DC
     \uD55C\uC7A5 \uAC00\uC838\uC634"
   artwork: {fileID: 21300000, guid: 0bf51a10a28b35243a0e25b9300c6f01, type: 3}
   cardType: 0
-  rarity: 0
+  rarity: 2
   cost: 2
   cardId: 2c746765-79a5-40ad-bd23-7fb128ab56d4
   haveLive2D: 0
   live2DPath: 
-  cardAbility: {fileID: 11400000, guid: a3a4f2039cac5214e81a3d203296c8ae, type: 2}
+  cardAbility: {fileID: 11400000, guid: 439aa9c6db4eae7488595c9342245189, type: 2}
   abilityValue: 1
+  monsterAbilityType: 2
   tags:
   - DogmaRequiem
   ownerType: 0
-  craftCost: 10
-  disenchantReward: 2
+  craftCost: 100
+  disenchantReward: 25
   canCraft: 1
   canDisenchant: 1
   maxHP: 2
   currentHP: 2
   monsterType: 1
   attack: 2
-  health: 2
+  health: 3
   race: 4
-  monsterAbilityType: 1

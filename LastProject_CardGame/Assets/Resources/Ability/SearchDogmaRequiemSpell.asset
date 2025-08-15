@@ -9,14 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 68bd28aa2720ed9468898114af1f5e4f, type: 3}
-  m_Name: SummonFromDeckDogmaRequiem 1
+  m_Script: {fileID: 11500000, guid: fa4e6bd3ad4d89e4b8948b89f26ab7eb, type: 3}
+  m_Name: SearchDogmaRequiemSpell
   m_EditorClassIdentifier: 
-  targetType: 0
-  targetOwner: 0
+  targetType: 1
+  targetOwner: 1
   condition: {fileID: 0}
-  searchType: 0
-  cardType: 0
+  searchType: 2
+  cardType: 1
   race: 0
   cost: 0
   costOp: 0
@@ -25,6 +25,13 @@ MonoBehaviour:
   useCompositeConditions: 1
   compositeOperator: 0
   conditions:
+  - searchType: 0
+    cardType: 1
+    race: 0
+    cost: 0
+    costOp: 0
+    cardID: 
+    tag: 
   - searchType: 4
     cardType: 0
     race: 0
@@ -32,10 +39,3 @@ MonoBehaviour:
     costOp: 0
     cardID: 
     tag: DogmaRequiem
-  - searchType: 2
-    cardType: 0
-    race: 4
-    cost: 0
-    costOp: 0
-    cardID: 
-    tag: 
