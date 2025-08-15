@@ -87,40 +87,102 @@ public class BattleManager : MonoBehaviour
     /// <summary>
     /// 공격 대상 지정 → 전투 실행
     /// </summary>
-    public void SetTarget(GameObject card)
+    public void SetTarget(GameObject targetObj)
     {
-        CardUI targetUI = card.GetComponent<CardUI>();
-        if (targetUI == null || !targetUI.isOnField || attacker == null) return;
+        if (attacker == null) return;
 
-        // 몬스터존/필드 여부 확인: 슬롯이 있으면 점유 여부, 없으면 isOnField로 판단
-        MonsterZoneSlot slot = card.transform.parent.GetComponent<MonsterZoneSlot>();
-        bool canBeTargetHere = slot != null ? slot.isOccupied : targetUI.isOnField;
-        if (!canBeTargetHere)
+        // 1) 카드 대상인지 확인
+        CardUI targetUI = targetObj.GetComponent<CardUI>();
+        if (targetUI != null)
         {
-            Debug.Log("몬스터존(또는 필드)에 있는 카드만 공격 대상이 될 수 있습니다.");
+            // 기존 카드 공격 로직 유지
+            MonsterZoneSlot slot = targetObj.transform.parent.GetComponent<MonsterZoneSlot>();
+            bool canBeTargetHere = slot != null ? slot.isOccupied : targetUI.isOnField;
+            if (!canBeTargetHere)
+            {
+                Debug.Log("몬스터존(또는 필드)에 있는 카드만 공격 대상이 될 수 있습니다.");
+                return;
+            }
+
+            CardUI attackerUI = attacker.GetComponent<CardUI>();
+            if (attackerUI == null) return;
+
+            if (targetObj == attacker)
+            {
+                Debug.Log("자기 자신은 공격할 수 없습니다.");
+                return;
+            }
+
+            if (attackerUI.ownerType == targetUI.ownerType)
+            {
+                Debug.Log("아군 몬스터는 공격할 수 없습니다.");
+                return;
+            }
+
+            target = targetObj;
+            ExecuteBattle();
             return;
         }
 
-        CardUI attackerUI = attacker.GetComponent<CardUI>();
-        if (attackerUI == null) return;
-
-        // 자기 자신을 타겟으로 지정 못하게
-        if (card == attacker)
+        // 2) HitZone 대상인지 확인 → 전용 연출 코루틴 실행
+        HitZone hitZone = targetObj.GetComponent<HitZone>();
+        if (hitZone != null)
         {
-            Debug.Log("자기 자신은 공격할 수 없습니다.");
+            DirectAttackHitZone(hitZone);
             return;
         }
 
-        // 아군 카드 공격 방지
-        if (attackerUI.ownerType == targetUI.ownerType)
-        {
-            Debug.Log("아군 몬스터는 공격할 수 없습니다.");
-            return;
-        }
-
-        target = card;
-        ExecuteBattle();
+        // 3) 카드도 히트존도 아닌 경우는 무시
+        Debug.Log("유효하지 않은 공격 대상입니다.");
     }
+
+    /// <summary>
+    /// 히트존(플레이어/적 본체) 직접 공격 연출 및 데미지 처리
+    /// </summary>
+    public void DirectAttackHitZone(HitZone hitZone)
+    {
+        if (attacker == null || hitZone == null) return;
+        if (isResolvingBattle) return;
+        StartCoroutine(DirectAttackHitZoneCoroutine(hitZone));
+    }
+
+    private IEnumerator DirectAttackHitZoneCoroutine(HitZone hitZone)
+    {
+        if (attacker == null || hitZone == null) yield break;
+
+        var atkUI = attacker.GetComponent<CardUI>();
+        if (atkUI == null) { ResetBattleState(); yield break; }
+
+        isResolvingBattle = true;
+        // 화살표 비활성화
+        arrow.Deactivate();
+
+        // 이동 연출 (공격자 → 히트존 → 복귀)
+        Transform atkTrParent = attacker.transform.parent;
+        Vector3 originalUp = attacker.transform.up;
+        Vector3 startPos = attacker.transform.position;
+        yield return MoveTo(attacker.transform, startPos + Vector3.back, 0.2f);
+        yield return new WaitForSeconds(0.05f);
+
+        Vector3 distance = hitZone.transform.position - startPos;
+        distance = Vector3.MoveTowards(distance, distance * 0.001f, 1f);
+        attacker.transform.up = distance;
+        yield return MoveTo(attacker.transform, startPos + distance, 0.3f, attackAnimCurve);
+        yield return new WaitForSeconds(0.05f);
+
+        // 데미지 적용 (HitZone 경유, 내부에서 MarkAsAttacked 처리)
+        hitZone.OnHitByCard(attacker);
+
+        // 복귀 (파괴되지 않았다면)
+        if (!atkUI.IsDead)
+            yield return MoveTo(attacker.transform, startPos, 0.3f);
+        attacker.transform.up = originalUp;
+        attacker.transform.parent = atkTrParent;
+
+        attacker = null;
+        isResolvingBattle = false;
+    }
+
     private void Update()
     {
         if (attacker != null && Input.GetMouseButtonDown(1)) // 우클릭

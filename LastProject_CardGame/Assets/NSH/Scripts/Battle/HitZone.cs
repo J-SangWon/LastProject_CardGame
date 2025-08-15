@@ -1,38 +1,46 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 
-public class HitZone : MonoBehaviour
+public class HitZone : MonoBehaviour, IPointerClickHandler
 {
-    public enum TargetType { Player, Enemy }
-    public TargetType targetType;    // È÷Æ®Á¸ Å¸ÀÔ: ÇÃ·¹ÀÌ¾î ¶Ç´Â Àû
+    [Header("HitZone ï¿½ï¿½ï¿½ï¿½")]
+    public bool isPlayerZone = true; // true = ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ Ã¼ï¿½ï¿½, false = ï¿½ï¿½ Ã¼ï¿½ï¿½
 
-    private void OnMouseDown()
+    /// <summary>
+    /// Ä«ï¿½å°¡ ï¿½ï¿½Æ®ï¿½ï¿½ï¿½ï¿½ Å¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ BattleManagerï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    /// </summary>
+    /// <param name="eventData"></param>
+    public void OnPointerClick(PointerEventData eventData)
     {
-        if (BattleManager.Instance == null) return;
+        // ï¿½ï¿½Å¬ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½
+        if (eventData.button != PointerEventData.InputButton.Left) return;
 
-        // °ø°İÀÚ°¡ Á¸ÀçÇÒ ¶§¸¸
-        if (BattleManager.Instance.HasAttacker())
+        // ï¿½ï¿½ï¿½ï¿½ï¿½Ú°ï¿½ ï¿½ï¿½ï¿½ÃµÇ¾ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ì¸¸ Ã³ï¿½ï¿½
+        if (BattleManager.Instance.attacker != null)
         {
-            var attackerGO = BattleManager.Instance.attacker;
-            var attackerUI = attackerGO.GetComponent<CardUI>();
-            if (attackerUI == null) return;
-
-            int damage = attackerUI.attack;
-
-            // ´ë»ó¿¡ µû¶ó Ã¼·Â °¨¼Ò
-            if (targetType == TargetType.Player)
-            {
-                GameManager.Instance.TakeDamageToPlayer(damage);
-            }
-            else if (targetType == TargetType.Enemy)
-            {
-                GameManager.Instance.TakeDamageToEnemy(damage);
-            }
-
-            // °ø°İÀÚ »óÅÂ ¾÷µ¥ÀÌÆ®
-            attackerUI.MarkAsAttacked();
-
-            // °ø°İ ÈÄ ÃÊ±âÈ­
-            BattleManager.Instance.CancelAttack();
+            // ì¹´ë“œ ì „íˆ¬ì™€ ë™ì¼í•œ ì—°ì¶œë¡œ ì§ì ‘ ê³µê²© ì²˜ë¦¬
+            BattleManager.Instance.DirectAttackHitZone(this);
         }
+    }
+
+    /// <summary>
+    /// BattleManagerï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ú°ï¿½ ï¿½ï¿½ï¿½Ãµï¿½ ï¿½ï¿½ È£ï¿½ï¿½
+    /// </summary>
+    /// <param name="attacker">ï¿½ï¿½ï¿½ï¿½ Ä«ï¿½ï¿½</param>
+    public void OnHitByCard(GameObject attacker)
+    {
+        var cardUI = attacker.GetComponent<CardUI>();
+        if (cardUI == null) return;
+
+        int damage = cardUI.attack;
+
+        if (isPlayerZone)
+            GameManager.Instance.TakeDamageToPlayer(damage);
+        else
+            GameManager.Instance.TakeDamageToEnemy(damage);
+
+        cardUI.MarkAsAttacked();
+
+        Debug.Log($"{cardUI.cardData.cardName} ï¿½ï¿½ {(isPlayerZone ? "Player" : "Enemy")} ï¿½ï¿½Æ®ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, {damage} ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½!");
     }
 }

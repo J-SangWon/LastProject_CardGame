@@ -11,8 +11,6 @@ public class MonsterZoneSlot : MonoBehaviour, IPointerClickHandler
         // 자식이 하나라도 있으면 슬롯 점유로 판단
         isOccupied = transform.childCount > 0;
     }
-
-
     public void OnPointerClick(PointerEventData eventData)
     {
         if (isOccupied) return;
