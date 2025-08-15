@@ -412,11 +412,18 @@ public class OpponentCardManager : MonoBehaviour
             card.AddComponent<AuraTracker>();
         }
 
-        // 필드 컨테이너에 직접 붙은 경우에만 필드 레이아웃 업데이트
-        if (parentSlot == fieldZone)
+        // 배치 완료 후 진입 효과/타겟팅 활성화를 위해 호출
+        var fm = card.GetComponent<FildMonster>();
+        if (fm != null)
         {
-            UpdateFieldLayout();
+            fm.OnPlacedOnField();
         }
+
+		// 필드 컨테이너에 직접 붙은 경우에만 필드 레이아웃 업데이트
+		if (parentSlot == fieldZone)
+		{
+			UpdateFieldLayout();
+		}
 	}
 
 	private void UpdateFieldLayout()
