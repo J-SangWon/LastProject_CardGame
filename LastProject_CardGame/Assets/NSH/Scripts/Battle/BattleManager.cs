@@ -227,6 +227,15 @@ public class BattleManager : MonoBehaviour
         CancelAbility();
 	}
 
+	public void SetAbilityCasterSilent(GameObject card)
+	{
+		CardUI cardUI = card.GetComponent<CardUI>();
+		if (cardUI == null || !cardUI.isOnField) return;
+
+		abilityCaster = card;
+		// 화살표를 활성화하지 않음 (AI 전용)
+	}
+
 
 	/// <summary>
 	/// 전투 실행
@@ -369,7 +378,11 @@ public class BattleManager : MonoBehaviour
 	public void BeginAbility(GameObject card)
 	{
 		CancelAbility();
-		arrow.SetupAndActivate(card.transform);
+		var ui = card != null ? card.GetComponent<CardUI>() : null;
+		if (ui != null && ui.ownerType == OwnerType.Player)
+		{
+			arrow.SetupAndActivate(card.transform);
+		}
 		abilityCaster = card;
 	}
 
