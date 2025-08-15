@@ -28,6 +28,7 @@ public class GameManager : MonoBehaviour
         InitGame();
     }
     private bool isGameInputLocked = false;
+
     public bool IsInputLocked() => isGameInputLocked;
     private bool rpsDecided = false;
     private void InitGame()
@@ -131,6 +132,11 @@ public class GameManager : MonoBehaviour
             if (turnTimer < 0) turnTimer = 0;
             UpdateTimerUI();
         }
+        if (turnTimer <= 0)
+        {
+            isTimerRunning = false;
+            ShowLoseScreen();
+        }
     }
     void ShowRPSPanel()
     {
@@ -201,7 +207,7 @@ public class GameManager : MonoBehaviour
         else if (result == -1)
         {
             rpsResultText.text = $"플레이어: {playerStr}\n상대: {enemyStr}\n\n패배! 상대가 선공입니다.";
-            isPlayerTurn = false; 
+            isPlayerTurn = false;
         }
         else
         {
@@ -306,7 +312,7 @@ public class GameManager : MonoBehaviour
     }
 
     void StartEnemyTurn()
-        {
+    {
             isPlayerTurn = false;
             currentPhase = GamePhase.MainPhase;
 
@@ -323,29 +329,26 @@ public class GameManager : MonoBehaviour
             OpponentCardManager.Instance?.DrawCards(1);
 
             UpdateAllUI();
-
-            // AI 턴 시작 (타입 의존 제거: SendMessage 사용)
-            try
+        try
+        {
+            GameObject aiGO = enemyAIObject != null ? enemyAIObject : GameObject.Find("EnemyAI");
+            if (aiGO != null)
             {
-                GameObject aiGO = enemyAIObject != null ? enemyAIObject : GameObject.Find("EnemyAI");
-                if (aiGO != null)
-                {
-                    aiGO.SendMessage("StartAITurn", SendMessageOptions.DontRequireReceiver);
-                    
-                }
-                else
-                {
-                    Debug.LogWarning("[GameManager] EnemyAI 오브젝트를 찾을 수 없습니다. (이름: 'EnemyAI' 또는 인스펙터 참조 설정 필요) AI 턴을 건너뜁니다.");
-                    StartCoroutine(EnemyTurnFallback());
-                }
+                aiGO.SendMessage("StartAITurn", SendMessageOptions.DontRequireReceiver);
             }
-            catch (System.Exception e)
+            else
             {
-                Debug.LogError($"[GameManager] AI 턴 시작 중 오류 발생: {e.Message}");
+                Debug.LogWarning("[GameManager] EnemyAI 오브젝트를 찾을 수 없습니다. AI 턴 건너뜀.");
                 StartCoroutine(EnemyTurnFallback());
             }
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"[GameManager] AI 턴 시작 오류: {e.Message}");
+            StartCoroutine(EnemyTurnFallback());
+        }
 
-          }
+    }
     IEnumerator EnemyTurnFallback()
     {
         
@@ -361,9 +364,7 @@ public class GameManager : MonoBehaviour
         turnCount++;
 
         if (isPlayerTurn)
-        {
             StartCoroutine(EnemyTurnCoroutine());
-        }
         else
         {
             currentPhase = GamePhase.FirstPhase;
@@ -544,8 +545,11 @@ public class GameManager : MonoBehaviour
         return currentPhase == GamePhase.MainPhase && isPlayerTurn;
     }
 
-    public bool CanAttack()
+    public bool CanAttack(bool isPlayer)
     {
+        // 1턴에는 누구도 공격 불가
+        if (turnCount == 1) return false;
+
         // Battle Phase에서만 공격 가능
         return currentPhase == GamePhase.BattlePhase && isPlayerTurn;
     }
@@ -615,14 +619,14 @@ public class GameManager : MonoBehaviour
             ShowWinScreen();
         }
     }
-    void ShowWinScreen()
+    public void ShowWinScreen()
     {
         isGameInputLocked = true; // 입력 차단
         turnButton.interactable = false; // 턴 버튼 비활성화
         if (winPanel != null) winPanel.SetActive(true);
     }
 
-    void ShowLoseScreen()
+    public void ShowLoseScreen()
     {
         isGameInputLocked = true;
         turnButton.interactable = false;
