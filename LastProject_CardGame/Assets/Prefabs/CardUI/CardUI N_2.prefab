@@ -1650,9 +1650,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_EffectColor: {r: 0, g: 1, b: 0, a: 1}
-  m_EffectDistance: {x: 15, y: -15}
-  m_UseGraphicAlpha: 1
+  m_EffectColor: {r: 1, g: 1, b: 1, a: 1}
+  m_EffectDistance: {x: 25, y: -25}
+  m_UseGraphicAlpha: 0
 --- !u!1 &8348245341604496249
 GameObject:
   m_ObjectHideFlags: 0
@@ -1973,6 +1973,7 @@ MonoBehaviour:
   maxHealth: 0
   currentHealth: 0
   FixedHealth: 0
+  isFront: 1
   isOnField: 0
   hasAttackedThisTurn: 0
   ownerType: 0
