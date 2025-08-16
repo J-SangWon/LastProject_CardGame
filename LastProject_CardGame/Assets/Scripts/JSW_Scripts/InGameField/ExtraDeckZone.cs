@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -16,8 +16,15 @@ public class ExtraDeckZone : MonoBehaviour, IPointerClickHandler
     public InGameCardListPanel extraDeckListPanel; // 클릭 시 보여줄 패널
 
     [Header("시각적 설정")]
-    public float cardSpacing = 10f; // 카드 간 간격
-    public int maxVisibleCards = 5; // 최대 표시할 카드 수
+    [Tooltip("화면 실제 픽셀 기준의 아주 미세한 간격(px). Canvas Scaler를 보정하여 적용합니다.")]
+    public float pixelSpacing = 0.15f; // 기본 0.15px 정도의 극미세 간격
+    [Tooltip("X축 간격 배수(음수면 왼쪽 방향)")]
+    public float xSpacingMultiplier = -1f;
+    [Tooltip("Y축 간격 배수(양수면 위 방향)")]
+    public float ySpacingMultiplier = 0.6f;
+    [Tooltip("오프셋이 증가하는 최대 단계 수(총 이동량 제한)")]
+    public int maxOffsetSteps = 4;
+    public int maxVisibleCards = 20; // 겹쳐 보여줄 최대 카드 수
 
     // 실제 엑스트라 덱 데이터 (DeckCardEntry 리스트)
     public List<DeckCardEntry> extraDeck = new List<DeckCardEntry>();
@@ -193,10 +200,25 @@ public class ExtraDeckZone : MonoBehaviour, IPointerClickHandler
                     GameObject cardObj = Instantiate(cardPrefab, transform);
                     cardObj.GetComponent<CanvasGroup>().blocksRaycasts = false; // 클릭 방지
                     cardObj.transform.localScale = Vector3.one;
-                                        
-                    // 카드 위치 설정 (가로로 나열)
-                    float xPos = cardIndex * cardSpacing;
-                    cardObj.transform.localPosition = new Vector3(xPos, 0, -cardIndex * 0.01f);
+
+                    // 카드 위치: 극미세 대각 겹침 (Canvas 스케일 보정)
+                    float scale = 1f;
+                    var canvas = GetComponentInParent<Canvas>();
+                    if (canvas != null && canvas.renderMode != RenderMode.WorldSpace)
+                    {
+                        scale = Mathf.Max(0.01f, canvas.scaleFactor);
+                    }
+                    float eff = pixelSpacing / scale; // 실제 화면 px을 기준으로 한 보정 값
+                    int step = Mathf.Min(cardIndex, Mathf.Max(0, maxOffsetSteps));
+                    float xPos = step * eff * xSpacingMultiplier;
+                    float yPos = step * eff * ySpacingMultiplier;
+                    var rt = cardObj.GetComponent<RectTransform>();
+                    if (rt != null)
+                        rt.anchoredPosition = new Vector2(xPos, yPos);
+                    else
+                        cardObj.transform.localPosition = new Vector3(xPos, yPos, 0f);
+                    // 최신 카드가 위에 오도록 정렬
+                    cardObj.transform.SetAsLastSibling();
                     
                     // 카드 UI 설정
                     var cardUI = cardObj.GetComponent<CardUI>();
@@ -205,8 +227,7 @@ public class ExtraDeckZone : MonoBehaviour, IPointerClickHandler
                         cardUI.SetCard(entry.card);
                         cardUI.EnableCardFlip = false; // 엑스트라 덱에서는 카드 플립 비활성화
                         cardUI.GetComponent<Image>().raycastTarget = false; // 클릭 방지
-                        cardUI.Front.SetActive(false);
-                        cardUI.Back.SetActive(true); // 뒷면만 표시
+                        cardUI.FlipCard(false);
                         cardUI.SetFace(false); // 뒷면으로 설정
                     }
 
