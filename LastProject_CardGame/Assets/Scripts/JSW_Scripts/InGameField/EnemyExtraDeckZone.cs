@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -16,8 +16,13 @@ public class EnemyExtraDeckZone : MonoBehaviour, IPointerClickHandler
     public InGameCardListPanel extraDeckListPanel; // 클릭 시 보여줄 패널(선택적)
 
     [Header("시각적 설정")]
-    public float cardSpacing = 10f; // 카드 간 간격
-    public int maxVisibleCards = 5; // 최대 표시할 카드 수
+    [Tooltip("화면 실제 픽셀 기준의 아주 미세한 간격(px). Canvas Scaler를 보정하여 적용합니다.")]
+    public float pixelSpacing = 0.15f; // 기본 0.15px 정도의 극미세 간격
+    [Tooltip("X축 간격 배수(양수면 오른쪽 방향)")]
+    public float xSpacingMultiplier = 1f;
+    [Tooltip("Y축 간격 배수(음수면 아래 방향)")]
+    public float ySpacingMultiplier = -0.6f;
+    public int maxVisibleCards = 20; // 겹쳐 보여줄 최대 카드 수
 
     // 실제 엑스트라 덱 데이터 (DeckCardEntry 리스트)
     public List<DeckCardEntry> extraDeck = new List<DeckCardEntry>();
@@ -160,8 +165,23 @@ public class EnemyExtraDeckZone : MonoBehaviour, IPointerClickHandler
                     cardObj.transform.localScale = Vector3.one;
                     cardObj.GetComponent<CanvasGroup>().blocksRaycasts = false;
 
-                    float xPos = cardIndex * cardSpacing;
-                    cardObj.transform.localPosition = new Vector3(xPos, 0, -cardIndex * 0.01f);
+                    // 카드 위치: 극미세 대각 겹침 (Canvas 스케일 보정)
+                    float scale = 1f;
+                    var canvas = GetComponentInParent<Canvas>();
+                    if (canvas != null && canvas.renderMode != RenderMode.WorldSpace)
+                    {
+                        scale = Mathf.Max(0.01f, canvas.scaleFactor);
+                    }
+                    float eff = pixelSpacing / scale; // 실제 화면 px 기준 보정 값
+                    float xPos = cardIndex * eff * xSpacingMultiplier;
+                    float yPos = cardIndex * eff * ySpacingMultiplier;
+                    var rt = cardObj.GetComponent<RectTransform>();
+                    if (rt != null)
+                        rt.anchoredPosition = new Vector2(xPos, yPos);
+                    else
+                        cardObj.transform.localPosition = new Vector3(xPos, yPos, 0f);
+                    // 최신 카드가 위로 오도록 정렬
+                    cardObj.transform.SetAsLastSibling();
 
                     var cardUI = cardObj.GetComponent<CardUI>();
                     if (cardUI != null)
