@@ -629,6 +629,13 @@ public class GameManager : MonoBehaviour
         UpdateCostUI();
         return true;
     }
+    // 코스트 복원: 취소/실패 시 되돌릴 때 사용
+    public void RefundPlayerCost(int amount)
+    {
+        if (amount <= 0) return;
+        playerCurrentCost = Mathf.Min(playerCurrentCost + amount, playerMaxCost);
+        UpdateCostUI();
+    }
     public bool CanSpendEnemyCost(int amount)
     {
         return enemyCurrentCost >= amount;
@@ -643,6 +650,13 @@ public class GameManager : MonoBehaviour
             return true;
         }
         return false;
+    }
+    // 적 코스트 복원: 취소/실패 시 되돌릴 때 사용
+    public void RefundEnemyCost(int amount)
+    {
+        if (amount <= 0) return;
+        enemyCurrentCost = Mathf.Min(enemyCurrentCost + amount, enemyMaxCost);
+        UpdateCostUI();
     }
     public void SelectCardForDiscard(GameObject card)
     {

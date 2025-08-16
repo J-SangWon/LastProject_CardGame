@@ -1,6 +1,7 @@
 using Kalkatos.DottedArrow;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class BattleManager : MonoBehaviour
 {
@@ -194,6 +195,12 @@ public class BattleManager : MonoBehaviour
         {
             CancelAttack();
         }
+
+        // 어빌리티(단일 타겟 마법 등) 타겟팅 중 우클릭 시 취소 및 롤백
+        if (isAbilityTargeting && Input.GetMouseButtonDown(1))
+        {
+            CancelAbilityByPlayer();
+        }
     }
 
     public void SetAbilityCaster(GameObject card)
@@ -221,13 +228,26 @@ public class BattleManager : MonoBehaviour
 		abilityTarget = card;
 		Debug.Log($"{targetUI.cardData.cardName}가 어빌리티 대상으로 설정됨");
 
-        // 어빌리티 즉시 실행
+        // 어빌리티 즉시 실행: 시전자 카드 타입에 따라 분기
         var casterFM = abilityCaster.GetComponent<FildMonster>();
-        if (casterFM != null)
+        var casterUI = abilityCaster.GetComponent<CardUI>();
+        if (casterFM != null && casterUI != null)
         {
-            casterFM.Entrance(casterFM.monsterCardData.cardAbility, casterFM.monsterCardData.abilityValue);
+            // 몬스터 카드: 기존 Entrance 로직 사용
+            if (casterUI.cardData is MonsterCardData)
+            {
+                if (casterFM.monsterCardData != null && casterFM.monsterCardData.cardAbility != null)
+                {
+                    casterFM.Entrance(casterFM.monsterCardData.cardAbility, casterFM.monsterCardData.abilityValue);
+                }
+            }
+            // 마법 카드: 대상 지정 후 마법 효과 발동
+            else if (casterUI.cardData is SpellCardData spellData)
+            {
+                casterFM.ActivateSpellEffect(spellData);
+            }
         }
-        
+
         // 상태 초기화
         CancelAbility();
 	}
@@ -396,6 +416,10 @@ public class BattleManager : MonoBehaviour
 			arrow.SetupAndActivate(card.transform);
 		}
 		abilityCaster = card;
+		// 타겟팅 모드 진입
+		isAbilityTargeting = true;
+		var uiName = ui != null && ui.cardData != null ? ui.cardData.cardName : "(null)";
+		Debug.Log($"[BattleManager] BeginAbility: caster={uiName}, IsAbilityTargeting={isAbilityTargeting}");
 	}
 
 	public void CancelAbility()
@@ -405,6 +429,50 @@ public class BattleManager : MonoBehaviour
 		{
 			abilityCaster = null;
 		}
+		// 타겟팅 상태/대상 초기화
+		isAbilityTargeting = false;
+		abilityTarget = null;
+		Debug.Log("[BattleManager] CancelAbility: targeting OFF");
 	}
+
+    /// <summary>
+    /// 플레이어 입력으로 어빌리티 타겟팅을 취소할 때(예: 단일 타겟 마법),
+    /// 시전자 카드가 손패에서 사용 대기 상태였다면 손패로 롤백합니다.
+    /// </summary>
+    public void CancelAbilityByPlayer()
+    {
+        // 롤백 대상 확인
+        var caster = abilityCaster;
+        var casterUI = caster != null ? caster.GetComponent<CardUI>() : null;
+        if (casterUI != null && casterUI.cardData is SpellCardData spell)
+        {
+            // 지속 마법이 아니고 단일 타겟 마법이며, 플레이어 카드인 경우에만 롤백
+            if (spell.spellType != SpellType.Continuous && spell.cardAbility != null && spell.cardAbility.targetType == TargetType.Single && casterUI.ownerType == OwnerType.Player)
+            {
+                // 코스트 복원
+                GameManager.Instance?.RefundPlayerCost(spell.cost);
+                var hand = PlayerCardManager.Instance != null ? PlayerCardManager.Instance.playerHandZone : null;
+                if (hand != null)
+                {
+                    caster.transform.SetParent(hand, true);
+                    var rt = caster.transform as RectTransform;
+                    if (rt != null) rt.anchoredPosition3D = Vector3.zero; else caster.transform.localPosition = Vector3.zero;
+
+                    // 레이아웃 복구
+                    var layout = caster.GetComponent<LayoutElement>();
+                    if (layout != null) layout.ignoreLayout = false;
+
+                    // 카드 상태 복구: 손패에서는 뒤집기 비활성
+                    casterUI.isOnField = false;
+                    casterUI.EnableCardFlip = false;
+
+                    PlayerCardManager.Instance.UpdateHandLayout();
+                }
+            }
+        }
+
+        // 공통 상태 정리
+        CancelAbility();
+    }
 	#endregion
 }

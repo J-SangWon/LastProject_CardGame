@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -228,7 +228,8 @@ public class OpponentCardManager : MonoBehaviour
         {
             cardUI.SetCard(data);
             cardUI.SetFace(true);
-            cardUI.EnableCardFlip = rotation == Quaternion.identity; // 플레이어 카드만 클릭 가능
+            cardUI.ownerType = OwnerType.Opponent; // 생성 시점부터 적 소유자 명시
+            cardUI.EnableCardFlip = false; // 적 카드는 클릭 플립 비활성화
         }
 
         // 드래그
@@ -552,7 +553,9 @@ public class OpponentCardManager : MonoBehaviour
         {
             cardUIComponent.isOnField = true;
             cardUIComponent.ownerType = OwnerType.Opponent;
-            cardUIComponent.FlipCard(true);
+            // 필드 소환 시 항상 앞면으로 표시, 적 카드는 플립 비활성
+            cardUIComponent.SetFace(true);
+            cardUIComponent.EnableCardFlip = false;
         }
 
         // 드래그 비활성화
