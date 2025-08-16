@@ -13,7 +13,7 @@ public class UIManager : SingletonBehaviour<UIManager>
 	[SerializeField] private GameObject MyPageUI;
 	[SerializeField] private GameObject BackgroundUI;
 
-	public Image Background;
+    public Image Background;
 	[SerializeField] private Image LobbyCharacterImage;
 	[SerializeField] private Image fadeImage;
 
@@ -23,7 +23,10 @@ public class UIManager : SingletonBehaviour<UIManager>
 	private Coroutine currentFade;
 	private Dictionary<LobbyType, GameObject> lobbyUIMap;
 
-	protected override void Awake()
+	[Header("Setting")]
+	[SerializeField] private GameObject SettingUI;
+
+    protected override void Awake()
 	{
 		m_IsDestroyOnLoad = true;
 		base.Awake();
@@ -43,6 +46,19 @@ public class UIManager : SingletonBehaviour<UIManager>
 			{ LobbyType.Background, BackgroundUI },
 		};
 	}
+
+	public void ShowSetting()
+	{
+        if (SettingUI != null)
+        {
+            SoundManager.Instance.PlaySFX("MENUSELECT_03");
+            Instantiate(SettingUI, LobbyUI.transform.parent);
+        }
+        else
+        {
+            Debug.LogWarning("Setting UI is not assigned in the inspector.");
+        }
+    }
 
 	public void ShowLobby(LobbyType type, float delay, System.Action onComplete = null)
 	{
