@@ -22,7 +22,14 @@ public class HandCard : MonoBehaviour, IPointerClickHandler
             CardSummonManager.Instance.DeselectCard();
             return;
         }
-
+        if (GameManager.Instance.IsDiscardSelectionActive)
+        {
+            if (GameManager.Instance.IsCardSelectedForDiscard(gameObject))
+                GameManager.Instance.DeselectCardForDiscard(gameObject);
+            else
+                GameManager.Instance.SelectCardForDiscard(gameObject);
+            return;
+        }
         // 새 카드 선택
         CardSummonManager.Instance.DeselectCard();
         CardSummonManager.Instance.SelectCard(gameObject);

@@ -18,7 +18,7 @@ public class PlayerCardManager : MonoBehaviour
     public Transform enemyHandZone;
     public Transform playerMonsterZone;
     public Transform enemyMonsterZone;
-
+    public Transform graveyardZone;
     private List<GameObject> deck = new List<GameObject>();
     public DeckData currentDeckData;
 

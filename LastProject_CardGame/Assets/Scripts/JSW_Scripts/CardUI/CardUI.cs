@@ -15,7 +15,8 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
     [Header("카드 데이터 받아두기")]
     public BaseCardData cardData;
     public MonsterCardData monsterCardData;
-
+    [Header("카드 상태")]
+    public bool isInHand = true;
     public GameObject Back;
     public Image imageBack;
     public GameObject Front;
