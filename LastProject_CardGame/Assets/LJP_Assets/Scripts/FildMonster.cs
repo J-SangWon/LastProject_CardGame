@@ -141,7 +141,6 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
     {
         AbilityParameter parameter = new AbilityParameter();
 
-		if (BattleManager.Instance.AbilityTarget?.GetComponent<CardUI>() != null)
 		// targets 리스트가 내부에서 초기화되지 않을 수 있으므로 안전하게 보장
 		if (parameter.targets == null)
 		{
