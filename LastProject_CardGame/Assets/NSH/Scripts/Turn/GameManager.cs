@@ -22,6 +22,8 @@ public class GameManager : MonoBehaviour
         // UI 참조 누락 방지 (에디터에서 안 넣어도 경고)
         if (turnButton != null)
             turnButton.interactable = false; // 시작 시 버튼 비활성화
+        if (discardWarningPanel != null)
+            discardWarningPanel.SetActive(false);
     }
 
     void Start()
@@ -119,7 +121,9 @@ public class GameManager : MonoBehaviour
     public Button paperButton;
     public Button scissorsButton;
     public TextMeshProUGUI rpsResultText;
-
+    [Header("Discard Warning UI")]
+    public GameObject discardWarningPanel; 
+    public TextMeshProUGUI discardWarningText;
     [Header("Win/Lose UI")]
     public GameObject winPanel;
     public GameObject losePanel;
@@ -448,6 +452,9 @@ public class GameManager : MonoBehaviour
             cardsToDiscardCount = handCount - 6;
             isDiscardSelectionActive = true;
             selectedCardsToDiscard.Clear();
+
+            ShowDiscardWarning(cardsToDiscardCount);
+            discardWarningPanel.SetActive(true);
             Debug.Log($"핸드 카드가 {handCount}장 초과! {cardsToDiscardCount}장 버리기 선택 필요.");
             // 여기서 UI 또는 카드 클릭 이벤트를 통해 선택 진행
             return;
@@ -548,6 +555,7 @@ public class GameManager : MonoBehaviour
 
         selectedCardsToDiscard.Clear();
         isDiscardSelectionActive = false;
+        discardWarningPanel.SetActive(false);
 
         // 턴 종료 진행
         StartCoroutine(EndPhaseAndAutoTurnCoroutine());
@@ -680,6 +688,20 @@ public class GameManager : MonoBehaviour
         {
             ShowWinScreen();
         }
+    }
+    void ShowDiscardWarning(int count)
+    {
+        if (discardWarningPanel != null)
+        {
+            discardWarningPanel.SetActive(true);
+            discardWarningText.text = $"카드가 6장을 초과했습니다{count}장을 버리세요.";
+        }
+    }
+
+    void HideDiscardWarning()
+    {
+        if (discardWarningPanel != null)
+            discardWarningPanel.SetActive(false);
     }
     public void ShowWinScreen()
     {
