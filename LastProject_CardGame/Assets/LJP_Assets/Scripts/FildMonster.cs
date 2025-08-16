@@ -169,20 +169,51 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
 		switch (type)
 		{
 			case TargetType.Fild:
-				return GetFromZones(owner,
-					PlayerCardManager.Instance.playerMonsterZone,
-					PlayerCardManager.Instance.enemyMonsterZone,
-					getChildOfChild: true);
-
+                if(cardUI.ownerType == OwnerType.Player)
+                {
+				    return GetFromZones(owner,
+					    PlayerCardManager.Instance.playerMonsterZone,
+					    PlayerCardManager.Instance.enemyMonsterZone,
+					    getChildOfChild: true);
+                }
+                else
+                {
+					return GetFromZones(owner,
+						PlayerCardManager.Instance.enemyMonsterZone,
+						PlayerCardManager.Instance.playerMonsterZone,
+						getChildOfChild: true);
+				}
 			case TargetType.Hand:
-				return GetFromZones(owner,
-					PlayerCardManager.Instance.playerHandZone,
-					PlayerCardManager.Instance.enemyHandZone);
+				if (cardUI.ownerType == OwnerType.Player)
+				{
+					return GetFromZones(owner,
+						PlayerCardManager.Instance.playerHandZone,
+						PlayerCardManager.Instance.enemyHandZone,
+						getChildOfChild: true);
+				}
+				else
+				{
+					return GetFromZones(owner,
+						PlayerCardManager.Instance.enemyHandZone,
+						PlayerCardManager.Instance.playerHandZone,
+						getChildOfChild: true);
+				}
 
 			case TargetType.Deck:
-				return GetFromZones(owner,
-					PlayerCardManager.Instance.playerDeckZone,
-					PlayerCardManager.Instance.enemyDeckZone);
+				if (cardUI.ownerType == OwnerType.Player)
+				{
+					return GetFromZones(owner,
+						PlayerCardManager.Instance.playerDeckZone,
+						PlayerCardManager.Instance.enemyDeckZone,
+						getChildOfChild: true);
+				}
+				else
+				{
+					return GetFromZones(owner,
+						PlayerCardManager.Instance.enemyDeckZone,
+						PlayerCardManager.Instance.playerDeckZone,
+						getChildOfChild: true);
+				}
 
 			default:
 				return Enumerable.Empty<CardUI>();
