@@ -1836,9 +1836,9 @@ GameObject:
   - component: {fileID: 6451283996007634016}
   - component: {fileID: 8906740630591169565}
   - component: {fileID: 6632694000808256612}
-  - component: {fileID: 7856441797010218355}
   - component: {fileID: -7555301608877832340}
   - component: {fileID: 7273626879887195047}
+  - component: {fileID: 7349297022223312513}
   m_Layer: 5
   m_Name: CardUI N_2 E
   m_TagString: Untagged
@@ -1928,6 +1928,7 @@ MonoBehaviour:
   enableCardFlip: 1
   cardData: {fileID: 0}
   monsterCardData: {fileID: 0}
+  isInHand: 1
   Back: {fileID: 399276537597171360}
   imageBack: {fileID: 8116571974810745133}
   Front: {fileID: 71839299888722706}
@@ -1957,24 +1958,10 @@ MonoBehaviour:
   maxHealth: 0
   currentHealth: 0
   FixedHealth: 0
+  isFront: 1
   isOnField: 0
   hasAttackedThisTurn: 0
   ownerType: 1
---- !u!114 &7856441797010218355
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9154549864915518465}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f7ab90e3c15d391428e5833d94637bf6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  cardOwner: 1
-  isSummoned: 0
-  droppedOnSlot: 0
 --- !u!225 &-7555301608877832340
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -2000,3 +1987,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cardManager: {fileID: 0}
+--- !u!114 &7349297022223312513
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9154549864915518465}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49a7ea21faf4bf74ab88b7e79de427b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isInHand: 1
