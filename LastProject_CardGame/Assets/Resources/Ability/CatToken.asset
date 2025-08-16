@@ -12,5 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c88c4e19f90958a45b778427ee9fe7d4, type: 3}
   m_Name: CatToken
   m_EditorClassIdentifier: 
+  targetType: 2
+  targetOwner: 0
   condition: {fileID: 0}
   Token: {fileID: 11400000, guid: 01c2de4bfb007834d9b9be6cb88cb4f4, type: 2}
