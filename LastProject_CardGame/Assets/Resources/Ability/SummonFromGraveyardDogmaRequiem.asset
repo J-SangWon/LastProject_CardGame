@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da42f690b09aaa842b8cc7c47117a95d, type: 3}
+  m_Name: SummonFromGraveyardDogmaRequiem
+  m_EditorClassIdentifier: 
+  targetType: 1
+  targetOwner: 1
+  condition: {fileID: 0}
+  searchType: 4
+  cardType: 0
+  race: 0
+  cost: 0
+  costOp: 0
+  cardID: 
+  tag: DogmaRequiem
+  excludeSelfId: 1
+  useCompositeConditions: 1
+  compositeOperator: 0
+  conditions:
+  - searchType: 0
+    cardType: 0
+    race: 0
+    cost: 0
+    costOp: 0
+    cardID: 
+    tag: 
+  - searchType: 4
+    cardType: 0
+    race: 0
+    cost: 0
+    costOp: 0
+    cardID: 
+    tag: DogmaRequiem

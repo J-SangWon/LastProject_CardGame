@@ -13,24 +13,23 @@ MonoBehaviour:
   m_Name: DogmaRequiem Funishment
   m_EditorClassIdentifier: 
   cardName: "\uB3C4\uADF8\uB9C8\uB808\uD034\uC5E0 \uC9D5\uBC8C"
-  description: "\uBB18\uC9C0\uC5D0 \uC5B8\uB370\uB4DC \uBAAC\uC2A4\uD130\uAC00 \uC788\uC744
-    \uACBD\uC6B0 1\uB9C8\uB9AC\uC758 \uBAAC\uC2A4\uD130\uC5D0\uAC8C N\uB370\uBBF8\uC9C0
-    or \uD30C\uAD34"
+  description: "\uBB18\uC9C0\uC5D0 \uB3C4\uADF8\uB9C8\uB808\uD034\uC5E0 \uBAAC\uC2A4\uD130\uAC00
+    \uC788\uC744 \uACBD\uC6B0 1\uB9C8\uB9AC\uC758 \uBAAC\uC2A4\uD130\uB97C \uD30C\uAD34"
   artwork: {fileID: 21300000, guid: 0a2df28f963747a498634d90e0c6f48b, type: 3}
   cardType: 1
-  rarity: 0
+  rarity: 1
   cost: 2
   cardId: c2e6cd7c-d089-4a7e-b1db-375d5de7ae89
   haveLive2D: 0
   live2DPath: 
-  cardAbility: {fileID: 11400000, guid: 00c7445d483e97e4a946306786b5b3c5, type: 2}
+  cardAbility: {fileID: 11400000, guid: 5ef330eb68bea354ab3deedfeeac27d5, type: 2}
   abilityValue: 1
   monsterAbilityType: 1
   tags:
   - DogmaRequiem
   ownerType: 0
-  craftCost: 10
-  disenchantReward: 2
+  craftCost: 30
+  disenchantReward: 8
   canCraft: 1
   canDisenchant: 1
   maxHP: 0

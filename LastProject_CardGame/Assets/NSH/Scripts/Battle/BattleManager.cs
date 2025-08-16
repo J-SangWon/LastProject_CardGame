@@ -124,21 +124,63 @@ public class BattleManager : MonoBehaviour
             return;
         }
 
-        // 2) HitZone 대상인지 확인
+        // 2) HitZone 대상인지 확인 → 전용 연출 코루틴 실행
         HitZone hitZone = targetObj.GetComponent<HitZone>();
         if (hitZone != null)
         {
-            hitZone.OnHitByCard(attacker);   // 히트존 체력 감소 처리
-            Debug.Log($"히트존 공격: {attacker.GetComponent<CardUI>().cardData.cardName} → {(hitZone.isPlayerZone ? "Player" : "Enemy")}");
-
-            // 공격자 초기화 및 화살표 비활성화
-            attacker = null;
-            arrow.Deactivate();
+            DirectAttackHitZone(hitZone);
             return;
         }
 
         // 3) 카드도 히트존도 아닌 경우는 무시
         Debug.Log("유효하지 않은 공격 대상입니다.");
+    }
+
+    /// <summary>
+    /// 히트존(플레이어/적 본체) 직접 공격 연출 및 데미지 처리
+    /// </summary>
+    public void DirectAttackHitZone(HitZone hitZone)
+    {
+        if (attacker == null || hitZone == null) return;
+        if (isResolvingBattle) return;
+        StartCoroutine(DirectAttackHitZoneCoroutine(hitZone));
+    }
+
+    private IEnumerator DirectAttackHitZoneCoroutine(HitZone hitZone)
+    {
+        if (attacker == null || hitZone == null) yield break;
+
+        var atkUI = attacker.GetComponent<CardUI>();
+        if (atkUI == null) { ResetBattleState(); yield break; }
+
+        isResolvingBattle = true;
+        // 화살표 비활성화
+        arrow.Deactivate();
+
+        // 이동 연출 (공격자 → 히트존 → 복귀)
+        Transform atkTrParent = attacker.transform.parent;
+        Vector3 originalUp = attacker.transform.up;
+        Vector3 startPos = attacker.transform.position;
+        yield return MoveTo(attacker.transform, startPos + Vector3.back, 0.2f);
+        yield return new WaitForSeconds(0.05f);
+
+        Vector3 distance = hitZone.transform.position - startPos;
+        distance = Vector3.MoveTowards(distance, distance * 0.001f, 1f);
+        attacker.transform.up = distance;
+        yield return MoveTo(attacker.transform, startPos + distance, 0.3f, attackAnimCurve);
+        yield return new WaitForSeconds(0.05f);
+
+        // 데미지 적용 (HitZone 경유, 내부에서 MarkAsAttacked 처리)
+        hitZone.OnHitByCard(attacker);
+
+        // 복귀 (파괴되지 않았다면)
+        if (!atkUI.IsDead)
+            yield return MoveTo(attacker.transform, startPos, 0.3f);
+        attacker.transform.up = originalUp;
+        attacker.transform.parent = atkTrParent;
+
+        attacker = null;
+        isResolvingBattle = false;
     }
 
     private void Update()
@@ -183,6 +225,15 @@ public class BattleManager : MonoBehaviour
         
         // 상태 초기화
         CancelAbility();
+	}
+
+	public void SetAbilityCasterSilent(GameObject card)
+	{
+		CardUI cardUI = card.GetComponent<CardUI>();
+		if (cardUI == null || !cardUI.isOnField) return;
+
+		abilityCaster = card;
+		// 화살표를 활성화하지 않음 (AI 전용)
 	}
 
 
@@ -327,7 +378,11 @@ public class BattleManager : MonoBehaviour
 	public void BeginAbility(GameObject card)
 	{
 		CancelAbility();
-		arrow.SetupAndActivate(card.transform);
+		var ui = card != null ? card.GetComponent<CardUI>() : null;
+		if (ui != null && ui.ownerType == OwnerType.Player)
+		{
+			arrow.SetupAndActivate(card.transform);
+		}
 		abilityCaster = card;
 	}
 

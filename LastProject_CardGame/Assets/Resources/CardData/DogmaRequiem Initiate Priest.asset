@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: DogmaRequiem Initiate Priest
   m_EditorClassIdentifier: 
   cardName: "\uB3C4\uADF8\uB9C8\uB808\uD034\uC5E0 \uC2E0\uC785 \uC0AC\uC81C"
-  description: "\uC0AC\uB9DD \uC2DC \uC5B8\uB370\uB4DC\uC871 \uB3C4\uADF8\uB9C8\uB808\uD034\uC5E0
-    \uBAAC\uC2A4\uD130 \uD55C\uC7A5\uC744 \uBB18\uC9C0\uB85C \uBCF4\uB0C4"
+  description: 
   artwork: {fileID: 21300000, guid: 30e715db407c71a499626ae469fe05e0, type: 3}
   cardType: 0
   rarity: 0
@@ -22,8 +21,9 @@ MonoBehaviour:
   cardId: afbab2e6-7cf7-4569-ad18-a9606e131848
   haveLive2D: 0
   live2DPath: 
-  cardAbility: {fileID: 11400000, guid: f59b18cc8b4297142a46c935c39fd7eb, type: 2}
+  cardAbility: {fileID: 0}
   abilityValue: 1
+  monsterAbilityType: 0
   tags:
   - DogmaRequiem
   ownerType: 0
@@ -31,10 +31,9 @@ MonoBehaviour:
   disenchantReward: 2
   canCraft: 1
   canDisenchant: 1
-  maxHP: 2
+  maxHP: 3
   currentHP: 2
   monsterType: 0
   attack: 1
-  health: 2
+  health: 3
   race: 4
-  monsterAbilityType: 0

@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections;
+using DG.Tweening;
 
 public class GameManager : MonoBehaviour
 {
@@ -26,17 +27,18 @@ public class GameManager : MonoBehaviour
     {
         InitGame();
     }
-
+    private bool isGameInputLocked = false;
+    public bool IsInputLocked() => isGameInputLocked;
+    private bool rpsDecided = false;
     private void InitGame()
     {
         // 초기 상태
-        currentPhase = GamePhase.FirstPhase;
-        isPlayerTurn = true;
+        currentPhase = GamePhase.None; // 아직 턴 시작 X
+        isPlayerTurn = true; // 기본값
         turnCount = 1;
 
         playerHealth = 40;
         enemyHealth = 40;
-
         playerCurrentCost = 0;
         playerMaxCost = 0;
         enemyCurrentCost = 0;
@@ -50,9 +52,11 @@ public class GameManager : MonoBehaviour
         // 버튼 리스너 등록
         if (turnButton != null)
             turnButton.onClick.AddListener(OnTurnButtonClicked);
-
-        // 플레이어 첫 턴 시작
-        StartPlayerTurn(currentPhase);
+        if (winPanel != null) winPanel.SetActive(false);
+        if (losePanel != null) losePanel.SetActive(false);
+        // === 가위바위보로 선후공 결정 ===
+        isGameInputLocked = true;
+        ShowRPSPanel();
     }
 
     // ===== Enum & 상태 변수 =====
@@ -101,7 +105,20 @@ public class GameManager : MonoBehaviour
     [Header("Cards")]
     public GameObject cardObject;
     public GameObject enemyCardObject;
-    
+
+    [Header("RPS - Rock Paper Scissors")]
+    public GameObject rpsPanel;
+    public CanvasGroup rpsCanvasGroup;
+    public Button rockButton;
+    public Button paperButton;
+    public Button scissorsButton;
+    public TextMeshProUGUI rpsResultText;
+
+    [Header("Win/Lose UI")]
+    public GameObject winPanel;
+    public GameObject losePanel;
+    private enum RPSChoice { Rock, Paper, Scissors }
+
     [Header("AI")]
     public GameObject enemyAIObject; // 씬에 있는 EnemyAI 오브젝트 참조 (선택)
 
@@ -115,9 +132,135 @@ public class GameManager : MonoBehaviour
             UpdateTimerUI();
         }
     }
+    void ShowRPSPanel()
+    {
+        if (rpsPanel != null)
+        {
+            rpsPanel.SetActive(true);
+            if (rpsCanvasGroup != null)
+            {
+                rpsCanvasGroup.alpha = 0f;
+                rpsCanvasGroup.DOFade(1f, 0.5f);
+            }
+        }
 
-    // ===== 턴 로직 =====
-    void StartPlayerTurn(GamePhase startPhase = GamePhase.MainPhase)
+        rockButton.onClick.RemoveAllListeners();
+        paperButton.onClick.RemoveAllListeners();
+        scissorsButton.onClick.RemoveAllListeners();
+
+        rockButton.onClick.AddListener(() => PlayerChooseRPS(RPSChoice.Rock));
+        paperButton.onClick.AddListener(() => PlayerChooseRPS(RPSChoice.Paper));
+        scissorsButton.onClick.AddListener(() => PlayerChooseRPS(RPSChoice.Scissors));
+
+        AnimateRPSButtons();
+    }
+
+    void AnimateRPSButtons()
+    {
+        float startY = -300f;
+        SetButtonStartPos(rockButton, startY);
+        SetButtonStartPos(paperButton, startY);
+        SetButtonStartPos(scissorsButton, startY);
+
+        AnimateButtonIn(rockButton, 0f);
+        AnimateButtonIn(paperButton, 0.1f);
+        AnimateButtonIn(scissorsButton, 0.2f);
+    }
+
+    void SetButtonStartPos(Button btn, float offsetY)
+    {
+        RectTransform rect = btn.GetComponent<RectTransform>();
+        rect.anchoredPosition = new Vector2(rect.anchoredPosition.x, offsetY);
+    }
+
+
+    void AnimateButtonIn(Button btn, float delay)
+    {
+        RectTransform rect = btn.GetComponent<RectTransform>();
+        rect.DOAnchorPosY(0f, 0.4f).SetEase(Ease.OutBack).SetDelay(delay);
+    }
+    void PlayerChooseRPS(RPSChoice playerChoice)
+    {
+        
+        if (rpsDecided) return;
+
+        // AI 무작위 선택
+        RPSChoice enemyChoice = (RPSChoice)Random.Range(0, 3);
+
+        string playerStr = playerChoice.ToString();
+        string enemyStr = enemyChoice.ToString();
+
+        // 승패 판정
+        int result = GetRPSResult(playerChoice, enemyChoice);
+
+        if (result == 1)
+        {
+            rpsResultText.text = $"플레이어: {playerStr}\n상대: {enemyStr}\n\n승리! 당신이 선공입니다.";
+            isPlayerTurn = true;
+        }
+        else if (result == -1)
+        {
+            rpsResultText.text = $"플레이어: {playerStr}\n상대: {enemyStr}\n\n패배! 상대가 선공입니다.";
+            isPlayerTurn = false; 
+        }
+        else
+        {
+            rpsResultText.text = $"플레이어: {playerStr}\n상대: {enemyStr}\n\n무승부! 다시 선택하세요.";
+            return; // 무승부면 다시 선택
+        }
+
+      
+        rockButton.interactable = false;
+        paperButton.interactable = false;
+        scissorsButton.interactable = false;
+        rpsDecided = true;
+
+        // 1.5초 후 RPS 패널 닫고 게임 시작
+        StartCoroutine(CloseRPSAndStartGame());
+    }
+    int GetRPSResult(RPSChoice player, RPSChoice enemy)
+    {
+        if (player == enemy) return 0; // 무승부
+
+        if ((player == RPSChoice.Rock && enemy == RPSChoice.Scissors) ||
+            (player == RPSChoice.Scissors && enemy == RPSChoice.Paper) ||
+            (player == RPSChoice.Paper && enemy == RPSChoice.Rock))
+            return 1; // 플레이어 승리
+
+        return -1; // 플레이어 패배
+    }
+    IEnumerator CloseRPSAndStartGame()
+    {
+        yield return new WaitForSeconds(1.5f);
+
+        if (rpsCanvasGroup != null)
+        {
+            rpsCanvasGroup.DOFade(0f, 0.4f);
+            yield return new WaitForSeconds(0.4f);
+        }
+
+        if (rpsPanel != null)
+            rpsPanel.SetActive(false);
+        if (rockButton != null) rockButton.gameObject.SetActive(false);
+        if (paperButton != null) paperButton.gameObject.SetActive(false);
+        if (scissorsButton != null) scissorsButton.gameObject.SetActive(false);
+        if (rpsResultText != null) rpsResultText.gameObject.SetActive(false);
+
+        isGameInputLocked = false;
+
+        // 선공이면 FirstPhase, 후공이면 상대 턴 MainPhase
+        if (isPlayerTurn)
+        {
+            currentPhase = GamePhase.FirstPhase;
+            StartPlayerTurn(currentPhase);
+        }
+        else
+        {
+            StartEnemyTurn();
+        }
+    }
+        // ===== 턴 로직 =====
+        void StartPlayerTurn(GamePhase startPhase = GamePhase.MainPhase)
     {
         isPlayerTurn = true;
         currentPhase = startPhase;
@@ -163,43 +306,51 @@ public class GameManager : MonoBehaviour
     }
 
     void StartEnemyTurn()
+        {
+            isPlayerTurn = false;
+            currentPhase = GamePhase.MainPhase;
+
+            ResetEnemyCardAttacks(); // 적 카드 공격 플래그 초기화
+
+            isTimerRunning = true;
+            turnButton.interactable = false; // AI 턴에서는 버튼 비활성화
+
+            if (enemyMaxCost < MAX_COST_LIMIT)
+                enemyMaxCost++;
+            enemyCurrentCost = enemyMaxCost;
+
+            // 적 턴 시작 시 1장 드로우
+            OpponentCardManager.Instance?.DrawCards(1);
+
+            UpdateAllUI();
+
+            // AI 턴 시작 (타입 의존 제거: SendMessage 사용)
+            try
+            {
+                GameObject aiGO = enemyAIObject != null ? enemyAIObject : GameObject.Find("EnemyAI");
+                if (aiGO != null)
+                {
+                    aiGO.SendMessage("StartAITurn", SendMessageOptions.DontRequireReceiver);
+                    
+                }
+                else
+                {
+                    Debug.LogWarning("[GameManager] EnemyAI 오브젝트를 찾을 수 없습니다. (이름: 'EnemyAI' 또는 인스펙터 참조 설정 필요) AI 턴을 건너뜁니다.");
+                    StartCoroutine(EnemyTurnFallback());
+                }
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"[GameManager] AI 턴 시작 중 오류 발생: {e.Message}");
+                StartCoroutine(EnemyTurnFallback());
+            }
+
+          }
+    IEnumerator EnemyTurnFallback()
     {
-        isPlayerTurn = false;
-        currentPhase = GamePhase.MainPhase;
-
-        ResetEnemyCardAttacks(); // 적 카드 공격 플래그 초기화
-
-        isTimerRunning = true;
-        turnButton.interactable = false; // AI 턴에서는 버튼 비활성화
-
-        if (enemyMaxCost < MAX_COST_LIMIT)
-            enemyMaxCost++;
-        enemyCurrentCost = enemyMaxCost;
-
-		// 적 턴 시작 시 1장 드로우
-		OpponentCardManager.Instance?.DrawCards(1);
-
-        UpdateAllUI();
-
-        // AI 턴 시작 (타입 의존 제거: SendMessage 사용)
-        try
-        {
-            GameObject aiGO = enemyAIObject != null ? enemyAIObject : GameObject.Find("EnemyAI");
-            if (aiGO != null)
-            {
-                aiGO.SendMessage("StartAITurn", SendMessageOptions.DontRequireReceiver);
-            }
-            else
-            {
-                Debug.LogWarning("[GameManager] EnemyAI 오브젝트를 찾을 수 없습니다. (이름: 'EnemyAI' 또는 인스펙터 참조 설정 필요) AI 턴을 건너뜁니다.");
-                EndPlayerTurn();
-            }
-        }
-        catch (System.Exception e)
-        {
-            Debug.LogError($"[GameManager] AI 턴 시작 중 오류 발생: {e.Message}");
-            EndPlayerTurn();
-        }
+        
+        yield return new WaitForSeconds(0.8f);
+        EndPlayerTurn(); // 적 턴 종료 → 플레이어 턴으로 전환
     }
 
     public void EndPlayerTurn()
@@ -231,6 +382,8 @@ public class GameManager : MonoBehaviour
     // ===== 버튼 처리 =====
     void OnTurnButtonClicked()
     {
+        if (IsInputLocked()) return;
+
         // AI 턴 중에는 버튼 클릭 무시
         if (!isPlayerTurn)
             return;
@@ -438,11 +591,17 @@ public class GameManager : MonoBehaviour
         }
         return false;
     }
+
     public void TakeDamageToPlayer(int amount)
     {
         playerHealth -= amount;
         if (playerHealth < 0) playerHealth = 0;
         UpdateHealthUI();
+
+        if (playerHealth <= 0)
+        {
+            ShowLoseScreen();
+        }
     }
 
     public void TakeDamageToEnemy(int amount)
@@ -450,6 +609,23 @@ public class GameManager : MonoBehaviour
         enemyHealth -= amount;
         if (enemyHealth < 0) enemyHealth = 0;
         UpdateHealthUI();
+
+        if (enemyHealth <= 0)
+        {
+            ShowWinScreen();
+        }
+    }
+    void ShowWinScreen()
+    {
+        isGameInputLocked = true; // 입력 차단
+        turnButton.interactable = false; // 턴 버튼 비활성화
+        if (winPanel != null) winPanel.SetActive(true);
     }
 
+    void ShowLoseScreen()
+    {
+        isGameInputLocked = true;
+        turnButton.interactable = false;
+        if (losePanel != null) losePanel.SetActive(true);
+    }
 }

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 public enum ConditionType
 {
@@ -15,6 +15,8 @@ public enum ConditionType
     OnTurnStart,        // 턴 시작 시
     OnTurnEnd,          // 턴 종료 시
     WhenCardInHand,     // 특정 카드가 손패에 있을 때
+    WhenGraveyardCount, // 묘지에 특정 개수 이상 카드가 있을 때
+    WhenGraveyardHasTag, // 묘지에 특정 태그 카드가 있을 때
 }
 [CreateAssetMenu(menuName = "EffectCondition/Condition")]
 public class EffectCondition : ScriptableObject
@@ -23,5 +25,7 @@ public class EffectCondition : ScriptableObject
     public ConditionType[] conditionType;
     public string targetCardId;  // 특정 카드 필요 시
     public int intValue;         // HP, 턴 수 등 비교 값
+    public string requiredTag;   // 묘지/덱/손패 등에서 찾을 태그 ("DogmaRequiem" 등)
+    public OwnerScope ownerScope = OwnerScope.Both; // 조건 평가 대상 진영
 
 }

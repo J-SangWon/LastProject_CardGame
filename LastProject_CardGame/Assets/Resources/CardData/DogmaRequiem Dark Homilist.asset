@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: DogmaRequiem Dark Homilist
   m_EditorClassIdentifier: 
   cardName: "\uB3C4\uADF8\uB9C8\uB808\uD034\uC5E0 \uAC15\uB860\uC790"
-  description: "\uC0AC\uB9DD \uC2DC \uB3C4\uADF8\uB9C8\uB808\uD034\uC5E0 \uD544\uB4DC\uB9C8\uBC95
+  description: "\uC794\uD5A5 : \uB3C4\uADF8\uB9C8\uB808\uD034\uC5E0 \uD544\uB4DC\uB9C8\uBC95
     \uAC00\uC838\uC634"
   artwork: {fileID: 21300000, guid: cf0d6c24ad6d8554ab03d4198ddd4c9d, type: 3}
   cardType: 0
@@ -24,6 +24,7 @@ MonoBehaviour:
   live2DPath: 
   cardAbility: {fileID: 11400000, guid: f7058a846d5268d42b47d642f0c8c630, type: 2}
   abilityValue: 1
+  monsterAbilityType: 2
   tags:
   - DogmaRequiem
   ownerType: 0
@@ -37,4 +38,3 @@ MonoBehaviour:
   attack: 2
   health: 5
   race: 4
-  monsterAbilityType: 2

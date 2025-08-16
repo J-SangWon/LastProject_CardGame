@@ -367,6 +367,12 @@ public class PlayerCardManager : MonoBehaviour
     public bool PlaceExistingCardToMonsterSlot(GameObject card, OwnerType ownerType)
     {
         if (card == null) return false;
+        var cardUIChk = card.GetComponent<CardUI>();
+        if (cardUIChk == null || cardUIChk.cardData == null || cardUIChk.cardData.cardType != CardType.Monster)
+        {
+            Debug.LogWarning("[PlayerCardManager] 몬스터 존에는 몬스터 카드만 배치할 수 있습니다.");
+            return false;
+        }
         Transform slotTr = FindFirstFreeMonsterSlot(ownerType);
         if (slotTr == null)
         {
@@ -416,6 +422,11 @@ public class PlayerCardManager : MonoBehaviour
     public GameObject SummonFromDataToMonsterZone(BaseCardData data, OwnerType ownerType)
     {
         if (data == null) return null;
+        if (data.cardType != CardType.Monster)
+        {
+            Debug.LogWarning("[PlayerCardManager] 몬스터 존에는 몬스터 카드만 소환할 수 있습니다.");
+            return null;
+        }
         Transform slotTr = FindFirstFreeMonsterSlot(ownerType);
         if (slotTr == null)
         {

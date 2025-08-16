@@ -107,6 +107,9 @@ public class EnemyAI : MonoBehaviour
         // 남은 코스트를 최대한 사용하여 소환
         yield return StartCoroutine(SummonAsMuchAsPossible());
 
+        // 스펠 카드 사용 시도 (코스트 허용 범위에서 다수)
+        yield return StartCoroutine(PlaySpellsAsMuchAsPossible());
+
         yield return new WaitForSeconds(actionDelay);
     }
 
@@ -192,10 +195,10 @@ public class EnemyAI : MonoBehaviour
                 break;
             }
 
-            // 현재 코스트로 낼 수 있는 카드 중 가장 비싼 카드 우선 소환
+            // 현재 코스트로 낼 수 있는 '몬스터' 카드 중 가장 비싼 카드 우선 소환
             int currentCost = GameManager.Instance.enemyCurrentCost;
             var affordable = handCards
-                .Where(c => c != null && c.cost <= currentCost)
+                .Where(c => c is MonsterCardData && c.cost <= currentCost)
                 .OrderByDescending(c => c.cost)
                 .ToList();
 
@@ -209,8 +212,25 @@ public class EnemyAI : MonoBehaviour
 
             GameManager.Instance.enemyCurrentCost -= cardToSummon.cost;
             GameManager.Instance.UpdateCostUI();
+            // 소환 전 AI 필드 스냅샷
+            var beforeEnemyMonsters = new HashSet<CardUI>(GetEnemyMonsters());
+
             yield return StartCoroutine(OpponentCardManager.Instance.SummonCard(cardToSummon));
             Debug.Log($"[EnemyAI] {cardToSummon.cardName} 소환 완료. 남은 코스트: {GameManager.Instance.enemyCurrentCost}");
+            // 소환 직후: 막 추가된 소환 개체를 식별
+            CardUI justSummoned = null;
+            var afterEnemyMonsters = GetEnemyMonsters();
+            foreach (var c in afterEnemyMonsters)
+            {
+                if (!beforeEnemyMonsters.Contains(c))
+                {
+                    justSummoned = c;
+                    break;
+                }
+            }
+
+            // TakeDamage(단일 타겟) 능력이면 플레이어 몬스터를 자동 타겟하여 사용
+            yield return StartCoroutine(TryUseTakeDamageAbilityAfterSummon(cardToSummon, justSummoned));
 
             summonedAtLeastOne = true;
             yield return new WaitForSeconds(actionDelay);
@@ -219,6 +239,85 @@ public class EnemyAI : MonoBehaviour
         if (!summonedAtLeastOne)
         {
             Debug.Log("[EnemyAI] 소환할 수 있는 카드가 없습니다");
+        }
+    }
+
+    // AI: 손패의 스펠(일반/지속)을 몬스터존 타겟 스팟에, 필드마법은 FieldZone에 사용
+    private IEnumerator PlaySpellsAsMuchAsPossible()
+    {
+        if (OpponentCardManager.Instance == null) yield break;
+
+        bool playedAny = false;
+        while (true)
+        {
+            // 현재 손패 스냅샷
+            var handCards = OpponentCardManager.Instance.GetHandCards();
+            var spells = handCards.Where(c => c is SpellCardData).Cast<SpellCardData>().ToList();
+            if (spells.Count == 0) break;
+
+            bool playedThisLoop = false;
+
+            foreach (var spell in spells.OrderByDescending(s => s.cost).ToList())
+            {
+                if (GameManager.Instance.enemyCurrentCost < spell.cost)
+                    continue;
+
+                // 손패 오브젝트 찾기
+                var cardObj = OpponentCardManager.Instance.FindHandCardObject(spell);
+                if (cardObj == null) continue;
+                var ui = cardObj.GetComponent<CardUI>();
+                if (ui == null) continue;
+
+                // 필드 마법 처리
+                if (spell.spellType == SpellType.Field)
+                {
+                    var fieldZoneGO = GameObject.Find("FieldZone");
+                    var fieldZone = fieldZoneGO != null ? fieldZoneGO.GetComponent<FieldSpellZone>() : null;
+                    if (fieldZone != null)
+                    {
+                        if (fieldZone.TryActivateFieldSpellForAI(cardObj))
+                        {
+                            playedThisLoop = true;
+                            playedAny = true;
+                            yield return new WaitForSeconds(actionDelay);
+                            break; // 손패 목록이 변했으니 다시 스냅샷
+                        }
+                    }
+                }
+                else
+                {
+                    // 일반/지속 마법: 반드시 MonsterZone(SpellPlayTarget) 경로로 사용
+                    var targets = FindObjectsByType<SpellPlayTarget>(FindObjectsSortMode.None);
+                    SpellPlayTarget monsterZoneTarget = null;
+                    foreach (var t in targets)
+                    {
+                        if (t == null) continue;
+                        var n = t.gameObject.name;
+                        if (!string.IsNullOrEmpty(n) && n.Contains("MonsterZone") && !n.StartsWith("E_"))
+                        {
+                            monsterZoneTarget = t;
+                            break;
+                        }
+                    }
+                    if (monsterZoneTarget != null)
+                    {
+                        if (monsterZoneTarget.TryPlaySpellFromCard(cardObj))
+                        {
+                            playedThisLoop = true;
+                            playedAny = true;
+                            yield return new WaitForSeconds(actionDelay);
+                            break; // 손패 목록이 변했으니 다시 스냅샷
+                        }
+                    }
+                }
+            }
+
+            if (!playedThisLoop) break;
+        }
+
+        if (!playedAny)
+        {
+            Debug.Log("[EnemyAI] 사용할 수 있는 스펠 카드가 없습니다");
         }
     }
 
@@ -338,18 +437,115 @@ public class EnemyAI : MonoBehaviour
     {
         Debug.Log($"[EnemyAI] {attacker.cardData.cardName} 직접 공격");
 
-        // 직접 공격 시 드래그 라인(Arrow) 잔상 제거 및 상태 리셋
-        if (BattleManager.Instance != null)
+        // 플레이어 HitZone을 찾아 공격력만큼 HP 감소 처리
+        var hitZones = FindObjectsByType<HitZone>(FindObjectsSortMode.None);
+        HitZone playerHitZone = null;
+        foreach (var hz in hitZones)
         {
-            BattleManager.Instance.CancelAttack();
+            if (hz != null && hz.isPlayerZone)
+            {
+                playerHitZone = hz;
+                break;
+            }
         }
 
-        // 직접 공격 처리(현재는 로그만) + 공격 플래그 설정
-        Debug.Log($"[EnemyAI] {attacker.cardData.cardName} 직접 공격으로 플레이어에게 {attacker.attack} 데미지");
-        attacker.MarkAsAttacked();
+        if (playerHitZone != null)
+        {
+            if (BattleManager.Instance != null)
+            {
+                BattleManager.Instance.SetAttacker(attacker.gameObject);
+                BattleManager.Instance.DirectAttackHitZone(playerHitZone);
+            }
+            else
+            {
+                playerHitZone.OnHitByCard(attacker.gameObject);
+            }
+        }
+        else
+        {
+            // HitZone을 못 찾은 경우: 상태만 정리
+            if (BattleManager.Instance != null)
+            {
+                BattleManager.Instance.CancelAttack();
+            }
+        }
 
         yield return new WaitForSeconds(actionDelay);
     }
 
+
+    /// <summary>
+    /// 방금 소환한 카드가 단일 타겟 피해 능력(TakeDamage)을 보유하면, 플레이어 필드 몬스터를 자동으로 골라 사용
+    /// - 타겟은 항상 플레이어 필드 몬스터 한정
+    /// - 적절한 타겟이 없으면 아무 것도 하지 않음
+    /// </summary>
+    private IEnumerator TryUseTakeDamageAbilityAfterSummon(BaseCardData summonedData, CardUI casterOverride)
+    {
+        if (summonedData == null) yield break;
+        var monsterData = summonedData as MonsterCardData;
+        if (monsterData == null) yield break;
+        if (monsterData.cardAbility == null) yield break;
+        // 입장(진입) 효과 카드만 자동 시전 대상
+        if (monsterData.monsterAbilityType != MonsterCardAbilityType.Entrance) yield break;
+        // TakeDamage(단일 피해)인지 확인
+        if (!(monsterData.cardAbility is Ability_TakeDamage)) yield break;
+
+        // 단일 타겟, 대상 소유자: Player인지 확인 (Resources/Ability/TakeDamage.asset의 설정과 일치)
+        if (monsterData.cardAbility.targetType != TargetType.Single)
+            yield break;
+
+        // 플레이어 필드에 몬스터가 있는지 확인
+        var playerMonsters = GetPlayerMonsters();
+        if (playerMonsters == null || playerMonsters.Count == 0)
+            yield break;
+
+        // 가장 약한 몬스터를 선택해 타겟팅
+        var onlyMonsterCards = new List<CardUI>();
+        foreach (var m in playerMonsters)
+        {
+            if (m != null && m.cardData is MonsterCardData)
+                onlyMonsterCards.Add(m);
+        }
+        var target = GetWeakestMonster(onlyMonsterCards);
+        if (target == null) yield break;
+
+        // 시전자: 방금 소환한 오브젝트를 필드에서 찾기 (같은 데이터 기준)
+        CardUI caster = casterOverride;
+        if (caster == null)
+        {
+            var all = FindObjectsByType<CardUI>(FindObjectsSortMode.None);
+            foreach (var c in all)
+            {
+                if (c != null && c.isOnField && c.ownerType == OwnerType.Opponent && c.cardData == summonedData)
+                {
+                    caster = c;
+                    break;
+                }
+            }
+        }
+        if (caster == null) yield break;
+
+        // BattleManager 경로를 이용해 FildMonster.Entrance로 실행되도록 시전자/타겟 설정
+        if (BattleManager.Instance != null)
+        {
+            // 화살표 없이 시전자/타겟 설정 후 즉시 발동
+            BattleManager.Instance.SetAbilityCasterSilent(caster.gameObject);
+            BattleManager.Instance.SetAbilityTarget(target.gameObject);
+            yield return new WaitForSeconds(0.2f);
+        }
+        else
+        {
+            // 폴백: 직접 Ability 실행 (FildMonster.Entrance)
+            var fm = caster.GetComponent<FildMonster>();
+            if (fm != null)
+            {
+                // 파라미터 구성: 단일 타겟
+                BattleManager.Instance?.CancelAbility();
+                AbilityParameter param = new AbilityParameter { value = monsterData.abilityValue, target = target };
+                monsterData.cardAbility.Activate(caster, param);
+                yield return null;
+            }
+        }
+    }
 
 }

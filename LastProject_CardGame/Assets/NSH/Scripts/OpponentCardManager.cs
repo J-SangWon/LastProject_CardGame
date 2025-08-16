@@ -54,27 +54,40 @@ public class OpponentCardManager : MonoBehaviour
 
         ClearDeck();
 
-        int zIndex = 0;
-        foreach (var entry in currentDeckData.mainDeck)
-        {
-            for (int i = 0; i < entry.count; i++)
-            {
-                GameObject card = CreateCard(entry.card, cardPrefab, deckZone, Quaternion.identity);
-                card.transform.localPosition = new Vector3(-zIndex * 0.5f, zIndex * 0.5f,0);
-                card.GetComponent<CardUI>().EnableCardFlip = false;
-                card.GetComponent<CardUI>().ownerType = OwnerType.Opponent; // 적 카드로 설정
-                card.GetComponent<CardUI>().FlipCard(false); // 카드 뒷면으로 설정
-                card.AddComponent<FildMonster>();
-                card.AddComponent<AuraTracker>();
-                zIndex++;
+		// 1) 덱 평탄화 후 셔플
+		List<BaseCardData> flatDeck = new List<BaseCardData>();
+		foreach (var entry in currentDeckData.mainDeck)
+		{
+			for (int i = 0; i < entry.count; i++)
+			{
+				flatDeck.Add(entry.card);
+			}
+		}
+		ShuffleDeckData(flatDeck);
 
-                deck.Add(card);
-            }
-        }
+		// 2) 셔플된 순서로 카드 생성
+		int zIndex = 0;
+		foreach (var data in flatDeck)
+		{
+			GameObject card = CreateCard(data, cardPrefab, deckZone, Quaternion.identity);
+			card.transform.localPosition = new Vector3(-zIndex * 0.5f, zIndex * 0.5f, 0);
+			var ui = card.GetComponent<CardUI>();
+			if (ui != null)
+			{
+				ui.EnableCardFlip = false;
+				ui.ownerType = OwnerType.Opponent;
+				ui.FlipCard(false);
+			}
+			if (card.GetComponent<FildMonster>() == null) card.AddComponent<FildMonster>();
+			if (card.GetComponent<AuraTracker>() == null) card.AddComponent<AuraTracker>();
+			zIndex++;
+			deck.Add(card);
+		}
+
 
         DrawCards(5);
     }
-
+    
     private void ClearDeck()
     {
         foreach (var card in deck)
@@ -283,8 +296,59 @@ public class OpponentCardManager : MonoBehaviour
 		return false;
 	}
 
+	/// <summary>
+	/// 리스트 셔플 (Fisher-Yates)
+	/// </summary>
+	private void ShuffleDeckData<T>(List<T> list)
+	{
+		for (int i = 0; i < list.Count; i++)
+		{
+			int r = Random.Range(i, list.Count);
+			(list[i], list[r]) = (list[r], list[i]);
+		}
+	}
+
+	/// <summary>
+	/// 현재 남은 덱(GameObject 리스트)을 셔플 (게임 중에도 호출 가능)
+	/// </summary>
+	public void ShuffleDeck()
+	{
+		if (deck == null || deck.Count <= 1) return;
+		for (int i = 0; i < deck.Count; i++)
+		{
+			int r = Random.Range(i, deck.Count);
+			(deck[i], deck[r]) = (deck[r], deck[i]);
+		}
+
+		// 시각 정렬(선택): 덱존에서 카드 스택 위치 재배치
+		if (deckZone != null)
+		{
+			int zIndex = 0;
+			foreach (var card in deck)
+			{
+				if (card == null) continue;
+				card.transform.SetParent(deckZone, false);
+				card.transform.localPosition = new Vector3(-zIndex * 0.5f, zIndex * 0.5f, 0);
+				zIndex++;
+			}
+		}
+	}
+
 	public void PlayCardToField(GameObject card)
 	{
+		// 몬스터 전용: 스펠/함정은 몬스터존(소환존)으로 배치 금지
+		var uiCheck = card != null ? card.GetComponent<CardUI>() : null;
+		if (uiCheck == null || uiCheck.cardData == null)
+		{
+			Debug.LogWarning("[OpponentCardManager] 유효하지 않은 카드로 PlayCardToField 호출");
+			return;
+		}
+		if (uiCheck.cardData.cardType != CardType.Monster)
+		{
+			Debug.LogWarning("[OpponentCardManager] 몬스터존에는 몬스터 카드만 배치할 수 있습니다.");
+			return;
+		}
+
 		// 1) 적 몬스터 슬롯(E_MonsterZone1~5) 중 빈 슬롯에만 배치
 		EnsureEnemySlots();
 		Transform parentSlot = null;
@@ -348,11 +412,18 @@ public class OpponentCardManager : MonoBehaviour
             card.AddComponent<AuraTracker>();
         }
 
-        // 필드 컨테이너에 직접 붙은 경우에만 필드 레이아웃 업데이트
-        if (parentSlot == fieldZone)
+        // 배치 완료 후 진입 효과/타겟팅 활성화를 위해 호출
+        var fm = card.GetComponent<FildMonster>();
+        if (fm != null)
         {
-            UpdateFieldLayout();
+            fm.OnPlacedOnField();
         }
+
+		// 필드 컨테이너에 직접 붙은 경우에만 필드 레이아웃 업데이트
+		if (parentSlot == fieldZone)
+		{
+			UpdateFieldLayout();
+		}
 	}
 
 	private void UpdateFieldLayout()
@@ -444,6 +515,13 @@ public class OpponentCardManager : MonoBehaviour
         if (cardData == null) yield break;
         if (handZone == null) yield break;
 
+        // 몬스터가 아닌 카드(스펠/함정)는 소환 경로 금지: 반드시 전용 사용 플로우 사용
+        if (cardData is SpellCardData || cardData is TrapCardData)
+        {
+            Debug.LogWarning("[OpponentCardManager] 스펠/함정 카드는 SummonCard로 소환할 수 없습니다. 전용 사용 플로우를 사용하세요.");
+            yield break;
+        }
+
         // 핸드에서 해당 카드 찾기
         GameObject cardToSummon = null;
         for (int i = 0; i < handZone.childCount; i++)
@@ -465,7 +543,7 @@ public class OpponentCardManager : MonoBehaviour
             yield break;
         }
 
-        // 필드로 이동
+        // 필드로 이동 (몬스터 전용)
         PlayCardToField(cardToSummon);
 
         // 카드 UI 설정
@@ -486,6 +564,24 @@ public class OpponentCardManager : MonoBehaviour
 
         Debug.Log($"[OpponentCardManager] {cardData.cardName} 소환 완료");
         yield return new WaitForSeconds(0.5f); // 소환 애니메이션 시간
+    }
+
+    /// <summary>
+    /// 손패에서 해당 데이터의 카드 오브젝트를 찾아 반환 (AI용)
+    /// </summary>
+    public GameObject FindHandCardObject(BaseCardData data)
+    {
+        if (handZone == null || data == null) return null;
+        for (int i = 0; i < handZone.childCount; i++)
+        {
+            var child = handZone.GetChild(i);
+            var ui = child.GetComponent<CardUI>();
+            if (ui != null && ui.cardData == data)
+            {
+                return child.gameObject;
+            }
+        }
+        return null;
     }
 
     #endregion

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections.Generic;
 using System.Collections;
 
@@ -241,5 +241,47 @@ public class DuelZoneManager : MonoBehaviour
             return graveyardZone.GetGraveyardCount();
         }
         return 0;
+    }
+
+    /// <summary>
+    /// 묘지에서 특정 태그를 가진 카드 개수 반환
+    /// </summary>
+    public int GetGraveyardCardCountByTag(OwnerType owner, string tag)
+    {
+        if (string.IsNullOrEmpty(tag)) return 0;
+        
+        System.Collections.Generic.List<DeckCardEntry> entries = null;
+        if (owner == OwnerType.Player)
+        {
+            if (graveyardZone == null) return 0;
+            entries = graveyardZone.GetAllGraveyardCards();
+        }
+        else if (owner == OwnerType.Opponent)
+        {
+            if (enemyGraveyardZone == null) return 0;
+            entries = enemyGraveyardZone.GetAllGraveyardCards();
+        }
+
+        if (entries == null) return 0;
+
+        int count = 0;
+        foreach (var entry in entries)
+        {
+            var card = entry?.card;
+            if (card != null && card.tags != null)
+            {
+                for (int i = 0; i < card.tags.Count; i++)
+                {
+                    if (card.tags[i].Equals(tag, System.StringComparison.OrdinalIgnoreCase))
+                    {
+                        // 동일 카드가 여러 장이면 개수만큼 합산
+                        count += entry.count;
+                        break;
+                    }
+                }
+            }
+        }
+
+        return count;
     }
 }

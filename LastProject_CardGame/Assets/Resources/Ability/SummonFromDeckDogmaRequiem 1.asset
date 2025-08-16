@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetType: 0
   targetOwner: 0
-  condition: {fileID: 11400000, guid: 940f1002fbd67fa4ca5a8d6e8e0fcce7, type: 2}
+  condition: {fileID: 0}
   searchType: 0
   cardType: 0
   race: 0
