@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Destroy
   m_EditorClassIdentifier: 
   targetType: 1
-  targetOwner: 0
+  targetOwner: 2
   condition: {fileID: 0}
   destroyType: 0

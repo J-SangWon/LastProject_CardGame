@@ -35,7 +35,8 @@ public class SpellPlayTarget : MonoBehaviour, IPointerClickHandler
                 GameManager.Instance.CurrentPhase,
                 ConditionType.OnCardPlayed,
                 spell.cardId,
-                0
+                0,
+                cardUI != null ? cardUI.ownerType : OwnerType.Player
             );
             if (!cond)
             {
@@ -105,17 +106,28 @@ public class SpellPlayTarget : MonoBehaviour, IPointerClickHandler
                     }
                     else
                     {
-                        // 일반/속공: 발동 후 묘지로 이동
-                        fm.ActivateSpellEffect(spell);
-                        var dz = DuelZoneManager.Instance;
-                        if (dz != null)
+                        // 단일 타겟 마법이면 타겟팅 모드로 전환하고 즉시 발동/제거하지 않음
+                        if (spell.cardAbility != null && spell.cardAbility.targetType == TargetType.Single)
                         {
-                            if (cardUI.ownerType == OwnerType.Player)
-                                dz.graveyardZone?.SendToGraveyard(spell);
-                            else if (cardUI.ownerType == OwnerType.Opponent)
-                                dz.enemyGraveyardZone?.SendToGraveyard(spell);
+                            Debug.Log($"[SpellPlayTarget] Single 타겟팅 모드 진입: {spell.cardName}");
+                            BattleManager.Instance.IsAbilityTargeting = true;
+                            BattleManager.Instance.SetAbilityCaster(selected);
                         }
-                        Object.Destroy(selected);
+                        else
+                        {
+                            // 비타겟/다중 타겟: 즉시 발동 후 묘지로 이동
+                            Debug.Log($"[SpellPlayTarget] 즉시 발동 경로: {spell.cardName}, targetType={spell.cardAbility?.targetType}");
+                            fm.ActivateSpellEffect(spell);
+                            var dz = DuelZoneManager.Instance;
+                            if (dz != null)
+                            {
+                                if (cardUI.ownerType == OwnerType.Player)
+                                    dz.graveyardZone?.SendToGraveyard(spell);
+                                else if (cardUI.ownerType == OwnerType.Opponent)
+                                    dz.enemyGraveyardZone?.SendToGraveyard(spell);
+                            }
+                            Object.Destroy(selected);
+                        }
                     }
                 }
                 else
@@ -123,15 +135,24 @@ public class SpellPlayTarget : MonoBehaviour, IPointerClickHandler
                     // FildMonster가 없으면 안전하게 제거 처리(연결 누락 대비)
                     if (spell.spellType != SpellType.Continuous)
                     {
-                        var dz = DuelZoneManager.Instance;
-                        if (dz != null)
+                        // 단일 타겟이면 타겟팅 모드 진입만 시도 (FildMonster가 없으므로 폴백 처리)
+                        if (spell.cardAbility != null && spell.cardAbility.targetType == TargetType.Single)
                         {
-                            if (cardUI.ownerType == OwnerType.Player)
-                                dz.graveyardZone?.SendToGraveyard(spell);
-                            else if (cardUI.ownerType == OwnerType.Opponent)
-                                dz.enemyGraveyardZone?.SendToGraveyard(spell);
+                            BattleManager.Instance.IsAbilityTargeting = true;
+                            BattleManager.Instance.SetAbilityCaster(selected);
                         }
-                        Object.Destroy(selected);
+                        else
+                        {
+                            var dz = DuelZoneManager.Instance;
+                            if (dz != null)
+                            {
+                                if (cardUI.ownerType == OwnerType.Player)
+                                    dz.graveyardZone?.SendToGraveyard(spell);
+                                else if (cardUI.ownerType == OwnerType.Opponent)
+                                    dz.enemyGraveyardZone?.SendToGraveyard(spell);
+                            }
+                            Object.Destroy(selected);
+                        }
                     }
                 }
             });
@@ -204,6 +225,7 @@ public class SpellPlayTarget : MonoBehaviour, IPointerClickHandler
                         fm.ActivateContinuousSpell(spell);
                     else
                     {
+                        Debug.Log($"[SpellPlayTarget.AI] 즉시 발동 경로: {spell.cardName}, targetType={spell.cardAbility?.targetType}");
                         fm.ActivateSpellEffect(spell);
                         Object.Destroy(cardObj);
                     }
