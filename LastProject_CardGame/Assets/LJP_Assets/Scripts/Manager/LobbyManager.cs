@@ -19,6 +19,12 @@ public class LobbyManager : SingletonBehaviour<LobbyManager>
 
 	[SerializeField] private float transitionDelay = 1f;
 
+	protected override void Awake()
+	{
+		m_IsDestroyOnLoad = true;
+		base.Awake();
+	}
+
 	public void ChangeLobbyType(LobbyType targetType)
 	{
 		if (isTransitioning || currentLobbyType == targetType)
