@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -104,7 +104,7 @@ public class OpponentCardManager : MonoBehaviour
             GameObject card = deck[0];
             deck.RemoveAt(0);
 
-            card.GetComponent<CardUI>().FlipCard(true); // 카드 앞면으로 설정
+            card.GetComponent<CardUI>().FlipCard(false); // 카드 앞면으로 설정
             card.transform.SetParent(handZone, false);
             card.transform.localScale = Vector3.one;
         }
