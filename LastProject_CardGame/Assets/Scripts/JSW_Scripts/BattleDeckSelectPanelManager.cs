@@ -50,6 +50,8 @@ public class BattleDeckSelectPanelManager : MonoBehaviour
 
                 if (totalCardCount < 30)
                 {
+                    SoundManager.Instance.PlaySFX("MENUSELECT_02");
+
                     // 덱이 30장 미만일 때 경고 메시지 출력
                     battleStartCheckPanel.SetActive(true);
                     if (checkPanelText != null)
@@ -59,8 +61,13 @@ public class BattleDeckSelectPanelManager : MonoBehaviour
                     return;
                 }
 
+
+
                 selectedDeck = deck;
                 DeckTransferManager.Instance.SetDeck(deck); // 덱 정보 임시 저장
+
+                SoundManager.Instance.PlaySFX("MENUSELECT_01");
+
                 battleStartCheckPanel.SetActive(true);      // 체크 패널 활성화
                 if (checkPanelText != null)
                     checkPanelText.text = $"'{deck.deckName}' 덱으로 시작하시겠습니까?";
@@ -86,12 +93,14 @@ public class BattleDeckSelectPanelManager : MonoBehaviour
 
     public void OnStartBattleButton()
     {
+        SoundManager.Instance.PlaySFX("MENUSELECT_01");
         // 덱 정보는 이미 DeckTransferManager.Instance에 저장됨
         SceneManager.LoadScene("InGame");
     }
     
     public void OnCancelBattleButton()
     {
+        SoundManager.Instance.PlaySFX("MENUSELECT_02");
         battleStartCheckPanel.SetActive(false);
     }
 }

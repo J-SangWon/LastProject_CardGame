@@ -11,6 +11,7 @@ public class LobbyButtonHandler : MonoBehaviour
 		GetComponent<Button>().onClick.AddListener(() =>
 		{
 			LobbyManager.Instance.ChangeLobbyType(targetLobbyType);
-		});
+			SoundManager.Instance.PlaySFX("MENUSELECT_03");
+        });
 	}
 }

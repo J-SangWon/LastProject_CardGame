@@ -23,9 +23,13 @@ public class SoundManager : MonoBehaviour
 
     private float bgmVolume = 1f;
     private float sfxVolume = 1f;
+    private bool bgmMute = false;
+    private bool sfxMute = false;
 
     private const string BGM_VOL_KEY = "BGM_VOLUME";
     private const string SFX_VOL_KEY = "SFX_VOLUME";
+    private const string BGM_MUTE_KEY = "BGM_MUTE";
+    private const string SFX_MUTE_KEY = "SFX_MUTE";
 
     void Awake()
     {
@@ -57,6 +61,8 @@ public class SoundManager : MonoBehaviour
         // 볼륨 로드
         bgmVolume = PlayerPrefs.GetFloat(BGM_VOL_KEY, 1f);
         sfxVolume = PlayerPrefs.GetFloat(SFX_VOL_KEY, 1f);
+        bgmMute = PlayerPrefs.GetInt(BGM_MUTE_KEY, 0) == 1; //1이면 true
+        sfxMute = PlayerPrefs.GetInt(SFX_MUTE_KEY, 0) == 1;
 
         bgmSource.volume = bgmVolume;
 
@@ -180,15 +186,36 @@ public class SoundManager : MonoBehaviour
         PlayerPrefs.SetFloat(BGM_VOL_KEY, bgmVolume);
         PlayerPrefs.Save();
     }
-
+  
     public void SetSFXVolume(float volume)
     {
         sfxVolume = Mathf.Clamp01(volume);
         PlayerPrefs.SetFloat(SFX_VOL_KEY, sfxVolume);
         PlayerPrefs.Save();
     }
+    public void SetBGMMute(bool isOn)
+    {
+        bgmMute = isOn;
+        bgmSource.mute = bgmMute;
+        PlayerPrefs.SetInt("BGM_MUTE", bgmMute ? 1 : 0);
+        PlayerPrefs.Save();
+    }
+
+    public void SetSFXMute(bool isOn)
+    {
+        sfxMute = isOn;
+        foreach (var sfx in sfxPool)
+        {
+            if (sfx != null)
+                sfx.mute = sfxMute;
+        }
+        PlayerPrefs.SetInt("SFX_MUTE", sfxMute ? 1 : 0);    //true면 1, false면 0
+        PlayerPrefs.Save();
+    }
 
     public float GetBGMVolume() => bgmVolume;
     public float GetSFXVolume() => sfxVolume;
+    public bool GetBGMMute() => bgmMute;
+    public bool GetSFXMute() => sfxMute;
     #endregion
 }
