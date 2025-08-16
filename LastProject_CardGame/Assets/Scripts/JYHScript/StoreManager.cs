@@ -199,11 +199,42 @@ public class StoreManager : MonoBehaviour
     {
         particle?.gameObject.SetActive(false); // 파티클 비활성화
 
+        //진동 시간 및 세기
+        float shakeDuration = 0f;
+        float shakeStrength = 0f;
+
+        //SOUND
+        if (GetHighestRarity() == CardRarity.UltraRare)
+        {
+            SoundManager.Instance.PlaySFX("PACKOPEN_UR");
+            shakeDuration = 2f;
+            shakeStrength = 0.5f; // 울트라 레어는 더 강한 진동
+        }
+        else if (GetHighestRarity() == CardRarity.SuperRare)
+        {
+            SoundManager.Instance.PlaySFX("PACKOPEN_SR");
+            shakeDuration = 1f;
+            shakeStrength = 0.3f;
+
+        }
+        else
+        {
+            SoundManager.Instance.PlaySFX("PACKOPEN");
+            shakeDuration = 0.5f;
+            shakeStrength = 0.1f; // 일반/레어는 약한 진동
+        }
+
         RectTransform topRect = CardPackUpImg.rectTransform;
         RectTransform downRect = CardPackDownImg.rectTransform;
 
         // 종이 찢듯이 회전하면서 올라가기
         Sequence seq = DOTween.Sequence();
+
+        // ────────────────── 카드팩 애니메이션 ──────────────────
+        // 1. 카드 팩의 진동을 줌
+        seq.Join(CardPackAnim.transform.DOShakeScale(shakeDuration, shakeStrength));
+
+        seq.AppendInterval(0.2f);
 
         // 1. 상단 찢어짐: 회전 + 이동
         seq.Join(topRect.DOLocalRotate(new Vector3(0, 0, -25f), 0.4f).SetEase(Ease.InOutSine));
@@ -292,6 +323,8 @@ public class StoreManager : MonoBehaviour
 
             CardPrefab cp = obj.GetComponent<CardPrefab>();
             cp.Init(data);
+
+            SoundManager.Instance.PlaySFX("CARDSPAWN");
 
             if (skipRemaining)
             {

@@ -151,6 +151,14 @@ public class CardPrefab : MonoBehaviour, IPointerClickHandler
     {
         isFlipped = showFront;
 
+        //SOUND
+        if(cardData.rarity == CardRarity.UltraRare)
+            SoundManager.Instance.PlaySFX("CARDFLIP_UR");
+        else if (cardData.rarity == CardRarity.SuperRare)
+            SoundManager.Instance.PlaySFX("CARDFLIP_SR");
+        else
+            SoundManager.Instance.PlaySFX("CARDFLIP");
+
         //openParticle ¼³Á¤
         GameObject openparticle = null;
         if (cardData.rarity == CardRarity.SuperRare)

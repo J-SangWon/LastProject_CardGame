@@ -56,6 +56,11 @@ public class BattleManager : MonoBehaviour
     /// </summary>
     public void SetAttacker(GameObject card)
     {
+        if (GameManager.Instance.TurnNumber == 1)
+        {
+            Debug.Log("1턴에는 공격할 수 없습니다.");
+            return;
+        }
         if (GameManager.Instance.CurrentPhase != GamePhase.BattlePhase)
         {
             Debug.Log("배틀 페이즈에서만 공격할 수 있습니다!");
@@ -250,6 +255,13 @@ public class BattleManager : MonoBehaviour
 
     private IEnumerator ExecuteBattleCoroutine()
     {
+        if (GameManager.Instance.TurnNumber == 1)
+        {
+            Debug.Log("1턴에는 배틀이 불가능합니다.");
+            ResetBattleState();
+            yield break;
+        }
+
         if (attacker == null || target == null) yield break;
 
         var atkUI = attacker.GetComponent<CardUI>();
