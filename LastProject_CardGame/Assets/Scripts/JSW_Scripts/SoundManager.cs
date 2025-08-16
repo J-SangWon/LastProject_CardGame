@@ -79,6 +79,12 @@ public class SoundManager : MonoBehaviour
     #region BGM
     public void PlayBGM(string name, float fadeTime = 0f)
     {
+        int ran = 0;
+        if (ran == Random.Range(0, 2)) 
+            name = name + "01";
+        else
+            name = name + "02";
+
         if (!bgmDict.ContainsKey(name))
         {
             Debug.LogWarning($"BGM '{name}' not found!");

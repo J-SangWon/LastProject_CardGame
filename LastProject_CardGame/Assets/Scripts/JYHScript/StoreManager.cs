@@ -417,7 +417,7 @@ public class StoreManager : MonoBehaviour
         //cardList
 
         SoundManager.Instance.PlaySFX("MENUSELECT_01"); // 닫기 사운드
-        //SoundManager.Instance.PlayBGM("MAIN_BGM"); // BGM 재생
+        SoundManager.Instance.PlayBGM("MAIN"); // BGM 재생
 
         //정보 초기화
         rarityList.Clear();

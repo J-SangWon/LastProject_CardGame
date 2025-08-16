@@ -253,7 +253,11 @@ public class GameManager : MonoBehaviour
     }
     IEnumerator CloseRPSAndStartGame()
     {
+        SoundManager.Instance.PlaySFX("START");
+
         yield return new WaitForSeconds(1.5f);
+
+        SoundManager.Instance.PlayBGM("INGAME", 0.5f);
 
         if (rpsCanvasGroup != null)
         {
@@ -705,6 +709,9 @@ public class GameManager : MonoBehaviour
     }
     public void ShowWinScreen()
     {
+        SoundManager.Instance.StopBGM();
+        SoundManager.Instance.PlaySFX("WIN");
+
         isGameInputLocked = true; // 입력 차단
         turnButton.interactable = false; // 턴 버튼 비활성화
         if (winPanel != null) winPanel.SetActive(true);
@@ -712,6 +719,9 @@ public class GameManager : MonoBehaviour
 
     public void ShowLoseScreen()
     {
+        SoundManager.Instance.StopBGM();
+        SoundManager.Instance.PlaySFX("LOSE");
+
         isGameInputLocked = true;
         turnButton.interactable = false;
         if (losePanel != null) losePanel.SetActive(true);

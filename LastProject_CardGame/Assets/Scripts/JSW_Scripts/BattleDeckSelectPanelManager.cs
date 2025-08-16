@@ -93,6 +93,7 @@ public class BattleDeckSelectPanelManager : MonoBehaviour
 
     public void OnStartBattleButton()
     {
+        SoundManager.Instance.StopBGM();
         SoundManager.Instance.PlaySFX("MENUSELECT_01");
         // 덱 정보는 이미 DeckTransferManager.Instance에 저장됨
         SceneManager.LoadScene("InGame");
