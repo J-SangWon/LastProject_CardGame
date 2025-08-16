@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections;
 using DG.Tweening;
+using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour
 {
@@ -106,6 +107,10 @@ public class GameManager : MonoBehaviour
     [Header("Cards")]
     public GameObject cardObject;
     public GameObject enemyCardObject;
+    private bool isDiscardSelectionActive = false;
+    public bool IsDiscardSelectionActive => isDiscardSelectionActive;
+    private int cardsToDiscardCount = 0;
+    private List<GameObject> selectedCardsToDiscard = new List<GameObject>();
 
     [Header("RPS - Rock Paper Scissors")]
     public GameObject rpsPanel;
@@ -136,6 +141,13 @@ public class GameManager : MonoBehaviour
         {
             isTimerRunning = false;
             ShowLoseScreen();
+        }
+        if ((winPanel != null && winPanel.activeSelf) || (losePanel != null && losePanel.activeSelf))
+        {
+            if (Input.GetMouseButtonDown(0) || Input.touchCount > 0)
+            {
+                ReturnToLobby();
+            }
         }
     }
     void ShowRPSPanel()
@@ -430,7 +442,16 @@ public class GameManager : MonoBehaviour
         {
             AuraManager.Instance.TriggerTurnEndEffects();
         }
-        
+        int handCount = PlayerCardManager.Instance.playerHandZone.childCount;
+        if (handCount > 6)
+        {
+            cardsToDiscardCount = handCount - 6;
+            isDiscardSelectionActive = true;
+            selectedCardsToDiscard.Clear();
+            Debug.Log($"핸드 카드가 {handCount}장 초과! {cardsToDiscardCount}장 버리기 선택 필요.");
+            // 여기서 UI 또는 카드 클릭 이벤트를 통해 선택 진행
+            return;
+        }
         StartCoroutine(EndPhaseAndAutoTurnCoroutine());
     }
 
@@ -514,7 +535,23 @@ public class GameManager : MonoBehaviour
         turnNumberText.text = $"Turn {turnCount}";
         turnText.text = isPlayerTurn ? "Player Turn" : "Enemy Turn";
     }
+    private void ConfirmDiscard()
+    {
+        foreach (var card in selectedCardsToDiscard)
+        {
+            // PlayerCardManager에서 카드 묘지 처리 가능
+            card.transform.SetParent(PlayerCardManager.Instance.graveyardZone, false);
+            card.transform.localPosition = Vector3.zero;
+            card.GetComponent<CardUI>().isInHand = false;
+            card.GetComponent<CardUI>()?.SetOutline(false);
+        }
 
+        selectedCardsToDiscard.Clear();
+        isDiscardSelectionActive = false;
+
+        // 턴 종료 진행
+        StartCoroutine(EndPhaseAndAutoTurnCoroutine());
+    }
     // ===== 카드 공격 초기화 =====
     void ResetPlayerCardAttacks()
     {
@@ -595,7 +632,32 @@ public class GameManager : MonoBehaviour
         }
         return false;
     }
+    public void SelectCardForDiscard(GameObject card)
+    {
+        if (!selectedCardsToDiscard.Contains(card))
+        {
+            selectedCardsToDiscard.Add(card);
+            card.GetComponent<CardUI>()?.SetOutline(true); // 선택 표시
+            if (selectedCardsToDiscard.Count >= cardsToDiscardCount)
+            {
+                ConfirmDiscard();
+            }
+        }
+    }
 
+    public void DeselectCardForDiscard(GameObject card)
+    {
+        if (selectedCardsToDiscard.Contains(card))
+        {
+            selectedCardsToDiscard.Remove(card);
+            card.GetComponent<CardUI>()?.SetOutline(false);
+        }
+    }
+
+    public bool IsCardSelectedForDiscard(GameObject card)
+    {
+        return selectedCardsToDiscard.Contains(card);
+    }
     public void TakeDamageToPlayer(int amount)
     {
         playerHealth -= amount;
@@ -631,5 +693,13 @@ public class GameManager : MonoBehaviour
         isGameInputLocked = true;
         turnButton.interactable = false;
         if (losePanel != null) losePanel.SetActive(true);
+    }
+    public void ReturnToLobby()
+    {
+        // 입력 차단
+        isGameInputLocked = true;
+
+        // 씬 이동
+        UnityEngine.SceneManagement.SceneManager.LoadScene("Lobby");
     }
 }
