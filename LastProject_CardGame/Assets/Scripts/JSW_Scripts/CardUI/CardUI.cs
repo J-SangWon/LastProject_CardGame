@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
@@ -168,6 +168,8 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
 
     public void SetFace(bool showFront)
     {
+        isFront = showFront;
+
         if (imageBack)
             imageBack.gameObject.SetActive(!showFront);
         if (imageFront)

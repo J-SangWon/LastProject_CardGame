@@ -18,28 +18,30 @@ public class Ability_CreateCardToHnad : CardAbility
 				CrateCardToHandLogic();
 				break;
 			default:
-				Debug.Log("ÇÊµå¿Í µ¦¸¸ »ı¼º°¡´É!!");
+				Debug.Log("í•„ë“œì™€ ë±ë§Œ ìƒì„±ê°€ëŠ¥!!");
 				break;
-
 		}
-
-
-		PlayerCardManager.Instance.UpdateHandLayout();
 	}
 
 	private void CrateCardToDeckLogic()
 	{
 		GameObject cardGo = PlayerCardManager.Instance.CreateCard(cardData, PlayerCardManager.Instance.cardPrefab, PlayerCardManager.Instance.playerDeckZone, Quaternion.identity);
 		int randIndex = Random.Range(0, PlayerCardManager.Instance.GetDeck().Count);
-		Debug.Log("ÀÎµ¦½º : " + randIndex);
+		Debug.Log("ì¸ë±ìŠ¤ : " + randIndex);
 
-		for (int i = randIndex; i < PlayerCardManager.Instance.GetDeck().Count; i++) //·¥´ı»ı¼ºµÈ Ä«µå À§¿¡ ÀÎµ¦½º Ä«µå µÚ·Î ¹Ğ±â
+		for (int i = randIndex; i < PlayerCardManager.Instance.GetDeck().Count; i++) //ë¨ë¤ìƒì„±ëœ ì¹´ë“œ ìœ„ì— ì¸ë±ìŠ¤ ì¹´ë“œ ë’¤ë¡œ ë°€ê¸°
 		{
 			PlayerCardManager.Instance.GetDeck()[i].transform.localPosition += new Vector3(0, 0, -0.01f);
 		}
 
 		cardGo.transform.localPosition = new Vector3(0, 0, -randIndex * 0.01f);
-		cardGo.GetComponent<CardUI>().EnableCardFlip = false;
+		var uiDeck = cardGo.GetComponent<CardUI>();
+		if (uiDeck != null)
+		{
+			uiDeck.ownerType = OwnerType.Player;
+			uiDeck.SetFace(false); // ë±ì€ ë’·ë©´
+			uiDeck.EnableCardFlip = false;
+		}
 		cardGo.AddComponent<FildMonster>();
 
 		PlayerCardManager.Instance.GetDeck().Insert(randIndex, cardGo);
@@ -49,7 +51,13 @@ public class Ability_CreateCardToHnad : CardAbility
 	{
 		GameObject cardGo = PlayerCardManager.Instance.CreateCard(cardData, PlayerCardManager.Instance.cardPrefab, PlayerCardManager.Instance.playerHandZone, Quaternion.identity);
 
-		cardGo.GetComponent<CardUI>().EnableCardFlip = false;
+		var uiHand = cardGo.GetComponent<CardUI>();
+		if (uiHand != null)
+		{
+			uiHand.ownerType = OwnerType.Player;
+			uiHand.SetFace(true);      // ì†íŒ¨ëŠ” ì•ë©´
+			uiHand.EnableCardFlip = false; // ì†íŒ¨ í´ë¦­ í”Œë¦½ ë¹„í™œì„±í™”
+		}
 		cardGo.AddComponent<FildMonster>();
 
 	}
