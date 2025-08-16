@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 655b965096876b5479501572675718e5, type: 3}
   m_Name: SummonFromExtraDeckSherap
   m_EditorClassIdentifier: 
-  targetType: 1
-  targetOwner: 1
+  targetType: 0
+  targetOwner: 0
   condition: {fileID: 11400000, guid: 2709781afd3135249bd1a02b1c0a2f2f, type: 2}
   searchType: 3
   cardType: 0

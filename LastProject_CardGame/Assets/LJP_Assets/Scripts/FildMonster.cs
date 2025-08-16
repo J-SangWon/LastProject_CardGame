@@ -361,10 +361,21 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
         if (spellCard.cardAbility == null)
         {
             Debug.LogError($"마법 카드 {spellCard.cardName}의 cardAbility가 null입니다.");
+            // 안전 롤백 (코스트가 이미 소모된 경우를 대비)
+            RollbackSpellPlay(spellCard, "cardAbility null");
             return;
         }
         
-        // 조건 확인
+        Debug.Log($"[FildMonster] ActivateSpellEffect 진입: {spellCard.cardName}, targetType={spellCard.cardAbility.targetType}, spellType={spellCard.spellType}");
+
+        // 단일 타겟이 아닌 마법은 타겟팅 모드가 남아있어도 즉시 정리하여 잘못된 타겟 요구를 방지
+        if (spellCard.cardAbility.targetType != TargetType.Single && BattleManager.Instance != null)
+        {
+            Debug.Log("[FildMonster] 비단일 타겟: 잔존 타겟팅 상태 정리(CancelAbility)");
+            BattleManager.Instance.CancelAbility();
+        }
+        
+        // 조건 확인 (실시간 보정: 사전 체크 후 상태가 달라졌을 수 있음)
         if (spellCard.cardAbility.condition != null)
         {
             bool conditionMet = EffectConditionEvaluator.IsConditionMet(
@@ -372,32 +383,136 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
                 GameManager.Instance.CurrentPhase,
                 ConditionType.OnCardPlayed,
                 spellCard.cardId,
-                0
+                0,
+                cardUI != null ? cardUI.ownerType : OwnerType.Player
             );
             
+            Debug.Log($"[FildMonster] 조건 평가 결과: {conditionMet}");
             if (!conditionMet)
             {
-                Debug.Log("마법 카드 효과 조건이 충족되지 않았습니다.");
+                Debug.Log("마법 카드 효과 조건이 충족되지 않았습니다. 롤백합니다.");
+                RollbackSpellPlay(spellCard, "condition not met");
                 return;
             }
         }
         
-        // 효과 발동
+        // 효과 발동 파라미터 구성
         AbilityParameter param = new AbilityParameter();
         param.value = spellCard.abilityValue;
         
+        // 대상 설정: 단일 타겟이면 BattleManager의 AbilityTarget 사용, 그 외는 대상군 수집
+        if (spellCard.cardAbility.targetType == TargetType.Single)
+        {
+            var targetUI = BattleManager.Instance != null ? BattleManager.Instance.AbilityTarget?.GetComponent<CardUI>() : null;
+            if (targetUI == null)
+            {
+                Debug.LogWarning("[FildMonster] 단일 타겟 마법이지만 AbilityTarget이 없습니다. 롤백합니다.");
+                RollbackSpellPlay(spellCard, "missing single target");
+                return;
+            }
+            else
+            {
+                Debug.Log($"[FildMonster] 단일 타겟 설정: {targetUI.cardData.cardName}");
+                param.target = targetUI;
+            }
+        }
+        else if (spellCard.cardAbility.targetType != TargetType.None)
+        {
+            var targets = GetAbilityTargets(
+                spellCard.cardAbility.targetType,
+                spellCard.cardAbility.targetOwner
+            );
+            param.targets = param.targets ?? new List<CardUI>();
+            var list = new List<CardUI>(targets);
+            param.targets.AddRange(list);
+            Debug.Log($"[FildMonster] 대상군 수집: {list.Count}개");
+        }
+        
         try
         {
+            Debug.Log("[FildMonster] Ability.Activate 호출");
             spellCard.cardAbility.Activate(cardUI, param);
             Debug.Log($"마법 카드 효과 발동 성공: {spellCard.cardName}");
             
-            // 즉시 마법은 사용 후 제거
-            Destroy(gameObject);
+            // 발동 성공 후 타겟팅 상태가 남아있지 않도록 보장 (단일/비단일 공통)
+            if (BattleManager.Instance != null)
+            {
+                Debug.Log("[FildMonster] 발동 후 타겟팅 상태 정리(CancelAbility)");
+                BattleManager.Instance.CancelAbility();
+            }
+            
+            // 즉시/속공 마법은 사용 후 묘지로 이동 (지속 마법 제외)
+            if (spellCard.spellType != SpellType.Continuous)
+            {
+                var dz = DuelZoneManager.Instance;
+                if (dz != null)
+                {
+                    if (cardUI.ownerType == OwnerType.Player)
+                        dz.graveyardZone?.SendToGraveyard(spellCard);
+                    else if (cardUI.ownerType == OwnerType.Opponent)
+                        dz.enemyGraveyardZone?.SendToGraveyard(spellCard);
+                }
+                Debug.Log("[FildMonster] 비지속 마법: 카드 오브젝트 제거");
+                Destroy(gameObject);
+            }
         }
         catch (System.Exception e)
         {
             Debug.LogError($"마법 카드 효과 발동 실패: {spellCard.cardName}, 오류: {e.Message}");
+            // 예외 시 안전 롤백
+            RollbackSpellPlay(spellCard, "exception during activate");
         }
+    }
+
+    // 발동 실패/취소 시 코스트 환불 + 손패/상태 롤백
+    private void RollbackSpellPlay(SpellCardData spellCard, string reason)
+    {
+        // 타겟팅 상태 해제 (화살표/캐스터/타겟)
+        if (BattleManager.Instance != null)
+        {
+            BattleManager.Instance.CancelAbility();
+        }
+
+        // 소유자별 코스트 환불 및 손패 복귀
+        Transform handZone = null;
+        if (cardUI != null)
+        {
+            if (cardUI.ownerType == OwnerType.Player)
+            {
+                GameManager.Instance?.RefundPlayerCost(spellCard.cost);
+                handZone = PlayerCardManager.Instance != null ? PlayerCardManager.Instance.playerHandZone : null;
+            }
+            else if (cardUI.ownerType == OwnerType.Opponent)
+            {
+                GameManager.Instance?.RefundEnemyCost(spellCard.cost);
+                handZone = PlayerCardManager.Instance != null ? PlayerCardManager.Instance.enemyHandZone : null;
+            }
+        }
+
+        if (handZone != null)
+        {
+            // 부모 되돌리고 위치/레이아웃 복구
+            transform.SetParent(handZone, true);
+            var rt = transform as RectTransform;
+            if (rt != null) rt.anchoredPosition3D = Vector3.zero; else transform.localPosition = Vector3.zero;
+
+            var layout = GetComponent<LayoutElement>();
+            if (layout != null) layout.ignoreLayout = false;
+
+            if (cardUI != null)
+            {
+                cardUI.isOnField = false;
+                cardUI.EnableCardFlip = false;
+            }
+
+            // 손패 레이아웃 갱신 (소유자별)
+            if (cardUI != null && cardUI.ownerType == OwnerType.Player)
+                PlayerCardManager.Instance?.UpdateHandLayout();
+            else
+                OpponentCardManager.Instance?.UpdateHandLayout();
+        }
+
+        Debug.LogWarning($"[FildMonster] 마법 발동 롤백: {spellCard.cardName} (이유: {reason})");
     }
 
     // 지속 마법 카드 효과 발동 및 등록
@@ -462,7 +577,8 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
                 GameManager.Instance.CurrentPhase,
                 ConditionType.OnCardPlayed,
                 monsterCardData.cardId,
-                0
+                0,
+                cardUI != null ? cardUI.ownerType : OwnerType.Player
             );
             
             if (!conditionMet)
@@ -572,7 +688,8 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
                    GameManager.Instance.CurrentPhase,
                    triggerType,
                    monsterCardData.cardId,
-                   0
+                   0,
+                   cardUI != null ? cardUI.ownerType : OwnerType.Player
                );
     }
 
@@ -613,7 +730,8 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
                    GameManager.Instance.CurrentPhase,
                    triggerType,
                    spellCard.cardId,
-                   0
+                   0,
+                   cardUI != null ? cardUI.ownerType : OwnerType.Player
                );
     }
 
@@ -653,7 +771,8 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
                    GameManager.Instance.CurrentPhase,
                    triggerType,
                    trapCard.cardId,
-                   0
+                   0,
+                   cardUI != null ? cardUI.ownerType : OwnerType.Player
                );
     }
 
@@ -701,7 +820,8 @@ public class FildMonster : MonoBehaviour, IPointerClickHandler
                 GameManager.Instance.CurrentPhase,
                 ConditionType.OnCardPlayed,
                 trapCard.cardId,
-                0
+                0,
+                cardUI != null ? cardUI.ownerType : OwnerType.Player
             );
             
             if (!conditionMet)

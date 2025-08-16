@@ -1,4 +1,4 @@
-﻿using DG.Tweening;
+using DG.Tweening;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -226,6 +226,7 @@ public class PlayerCardManager : MonoBehaviour
             cardUI.SetCard(data);
             cardUI.SetFace(true);
             cardUI.EnableCardFlip = rotation == Quaternion.identity; // 플레이어 카드만 클릭 가능
+            cardUI.ownerType = OwnerType.Player; // 생성 경로상 Player 전용 매니저이므로 명시
         }
 
         // 드래그
@@ -388,7 +389,9 @@ public class PlayerCardManager : MonoBehaviour
         {
             cardUI.isOnField = true;
             cardUI.ownerType = ownerType;
-            cardUI.FlipCard(true);
+            // 상대 몬스터도 기본은 앞면으로 소환
+            cardUI.SetFace(true);
+            cardUI.EnableCardFlip = false;
         }
 
         var drag = card.GetComponent<CardDragHandler>();
@@ -446,7 +449,8 @@ public class PlayerCardManager : MonoBehaviour
         if (cardUI != null)
         {
             cardUI.SetCard(data);
-            cardUI.SetFace(ownerType == OwnerType.Player);
+            // 부활/강제 소환은 플레이어/상대 구분 없이 앞면으로 소환되도록 통일
+            cardUI.SetFace(true);
             cardUI.EnableCardFlip = false;
             cardUI.isOnField = true;
             cardUI.ownerType = ownerType;

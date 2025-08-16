@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6135601956754545839}
   - component: {fileID: 5956742839396894114}
   m_Layer: 0
-  m_Name: SoundMgr
+  m_Name: SoundManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -46,7 +46,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bgmSource: {fileID: 5956742839396894114}
-  bgmClips: []
+  bgmClips:
+  - {fileID: 8300000, guid: d3d98edb60e3d3a429d12726c8b818aa, type: 3}
+  - {fileID: 8300000, guid: 194908ccf7702764287353c9f9e3047e, type: 3}
+  - {fileID: 8300000, guid: ab3e14ba0a6d16b40a227eb87c1dc8a0, type: 3}
+  - {fileID: 8300000, guid: a4354aef88625124283d10f1528e8eb5, type: 3}
   sfxClips:
   - {fileID: 8300000, guid: 78330eab21068674babaa081be4b000f, type: 3}
   - {fileID: 8300000, guid: d56b9abde36d4984687e5887240a5c62, type: 3}
@@ -55,6 +59,14 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 4ad294390186b544585cbd538823c8aa, type: 3}
   - {fileID: 8300000, guid: a7f42fb42e0ba304b86eafafd8a6db38, type: 3}
   - {fileID: 8300000, guid: b61ff06e9d5a48240a912c3a95307210, type: 3}
+  - {fileID: 8300000, guid: 0f9c5a1146c0f174c8370ee8e34e9d1c, type: 3}
+  - {fileID: 8300000, guid: 9a10c2c3d4d322d41adc34b2301c3483, type: 3}
+  - {fileID: 8300000, guid: 024f498283fbd564ba4494e80aa6a6a5, type: 3}
+  - {fileID: 8300000, guid: 6491b4e8abee74c46a54a07913cc670f, type: 3}
+  - {fileID: 8300000, guid: 374f272ab63f29f4e87131e3dc6be317, type: 3}
+  - {fileID: 8300000, guid: 70f949907176d8043bb80f12fcaf7bfd, type: 3}
+  - {fileID: 8300000, guid: ebe2d6152a0a7f14e9d115b6c7058fe7, type: 3}
+  - {fileID: 8300000, guid: a4e414bd8395b1a44b3e6d116ea3d83c, type: 3}
   sfxPrefab: {fileID: 1166805789358344177, guid: 09bf81726fc74f347b5876e7aba4bcc1, type: 3}
   sfxPoolSize: 10
 --- !u!82 &5956742839396894114

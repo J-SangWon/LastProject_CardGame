@@ -71,6 +71,7 @@ public class StoreManager : MonoBehaviour
 
         // 스크롤 도중 구매 방지 (옵션)
         packViewController.onDragStart += () => buyButton.interactable = false;
+        packViewController.onDragStart += () => SoundManager.Instance.PlaySFX("PACKSLIDE"); // 스크롤 시작 시 클릭 사운드
         packViewController.onSnapEnd += () => buyButton.interactable = true;
 
         CardSpawnPanel.SetActive(false);
@@ -104,7 +105,14 @@ public class StoreManager : MonoBehaviour
     // ────────────────── Buy 클릭 ──────────────────
     void BuyCard()
     {
-        if (isOpening || coin < 10) return;
+        if (isOpening || coin < 10)
+        {
+            SoundManager.Instance.PlaySFX("MENUSELECT_ERROR"); // 오류 사운드
+            return;
+        }
+
+        SoundManager.Instance.StopBGM(); // BGM 정지
+        SoundManager.Instance.PlaySFX("BUYCARD"); // 구매 사운드
 
         coin -= 10;
         coinText.text = coin.ToString();
@@ -208,20 +216,20 @@ public class StoreManager : MonoBehaviour
         {
             SoundManager.Instance.PlaySFX("PACKOPEN_UR");
             shakeDuration = 2f;
-            shakeStrength = 0.5f; // 울트라 레어는 더 강한 진동
+            shakeStrength = 0.7f; // 울트라 레어는 더 강한 진동
         }
         else if (GetHighestRarity() == CardRarity.SuperRare)
         {
             SoundManager.Instance.PlaySFX("PACKOPEN_SR");
             shakeDuration = 1f;
-            shakeStrength = 0.3f;
+            shakeStrength = 0.4f;
 
         }
         else
         {
             SoundManager.Instance.PlaySFX("PACKOPEN");
             shakeDuration = 0.5f;
-            shakeStrength = 0.1f; // 일반/레어는 약한 진동
+            shakeStrength = 0.2f; // 일반/레어는 약한 진동
         }
 
         RectTransform topRect = CardPackUpImg.rectTransform;
@@ -377,6 +385,7 @@ public class StoreManager : MonoBehaviour
     // ────────────────── 모든 카드 뒤집기 ──────────────────
     void CardAllOpen()
     {
+        SoundManager.Instance.PlaySFX("MENUSELECT_01"); // 닫기 사운드
         foreach (Transform child in cardSpawnContent)
         {
             var card = child.GetComponent<CardPrefab>();
@@ -406,6 +415,9 @@ public class StoreManager : MonoBehaviour
             PlayerCardCollectionManager.Instance.AddCard(card.cardId);
         }
         //cardList
+
+        SoundManager.Instance.PlaySFX("MENUSELECT_01"); // 닫기 사운드
+        SoundManager.Instance.PlayBGM("MAIN"); // BGM 재생
 
         //정보 초기화
         rarityList.Clear();

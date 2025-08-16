@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
@@ -44,7 +44,7 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
     public int currentHealth;
     public int FixedHealth;
 
-    private Outline outline;
+    public GameObject outline;
     public bool isFront = true;
     public bool isOnField = false;
 
@@ -65,9 +65,8 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
 
     private void Awake()
     {
-        outline = GetComponentInChildren<Outline>();
         if (outline != null)
-            outline.enabled = false;
+            outline.SetActive(false);
     }
 
     private void Start()
@@ -168,6 +167,8 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
 
     public void SetFace(bool showFront)
     {
+        isFront = showFront;
+
         if (imageBack)
             imageBack.gameObject.SetActive(!showFront);
         if (imageFront)
@@ -193,7 +194,7 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
     public void SetOutline(bool active)
     {
         if (outline != null)
-            outline.enabled = active;
+            outline.SetActive(active);
     }
 
     public void SetCard(BaseCardData data)

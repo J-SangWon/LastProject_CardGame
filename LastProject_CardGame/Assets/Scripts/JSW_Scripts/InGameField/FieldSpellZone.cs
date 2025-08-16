@@ -172,12 +172,15 @@ public class FieldSpellZone : MonoBehaviour, IPointerClickHandler
             // 조건 확인
             if (currentFieldSpell.cardAbility.condition != null)
             {
+                var ownerUI = currentFieldSpellCardObj != null ? currentFieldSpellCardObj.GetComponent<CardUI>() : null;
+                var casterOwner = ownerUI != null ? ownerUI.ownerType : OwnerType.Player;
                 bool conditionMet = EffectConditionEvaluator.IsConditionMet(
                     currentFieldSpell.cardAbility.condition,
                     GameManager.Instance.CurrentPhase,
                     ConditionType.OnCardPlayed,
                     currentFieldSpell.cardId,
-                    0
+                    0,
+                    casterOwner
                 );
 
                 Debug.Log($"필드마법 조건 확인 결과: {conditionMet}");
