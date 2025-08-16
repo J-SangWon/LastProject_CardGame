@@ -50,7 +50,7 @@ public class BattleDeckSelectPanelManager : MonoBehaviour
 
                 if (totalCardCount < 30)
                 {
-                    SoundManager.Instance.PlaySFX("MENUSELECT_02");
+                    SoundManager.Instance.PlaySFX("MENUSELECT_ERROR");
 
                     // 덱이 30장 미만일 때 경고 메시지 출력
                     battleStartCheckPanel.SetActive(true);
