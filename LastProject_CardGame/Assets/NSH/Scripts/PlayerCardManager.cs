@@ -439,7 +439,7 @@ public class PlayerCardManager : MonoBehaviour
         card.transform.localPosition = Vector3.zero;
         if (ownerType == OwnerType.Opponent)
         {
-            card.transform.localRotation = Quaternion.Euler(0, 180f, 0);
+            card.transform.localRotation = Quaternion.Euler(0, 0, 0);
         }
 
         var cardUI = card.GetComponent<CardUI>();

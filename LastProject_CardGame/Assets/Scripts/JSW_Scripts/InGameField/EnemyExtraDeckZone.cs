@@ -170,8 +170,7 @@ public class EnemyExtraDeckZone : MonoBehaviour, IPointerClickHandler
                         cardUI.EnableCardFlip = false;
                         cardUI.GetComponent<Image>().raycastTarget = false;
                         // 적 엑스트라 덱 표시: 뒷면
-                        cardUI.Front.SetActive(false);
-                        cardUI.Back.SetActive(true);
+                        cardUI.FlipCard(false);
                         cardUI.SetFace(false);
                     }
 

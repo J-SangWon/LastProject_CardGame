@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: TakeDamageAll
   m_EditorClassIdentifier: 
   targetType: 2
-  targetOwner: 0
+  targetOwner: 2
   condition: {fileID: 0}
