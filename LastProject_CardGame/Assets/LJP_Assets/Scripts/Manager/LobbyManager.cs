@@ -23,7 +23,10 @@ public class LobbyManager : SingletonBehaviour<LobbyManager>
 	{
 		m_IsDestroyOnLoad = true;
 		base.Awake();
-	}
+
+        //사운드BGM
+        SoundManager.Instance.PlayBGM("MAIN");
+    }
 
 	public void ChangeLobbyType(LobbyType targetType)
 	{
