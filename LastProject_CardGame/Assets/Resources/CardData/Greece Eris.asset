@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Greece Eris
   m_EditorClassIdentifier: 
   cardName: "\uC5D0\uB9AC\uC2A4"
-  description: "\uD558\uC218\uC778 \uD558\uB098\uC758 \uACF5\uACA9\uB825\uACFC \uCCB4\uB825\uC744
-    \uBC14\uAFC9\uB2C8\uB2E4."
+  description: "\uC9C4\uC785 : \uD558\uC218\uC778 \uD558\uB098\uC758 \uACF5\uACA9\uB825\uACFC
+    \uCCB4\uB825\uC744 \uBC14\uAFC9\uB2C8\uB2E4."
   artwork: {fileID: 21300000, guid: 6d974b0d1e120fa47939e9169bb1842a, type: 3}
   cardType: 0
   rarity: 1
@@ -31,7 +31,7 @@ MonoBehaviour:
   disenchantReward: 8
   canCraft: 1
   canDisenchant: 1
-  maxHP: 0
+  maxHP: 2
   currentHP: 0
   monsterType: 0
   attack: 1

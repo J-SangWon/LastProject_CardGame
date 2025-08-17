@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Greece Daphne
   m_EditorClassIdentifier: 
   cardName: "\uB2E4\uD504\uB124"
-  description: "\uB098\uC758 \uBAA8\uB4E0 \uCE90\uB9AD\uD130\uC758 \uCCB4\uB825\uC744
-    3 \uD68C\uBCF5\uD569\uB2C8\uB2E4."
+  description: "\uC9C4\uC785 : \uB098\uC758 \uBAA8\uB4E0 \uCE90\uB9AD\uD130\uC758
+    \uCCB4\uB825\uC744 3 \uD68C\uBCF5\uD569\uB2C8\uB2E4."
   artwork: {fileID: 21300000, guid: a09e9fe460b53bb43a32f4c93277228f, type: 3}
   cardType: 0
   rarity: 0
@@ -31,7 +31,7 @@ MonoBehaviour:
   disenchantReward: 2
   canCraft: 1
   canDisenchant: 1
-  maxHP: 0
+  maxHP: 10
   currentHP: 0
   monsterType: 0
   attack: 4

@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Greece Chimera
   m_EditorClassIdentifier: 
   cardName: "\uD0A4\uBA54\uB77C"
-  description: "\uC8FD\uC74C\uC758 \uBA54\uC544\uB9AC : \uC801 \uD558\uC218\uC778
-    \uD558\uB098\uC5D0\uAC8C 3 \uD53C\uD574\uB97C \uC90D\uB2C8\uB2E4."
+  description: "\uC794\uD5A5 : \uC801 \uD558\uC218\uC778 \uD558\uB098\uC5D0\uAC8C
+    3 \uD53C\uD574\uB97C \uC90D\uB2C8\uB2E4."
   artwork: {fileID: 21300000, guid: 164f46aeaea9e4c41a80cf80d8aede23, type: 3}
   cardType: 0
   rarity: 1
@@ -22,18 +22,18 @@ MonoBehaviour:
   cardId: 1af1c33d-a4da-43b3-b096-3160c91d80da
   haveLive2D: 0
   live2DPath: 
-  cardEffect: 0
+  cardAbility: {fileID: 11400000, guid: c98d03f561319c64c9df9742b235510b, type: 2}
+  abilityValue: 3
+  monsterAbilityType: 2
   tags: []
+  ownerType: 0
   craftCost: 30
   disenchantReward: 8
   canCraft: 1
   canDisenchant: 1
   maxHP: 3
-  currentHP: 0
+  currentHP: 3
   monsterType: 0
   attack: 4
   health: 3
   race: 9
-  monsterAbilityType: 2
-  abilityType: 0
-  abiltyValue: 3

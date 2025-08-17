@@ -21,8 +21,11 @@ MonoBehaviour:
   cardId: 07ad6e4e-1e95-4db6-9e85-3c7d67809a55
   haveLive2D: 0
   live2DPath: 
-  cardEffect: 0
+  cardAbility: {fileID: 11400000, guid: 08dbb5421deb89c43ac21163a130f0ea, type: 2}
+  abilityValue: 3
+  monsterAbilityType: 0
   tags: []
+  ownerType: 0
   craftCost: 100
   disenchantReward: 25
   canCraft: 1

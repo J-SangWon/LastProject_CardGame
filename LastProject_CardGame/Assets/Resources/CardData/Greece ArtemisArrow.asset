@@ -22,8 +22,8 @@ MonoBehaviour:
   cardId: cca31a4e-9abb-408c-a91e-5e45396c8f3e
   haveLive2D: 0
   live2DPath: 
-  cardAbility: {fileID: 0}
-  abilityValue: 0
+  cardAbility: {fileID: 11400000, guid: c98d03f561319c64c9df9742b235510b, type: 2}
+  abilityValue: 2
   monsterAbilityType: 0
   tags: []
   ownerType: 0

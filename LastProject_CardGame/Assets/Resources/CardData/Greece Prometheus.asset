@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: Greece Prometheus
   m_EditorClassIdentifier: 
   cardName: "\uD504\uB85C\uBA54\uD14C\uC6B0\uC2A4"
-  description: "\uB0B4 \uD134 \uC2DC\uC791 \uC2DC \uCE74\uB4DC 1\uC7A5 \uB4DC\uB85C\uC6B0"
+  description: "\uC9C0\uC18D : \uB0B4 \uD134 \uC2DC\uC791 \uC2DC \uCE74\uB4DC 1\uC7A5
+    \uB4DC\uB85C\uC6B0"
   artwork: {fileID: 21300000, guid: 7a62a8625287ee344bd8c4d52ec6eda9, type: 3}
   cardType: 0
   rarity: 3
@@ -21,18 +22,18 @@ MonoBehaviour:
   cardId: caa3d623-f944-4808-82b7-c6a1f6e6099e
   haveLive2D: 0
   live2DPath: 
-  cardEffect: 0
+  cardAbility: {fileID: 11400000, guid: f59b18cc8b4297142a46c935c39fd7eb, type: 2}
+  abilityValue: 1
+  monsterAbilityType: 3
   tags: []
+  ownerType: 0
   craftCost: 400
   disenchantReward: 100
   canCraft: 1
   canDisenchant: 1
   maxHP: 5
-  currentHP: 0
+  currentHP: 5
   monsterType: 0
   attack: 2
   health: 5
   race: 6
-  monsterAbilityType: 3
-  abilityType: 5
-  abiltyValue: 1
