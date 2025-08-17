@@ -6582,10 +6582,10 @@ RectTransform:
   m_Children:
   - {fileID: 451198803}
   - {fileID: 1387634229}
-  - {fileID: 36333670}
-  - {fileID: 1485582680}
   - {fileID: 1022364702}
   - {fileID: 1421261761}
+  - {fileID: 36333670}
+  - {fileID: 1485582680}
   m_Father: {fileID: 642304248}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
