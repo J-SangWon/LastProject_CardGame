@@ -9,13 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9d84224a14b991845896dfdb9fb1b115, type: 3}
-  m_Name: TurnStartCondition
+  m_Script: {fileID: 11500000, guid: 134c56b3b6715c242ad4908d846fc226, type: 3}
+  m_Name: Stun
   m_EditorClassIdentifier: 
-  gamePhase: 1
-  conditionType: 0a000000
-  combination: 1
-  targetCardId: 
-  intValue: 0
-  requiredTag: 
-  ownerScope: 2
+  targetType: 1
+  targetOwner: 3
+  condition: {fileID: 0}

@@ -9,13 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9d84224a14b991845896dfdb9fb1b115, type: 3}
-  m_Name: TurnStartCondition
+  m_Script: {fileID: 11500000, guid: 70f15c1e8d5f3dd4fa1ba4ad7a095eee, type: 3}
+  m_Name: AllHPBuff
   m_EditorClassIdentifier: 
-  gamePhase: 1
-  conditionType: 0a000000
-  combination: 1
-  targetCardId: 
-  intValue: 0
-  requiredTag: 
-  ownerScope: 2
+  targetType: 2
+  targetOwner: 1
+  condition: {fileID: 0}
+  buffType: 1
+  isReset: 0

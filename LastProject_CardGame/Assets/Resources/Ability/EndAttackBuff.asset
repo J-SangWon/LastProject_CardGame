@@ -9,13 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9d84224a14b991845896dfdb9fb1b115, type: 3}
-  m_Name: TurnStartCondition
+  m_Script: {fileID: 11500000, guid: 70f15c1e8d5f3dd4fa1ba4ad7a095eee, type: 3}
+  m_Name: EndAttackBuff
   m_EditorClassIdentifier: 
-  gamePhase: 1
-  conditionType: 0a000000
-  combination: 1
-  targetCardId: 
-  intValue: 0
-  requiredTag: 
-  ownerScope: 2
+  targetType: 5
+  targetOwner: 3
+  condition: {fileID: 11400000, guid: 8fa90e519e8ab9f4c80fe96882648d43, type: 2}
+  buffType: 0
+  isReset: 0

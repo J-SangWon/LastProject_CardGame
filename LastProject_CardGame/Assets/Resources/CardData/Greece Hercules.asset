@@ -22,7 +22,7 @@ MonoBehaviour:
   cardId: 4cb360fa-652a-44b5-a553-aaff1dffce3a
   haveLive2D: 0
   live2DPath: 
-  cardAbility: {fileID: 0}
+  cardAbility: {fileID: 11400000, guid: 62f843e9cb5b7c44a99e1bca34f68e18, type: 2}
   abilityValue: 0
   monsterAbilityType: 1
   tags: []

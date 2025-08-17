@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Greece Daphne
   m_EditorClassIdentifier: 
   cardName: "\uB2E4\uD504\uB124"
-  description: "\uC9C4\uC785 : \uB098\uC758 \uBAA8\uB4E0 \uCE90\uB9AD\uD130\uC758
+  description: "\uC9C4\uC785 : \uB098\uC758 \uBAA8\uB4E0 \uD558\uC218\uC778\uC758
     \uCCB4\uB825\uC744 3 \uD68C\uBCF5\uD569\uB2C8\uB2E4."
   artwork: {fileID: 21300000, guid: a09e9fe460b53bb43a32f4c93277228f, type: 3}
   cardType: 0
@@ -22,9 +22,9 @@ MonoBehaviour:
   cardId: 2e74e484-6171-41da-ab73-6c7ada7c19d0
   haveLive2D: 0
   live2DPath: 
-  cardAbility: {fileID: 0}
-  abilityValue: 0
-  monsterAbilityType: 0
+  cardAbility: {fileID: 11400000, guid: 861f299626e09c145805751f5fe59408, type: 2}
+  abilityValue: 3
+  monsterAbilityType: 1
   tags: []
   ownerType: 0
   craftCost: 10
@@ -32,7 +32,7 @@ MonoBehaviour:
   canCraft: 1
   canDisenchant: 1
   maxHP: 10
-  currentHP: 0
+  currentHP: 10
   monsterType: 0
   attack: 4
   health: 10

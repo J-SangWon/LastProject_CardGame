@@ -9,13 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9d84224a14b991845896dfdb9fb1b115, type: 3}
-  m_Name: TurnStartCondition
+  m_Script: {fileID: 11500000, guid: a9b73883c4b2bcc49b572f3b5d581a5f, type: 3}
+  m_Name: TurnStartDraw
   m_EditorClassIdentifier: 
-  gamePhase: 1
-  conditionType: 0a000000
-  combination: 1
-  targetCardId: 
-  intValue: 0
-  requiredTag: 
-  ownerScope: 2
+  targetType: 0
+  targetOwner: 0
+  condition: {fileID: 11400000, guid: 940f1002fbd67fa4ca5a8d6e8e0fcce7, type: 2}
