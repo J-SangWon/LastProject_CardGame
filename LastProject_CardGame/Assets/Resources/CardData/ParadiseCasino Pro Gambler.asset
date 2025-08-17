@@ -12,20 +12,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e8e2555d73122b43b44cc301395f4ad, type: 3}
   m_Name: ParadiseCasino Pro Gambler
   m_EditorClassIdentifier: 
-  cardName: "\uD504\uB85C\uAC9C\uBE14\uB7EC"
-  description: 
-  artwork: {fileID: 0}
+  cardName: "\uD30C\uB77C\uB2E4\uC774\uC2A4\uCE74\uC9C0\uB178 \uD504\uB85C\uAC9C\uBE14\uB7EC"
+  description: "\uC9C4\uC785:\uC8FC\uC0AC\uC704\uB97C \uAD74\uB824 2,4,6\uB098\uC624\uBA74
+    \uD50C\uB808\uC774\uC5B4\uAC00 \uB4DC\uB85C\uC6B01,3,5\uAC00 \uB098\uC624\uBA74
+    \uC0C1\uB300\uAC00 \uB4DC\uB85C\uC6B0"
+  artwork: {fileID: 21300000, guid: 1ad8e09084cd4354aa204fb9b4611ba5, type: 3}
   cardType: 0
-  rarity: 0
+  rarity: 1
   cost: 2
   cardId: fb1f6903-ed3b-4ba6-b94e-812d064f4eac
   haveLive2D: 0
   live2DPath: 
+  cardAbility: {fileID: 11400000, guid: 83665deb5d0a6bf459728e686612b260, type: 2}
+  abilityValue: 1
+  monsterAbilityType: 1
   tags: []
-  craftCost: 10
-  disenchantReward: 2
+  ownerType: 0
+  craftCost: 30
+  disenchantReward: 8
   canCraft: 1
   canDisenchant: 1
+  maxHP: 3
+  currentHP: 3
   monsterType: 0
   attack: 2
   health: 3
