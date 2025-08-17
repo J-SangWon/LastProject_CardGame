@@ -44,8 +44,7 @@ public class CardManager : MonoBehaviour
         RefreshOwnedCardCounts();
         if (isTestMode) GiveTestCardsToUser();
 
-        //사운드BGM
-        SoundManager.Instance.PlayBGM("MAIN");
+
 
         // DeckSaveManager 찾기
         deckSaveManager = FindAnyObjectByType<DeckSaveManager>();

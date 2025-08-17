@@ -59,11 +59,13 @@ public class BattleManager : MonoBehaviour
     {
         if (GameManager.Instance.TurnNumber == 1)
         {
+            SoundManager.Instance.PlaySFX("ERROR");
             Debug.Log("1턴에는 공격할 수 없습니다.");
             return;
         }
         if (GameManager.Instance.CurrentPhase != GamePhase.BattlePhase)
         {
+            SoundManager.Instance.PlaySFX("ERROR");
             Debug.Log("배틀 페이즈에서만 공격할 수 있습니다!");
             return;
         }
@@ -75,19 +77,25 @@ public class BattleManager : MonoBehaviour
         bool canAttackFromHere = slot != null ? slot.isOccupied : cardUI.isOnField;
         if (!canAttackFromHere)
         {
-            Debug.Log("몬스터존(또는 필드)에 있는 카드만 공격할 수 있습니다.");
+            ErrorString("몬스터존(또는 필드)에 있는 카드만 공격할 수 있습니다.");
             return;
         }
 
         if (cardUI.hasAttackedThisTurn)
         {
-            Debug.Log("이 카드는 이미 공격했습니다.");
+            ErrorString("이미 이번 턴에 공격한 카드입니다.");
             return;
         }
 
         attacker = card;
         Debug.Log($"공격자 설정됨: {cardUI.cardData.cardName}");
         BeginAttack(attacker);
+    }
+
+    private void ErrorString(string error)
+    {
+        SoundManager.Instance.PlaySFX("ERROR");
+        Debug.Log(error);
     }
 
     /// <summary>
@@ -106,7 +114,7 @@ public class BattleManager : MonoBehaviour
             bool canBeTargetHere = slot != null ? slot.isOccupied : targetUI.isOnField;
             if (!canBeTargetHere)
             {
-                Debug.Log("몬스터존(또는 필드)에 있는 카드만 공격 대상이 될 수 있습니다.");
+               ErrorString("몬스터존(또는 필드)에 있는 카드만 공격 대상이 될 수 있습니다.");
                 return;
             }
 
@@ -115,13 +123,13 @@ public class BattleManager : MonoBehaviour
 
             if (targetObj == attacker)
             {
-                Debug.Log("자기 자신은 공격할 수 없습니다.");
+                ErrorString("자기 자신은 공격할 수 없습니다.");
                 return;
             }
 
             if (attackerUI.ownerType == targetUI.ownerType)
             {
-                Debug.Log("아군 몬스터는 공격할 수 없습니다.");
+                ErrorString("아군 몬스터는 공격할 수 없습니다.");
                 return;
             }
 
@@ -139,7 +147,7 @@ public class BattleManager : MonoBehaviour
         }
 
         // 3) 카드도 히트존도 아닌 경우는 무시
-        Debug.Log("유효하지 않은 공격 대상입니다.");
+        ErrorString("유효하지 않은 공격 대상입니다.");
     }
 
     /// <summary>
@@ -221,7 +229,7 @@ public class BattleManager : MonoBehaviour
 
 		if (card == abilityCaster)
 		{
-			Debug.Log("자기 자신에게 능력을 시전할 수 없습니다.");
+			ErrorString("자기 자신에게 능력을 시전할 수 없습니다.");
 			return;
 		}
 
@@ -357,6 +365,9 @@ public class BattleManager : MonoBehaviour
 
         // 3) 히트 연출(히트스톱 등)
         yield return new WaitForSeconds(0.05f);
+
+        // 사운드
+        SoundManager.Instance.PlaySFX("ATTACK");
 
         // 4) 데미지 적용(존재/참조 재확인)
         tgtUI.ReduceHealth(damageToTarget);

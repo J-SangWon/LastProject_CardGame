@@ -409,6 +409,8 @@ public class GameManager : MonoBehaviour
         if (!isPlayerTurn)
             return;
 
+        SoundManager.Instance.PlaySFX("NEXTTURN");
+
         switch (currentPhase)
         {
             case GamePhase.FirstPhase:
@@ -550,12 +552,23 @@ public class GameManager : MonoBehaviour
     {
         foreach (var card in selectedCardsToDiscard)
         {
-            // PlayerCardManager에서 카드 묘지 처리 가능
-            card.transform.SetParent(PlayerCardManager.Instance.graveyardZone, false);
-            card.transform.localPosition = Vector3.zero;
-            card.GetComponent<CardUI>().isInHand = false;
-            card.GetComponent<CardUI>()?.SetOutline(false);
+            var ui = card != null ? card.GetComponent<CardUI>() : null;
+            var data = ui != null ? ui.cardData : null;
+            if (data == null)
+                continue;
+
+            var owner = ui != null ? ui.ownerType : OwnerType.Player;
+            DuelZoneManager.Instance?.SendToGraveyard(data, owner);
+
+            if (ui != null)
+            {
+                ui.isInHand = false;
+                ui.SetOutline(false);
+            }
+            Destroy(card);
         }
+
+        PlayerCardManager.Instance?.UpdateHandLayout();
 
         selectedCardsToDiscard.Clear();
         isDiscardSelectionActive = false;
@@ -663,7 +676,6 @@ public class GameManager : MonoBehaviour
         if (!selectedCardsToDiscard.Contains(card))
         {
             selectedCardsToDiscard.Add(card);
-            card.GetComponent<CardUI>()?.SetOutline(true); // 선택 표시
             if (selectedCardsToDiscard.Count >= cardsToDiscardCount)
             {
                 ConfirmDiscard();

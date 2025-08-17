@@ -351,6 +351,7 @@ public class FieldSpellZone : MonoBehaviour, IPointerClickHandler
                     {
                         if (!GameManager.Instance.TrySpendPlayerCost(cost))
                         {
+                            SoundManager.Instance?.PlaySFX("Error");
                             Debug.Log($"플레이어 코스트 부족: 필요 {cost}, 현재 {GameManager.Instance.playerCurrentCost}");
                             // 카드를 원래 위치로 되돌림
                             cardObject.transform.SetParent(PlayerCardManager.Instance.playerHandZone, false);

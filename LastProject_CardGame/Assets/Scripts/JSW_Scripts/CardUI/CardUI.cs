@@ -38,6 +38,10 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
     public GameObject Rarity;
     public Sprite[] rarityImages;
 
+    public Image DamageEffect;
+    public TMP_Text DamageTex;
+    public float effectDelay = 1f;
+
     public int attack;
     public int FixedAttack;
     public int maxHealth;           // runtime 최대체력 (초기화)
@@ -71,7 +75,10 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
 
     private void Start()
     {
-        SetFace(isFront);
+		DamageEffect.enabled = false;
+        DamageTex.enabled = false;
+
+		SetFace(isFront);
         foreach (var image in GetComponentsInChildren<Image>())
         {
             if (image.gameObject.name == "CardBackground" || image.gameObject.name == "Frame")
@@ -114,6 +121,9 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
     {
         if (IsDead || isDeadFlag) return; // 이미 죽었으면 무시
 
+
+        StartCoroutine(ShowDamageEffect(effectDelay, damage));
+
         currentHealth -= damage;
         if (currentHealth < 0) currentHealth = 0;
         UpdateHealth();
@@ -131,6 +141,7 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
         if (!isDeadFlag || deathResolved) return;
 
         deathResolved = true;
+
 
         // 안전하게 무덤으로 보내기 (DuelZoneManager가 GameObject를 원한다면 변경 필요)
         try
@@ -163,6 +174,17 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
         currentHealth += value;
 
         UpdateHealth();
+    }
+
+    private IEnumerator ShowDamageEffect(float delay, int damage)
+    {
+        DamageEffect.enabled = true;
+        DamageTex.enabled = true;
+		DamageTex.text = "-" + damage.ToString();
+
+		yield return new WaitForSeconds(delay);
+        DamageEffect.enabled = false;
+        DamageTex.enabled = false;
     }
 
     public void SetFace(bool showFront)
@@ -289,6 +311,8 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
+        SoundManager.Instance.PlaySFX("SELECT");
+
         // 우클릭: 상세 정보 전용
         if (eventData != null && eventData.button == PointerEventData.InputButton.Right)
         {

@@ -119,6 +119,8 @@ public class PlayerCardManager : MonoBehaviour
             GameObject card = deck[0];
             deck.RemoveAt(0);
 
+            SoundManager.Instance.PlaySFX("CARDDRAW"); // 드로우 사운드 재생
+
             card.GetComponent<CardUI>().FlipCard(true);
             card.transform.SetParent(playerHandZone, false);
             card.transform.localScale = Vector3.one;
@@ -289,6 +291,7 @@ public class PlayerCardManager : MonoBehaviour
         var cardUI = card.GetComponent<CardUI>();
         if (cardUI != null)
         {
+            SoundManager.Instance.PlaySFX("CARDSUMMON"); // 소환 사운드 재생
             cardUI.isOnField = true;
         }
 

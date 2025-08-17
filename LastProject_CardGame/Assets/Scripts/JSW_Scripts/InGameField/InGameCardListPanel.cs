@@ -13,6 +13,8 @@ public class InGameCardListPanel : MonoBehaviour
 
     public void Show(List<DeckCardEntry> entries, string title, bool reverseOrder = false)
     {
+        SoundManager.Instance.PlaySFX("MENUSELEET_01");
+
         gameObject.SetActive(true);
 
         // 제목 설정
@@ -53,6 +55,8 @@ public class InGameCardListPanel : MonoBehaviour
 
     public void Hide()
     {
+        SoundManager.Instance.PlaySFX("MENUSELEET_01");
+
         gameObject.SetActive(false);
     }
 
