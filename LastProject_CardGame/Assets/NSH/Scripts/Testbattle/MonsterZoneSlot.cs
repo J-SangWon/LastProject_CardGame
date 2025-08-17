@@ -19,12 +19,12 @@ public class MonsterZoneSlot : MonoBehaviour, IPointerClickHandler
         if (selectedCard != null)
         {
             var cardUI = selectedCard.GetComponent<CardUI>();
-            cardUI.SetOutline(false); 
+            cardUI.SetOutline(false); // 선택 해제 시 아웃라인 제거
             if (cardUI == null)
             {
                 return;
             }
-            cardUI.SetOutline(false);
+
             if (!GameManager.Instance.CanSummonCard())
             {
                 Debug.Log("현재 페이즈에서는 카드 소환 불가!");
@@ -55,6 +55,7 @@ public class MonsterZoneSlot : MonoBehaviour, IPointerClickHandler
                 int cost = cardUI.cardData.cost;
                 if (!GameManager.Instance.TrySpendPlayerCost(cost))
                 {
+                    SoundManager.Instance.PlaySFX("Error");
                     Debug.Log($"코스트 부족: 필요 {cost}, 현재 {GameManager.Instance.playerCurrentCost}");
                     return;
                 }

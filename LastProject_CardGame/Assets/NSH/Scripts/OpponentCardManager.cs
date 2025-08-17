@@ -104,6 +104,8 @@ public class OpponentCardManager : MonoBehaviour
             GameObject card = deck[0];
             deck.RemoveAt(0);
 
+            SoundManager.Instance.PlaySFX("CARDDRAW"); // 드로우 사운드 재생
+
             card.GetComponent<CardUI>().FlipCard(false); // 카드 앞면으로 설정
             card.transform.SetParent(handZone, false);
             card.transform.localScale = Vector3.one;
@@ -146,37 +148,6 @@ public class OpponentCardManager : MonoBehaviour
         //        rt.anchoredPosition = new Vector2(i * spacing, 0);
         //    }
         //}
-    }
-
-    //핸드존 
-    public void MouseOnHandZone()
-    {
-        var layoutGroup = handZone.GetComponent<HorizontalLayoutGroup>();
-        if (layoutGroup == null) return;
-
-        // 1) pad 복사/수정
-        var pad = layoutGroup.padding;
-        pad.top = -50;
-
-        // 2) 재할당(중요!)
-        layoutGroup.padding = pad;
-
-        // 3) 강제 리빌드
-        LayoutRebuilder.ForceRebuildLayoutImmediate(handZone as RectTransform);
-        Canvas.ForceUpdateCanvases();
-    }
-
-    public void MouseExitHandZone()
-    {
-        var layoutGroup = handZone.GetComponent<HorizontalLayoutGroup>();
-        if (layoutGroup == null) return;
-
-        var pad = layoutGroup.padding;
-        pad.top = 300;                         // 네가 원하는 값
-        layoutGroup.padding = pad;             // 재할당(중요!)
-
-        LayoutRebuilder.ForceRebuildLayoutImmediate(handZone as RectTransform);
-        Canvas.ForceUpdateCanvases();
     }
 
     #endregion
@@ -404,7 +375,8 @@ public class OpponentCardManager : MonoBehaviour
 		var cardUI = card.GetComponent<CardUI>();
 		if (cardUI != null)
 		{
-			cardUI.isOnField = true;
+            SoundManager.Instance.PlaySFX("CARDSUMMON"); // 소환 사운드 재생
+            cardUI.isOnField = true;
 		}
 
         // AuraTracker 보장: 없으면 추가

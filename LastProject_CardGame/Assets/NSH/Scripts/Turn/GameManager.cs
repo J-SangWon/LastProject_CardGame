@@ -409,6 +409,8 @@ public class GameManager : MonoBehaviour
         if (!isPlayerTurn)
             return;
 
+        SoundManager.Instance.PlaySFX("NEXTTURN");
+
         switch (currentPhase)
         {
             case GamePhase.FirstPhase:
@@ -674,7 +676,6 @@ public class GameManager : MonoBehaviour
         if (!selectedCardsToDiscard.Contains(card))
         {
             selectedCardsToDiscard.Add(card);
-            card.GetComponent<CardUI>()?.SetOutline(true); // 선택 표시
             if (selectedCardsToDiscard.Count >= cardsToDiscardCount)
             {
                 ConfirmDiscard();

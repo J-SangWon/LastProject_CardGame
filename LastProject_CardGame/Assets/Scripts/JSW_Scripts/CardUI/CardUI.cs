@@ -289,6 +289,8 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
+        SoundManager.Instance.PlaySFX("SELECT");
+
         // 우클릭: 상세 정보 전용
         if (eventData != null && eventData.button == PointerEventData.InputButton.Right)
         {
