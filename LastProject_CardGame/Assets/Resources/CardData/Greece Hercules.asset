@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Greece Hercules
   m_EditorClassIdentifier: 
   cardName: "\uD5E4\uB77C\uD074\uB808\uC2A4"
-  description: "\uC804\uD22C\uC758 \uD568\uC131 \uC544\uAD70 \uD558\uC218\uC778\uC5D0\uAC8C
-    \uACF5\uACA9\uB825\uACFC \uCCB4\uB825\uC744 2\uC529 \uBD80\uC5EC\uD569\uB2C8\uB2E4."
+  description: "\uC9C4\uC785 : \uC544\uAD70 \uD558\uC218\uC778\uC5D0\uAC8C \uACF5\uACA9\uB825\uACFC
+    \uCCB4\uB825\uC744 2\uC529 \uBD80\uC5EC\uD569\uB2C8\uB2E4."
   artwork: {fileID: 21300000, guid: 9e6ae09b6c0485c4887d9a782033cc02, type: 3}
   cardType: 0
   rarity: 2
@@ -22,18 +22,18 @@ MonoBehaviour:
   cardId: 4cb360fa-652a-44b5-a553-aaff1dffce3a
   haveLive2D: 0
   live2DPath: 
-  cardEffect: 0
+  cardAbility: {fileID: 11400000, guid: 62f843e9cb5b7c44a99e1bca34f68e18, type: 2}
+  abilityValue: 0
+  monsterAbilityType: 1
   tags: []
+  ownerType: 0
   craftCost: 100
   disenchantReward: 25
   canCraft: 1
   canDisenchant: 1
   maxHP: 5
-  currentHP: 0
+  currentHP: 5
   monsterType: 0
   attack: 7
   health: 5
   race: 3
-  monsterAbilityType: 1
-  abilityType: 0
-  abiltyValue: 0

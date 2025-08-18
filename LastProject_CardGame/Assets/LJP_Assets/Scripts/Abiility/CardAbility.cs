@@ -14,7 +14,8 @@ public enum TargetType
 	Single,
 	Fild,
 	Hand,
-	Deck
+	Deck,
+	Self
 }
 
 public enum TargetOwner

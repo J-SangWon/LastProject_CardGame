@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: Greece Tartarus
   m_EditorClassIdentifier: 
   cardName: "\uD0C0\uB974\uD0C0\uB85C\uC2A4"
-  description: "\uC804\uD22C\uC758 \uD568\uC131 - \uB2E4\uB978 \uBAA8\uB4E0 \uD558\uC218\uC778\uC744
-    \uD30C\uAD34\uD569\uB2C8\uB2E4."
+  description: "\uC9C4\uC785 : \uD558\uC218\uC778\uC744 \uD558\uB098\uB97C \uD30C\uAD34\uD569\uB2C8\uB2E4."
   artwork: {fileID: 21300000, guid: d6fdfb2f66bbbd84e96aa8913dcc932c, type: 3}
   cardType: 0
   rarity: 3
@@ -22,8 +21,8 @@ MonoBehaviour:
   cardId: 1995affa-5041-4c2c-aa5f-2b8ae39a553a
   haveLive2D: 0
   live2DPath: 
-  cardAbility: {fileID: 0}
-  abilityValue: 0
+  cardAbility: {fileID: 11400000, guid: 5ef330eb68bea354ab3deedfeeac27d5, type: 2}
+  abilityValue: 1
   monsterAbilityType: 0
   tags: []
   ownerType: 0
@@ -31,9 +30,9 @@ MonoBehaviour:
   disenchantReward: 100
   canCraft: 1
   canDisenchant: 1
-  maxHP: 0
-  currentHP: 0
+  maxHP: 10
+  currentHP: 10
   monsterType: 0
-  attack: 10
-  health: 10
+  attack: 11
+  health: 11
   race: 5

@@ -42,6 +42,12 @@ public class Ability_Buff : CardAbility
 			targetList.Add(param.target);
 			handler.Apply(param.target, param.value, beforeAttackList, beforeHealthList);
 		}
+		else if(targetType == TargetType.Self)
+		{
+			targetList.Add(card);
+            handler.Apply(card, param.value, beforeAttackList, beforeHealthList);
+        }
+
 		else
 		{
 			foreach (var t in param.targets)

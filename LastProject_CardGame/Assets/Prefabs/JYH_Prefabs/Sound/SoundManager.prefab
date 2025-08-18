@@ -70,6 +70,10 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 384c278c95f86e8479eb680d66565282, type: 3}
   - {fileID: 8300000, guid: 75f6c99787892f54fbef84a17694f1c5, type: 3}
   - {fileID: 8300000, guid: b062bb41a6fd2b64784f75c3e9ea0c32, type: 3}
+  - {fileID: 8300000, guid: db5370bdf1213e7408a01bb0a3a8fd88, type: 3}
+  - {fileID: 8300000, guid: b15ef48396262cb498fc3d7c1d5bfc39, type: 3}
+  - {fileID: 8300000, guid: 727d00cead80ac7498be662bad16634d, type: 3}
+  - {fileID: 8300000, guid: e6595ae93d8a997488925124f294f13b, type: 3}
   sfxPrefab: {fileID: 1166805789358344177, guid: 09bf81726fc74f347b5876e7aba4bcc1, type: 3}
   sfxPoolSize: 10
 --- !u!82 &5956742839396894114

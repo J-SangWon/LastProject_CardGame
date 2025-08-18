@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: Greece Athena
   m_EditorClassIdentifier: 
   cardName: "\uC544\uD14C\uB098"
-  description: "\uC544\uAD70 \uD558\uC218\uC778\uC758 \uCCB4\uB825\uC744 1 \uC99D\uAC00\uC2DC\uD0B5\uB2C8\uB2E4."
+  description: "\uC9C4\uC785 : \uBAA8\uB4E0 \uC544\uAD70 \uD558\uC218\uC778\uC758
+    \uCCB4\uB825\uC744 1 \uC99D\uAC00\uC2DC\uD0B5\uB2C8\uB2E4."
   artwork: {fileID: 21300000, guid: a49585830215543418cbf91d588dd5a4, type: 3}
   cardType: 0
   rarity: 2
@@ -21,12 +22,17 @@ MonoBehaviour:
   cardId: 22630820-503e-491b-9349-9ad74cd8817f
   haveLive2D: 0
   live2DPath: 
-  cardEffects: []
+  cardAbility: {fileID: 11400000, guid: 96e5c5b84fb8f3c4583ed3cde6f789e3, type: 2}
+  abilityValue: 1
+  monsterAbilityType: 1
   tags: []
+  ownerType: 0
   craftCost: 100
   disenchantReward: 25
   canCraft: 1
   canDisenchant: 1
+  maxHP: 5
+  currentHP: 5
   monsterType: 0
   attack: 5
   health: 5

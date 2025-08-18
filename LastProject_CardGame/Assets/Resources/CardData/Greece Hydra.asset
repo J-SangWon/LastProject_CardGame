@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: Greece Hydra
   m_EditorClassIdentifier: 
   cardName: "\uD788\uB4DC\uB77C"
-  description: "\uC8FD\uC74C\uC758 \uBA54\uC544\uB9AC - 2\uAC1C\uC758 \uBA38\uB9AC(2/2)\uB97C
-    \uC18C\uD658\uD569\uB2C8\uB2E4."
+  description: "\uC794\uD5A5 : 2\uAC1C\uC758 \uBA38\uB9AC(2/2)\uB97C \uC18C\uD658\uD569\uB2C8\uB2E4."
   artwork: {fileID: 21300000, guid: 80afb70bfdd4d9944b7f41b470f54a42, type: 3}
   cardType: 0
   rarity: 0
@@ -31,7 +30,7 @@ MonoBehaviour:
   disenchantReward: 2
   canCraft: 1
   canDisenchant: 1
-  maxHP: 0
+  maxHP: 7
   currentHP: 0
   monsterType: 0
   attack: 5
