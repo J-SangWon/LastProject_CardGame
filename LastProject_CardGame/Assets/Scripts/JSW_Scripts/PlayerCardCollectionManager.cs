@@ -14,7 +14,6 @@ public class PlayerCardCollectionData
 {
     public List<PlayerCardEntry> ownedCards = new List<PlayerCardEntry>();
     public int craftPoint;
-    public int coin;
 }
 
 public class PlayerCardCollectionManager : MonoBehaviour
@@ -145,30 +144,6 @@ public class PlayerCardCollectionManager : MonoBehaviour
     public void AddTestCraftPoint1000()
     {
         AddTestCraftPoint(1000);
-    }
-
-    public void AddCoin(int amount)
-    {
-        collection.coin += amount;
-        SaveCollection();
-    }
-
-    // 코인 사용 (성공 시 true, 실패 시 false)
-    public bool SpendCoin(int amount)
-    {
-        if (collection.coin >= amount)
-        {
-            collection.coin -= amount;
-            SaveCollection();
-            return true;
-        }
-        return false;
-    }
-
-    // 현재 코인 조회
-    public int GetCoin()
-    {
-        return collection.coin;
     }
 #endif
 }
