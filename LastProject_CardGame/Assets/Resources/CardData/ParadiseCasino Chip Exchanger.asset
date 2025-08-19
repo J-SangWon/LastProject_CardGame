@@ -35,4 +35,4 @@ MonoBehaviour:
   monsterType: 0
   attack: 1
   health: 3
-  race: 0
+  race: 6

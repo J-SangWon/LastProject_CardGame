@@ -3825,6 +3825,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5956742839396894114, guid: 6d3a9651d76e25643828d5ef5eb7eaa6, type: 3}
+      propertyPath: m_Volume
+      value: 0.7947
+      objectReference: {fileID: 0}
     - target: {fileID: 6135601956754545839, guid: 6d3a9651d76e25643828d5ef5eb7eaa6, type: 3}
       propertyPath: sfxClips.Array.size
       value: 22
