@@ -8,3 +8,9 @@ Unity 기반으로 제작 중인 카드 게임 프로젝트입니다.
 - 덱 빌더 및 덱 저장 기능
 - 묘지 시스템
 - 인게임 카드 상세 보기 UI
+
+##로비
+![로비 화면](./Screenshots/Lobby.png)
+
+##인게임
+![게임 화면](./Screenshots/ingame.png)
