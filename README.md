@@ -12,5 +12,13 @@ Unity 기반으로 제작 중인 카드 게임 프로젝트입니다.
 ##로비
 ![로비 화면](./Screenshots/Lobby.png)
 
+##덱제작
+![덱 제작](./Screenshots/image01.png)
+
+##샵
+![샵](./Screenshots/image02.png)
+
 ##인게임
 ![게임 화면](./Screenshots/ingame.png)
+![타겟팅](./Screenshots/image02.png)
+
